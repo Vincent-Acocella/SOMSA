@@ -4,7 +4,7 @@ import Display from './Display'
 //This will be the entire layout 
 
 //export const ReactContext = ReactContext.createContext()
-const LOCAL_STORAGE_KEY = 'username'
+//const LOCAL_STORAGE_KEY = 'username'
 
 
 function App() {
@@ -43,7 +43,7 @@ function App() {
           </li>
         </ul>
       </div>
-      <div>
+      <div className= "display-all-cards">
         <Display currentPage = {selectedPage}/>
       </div>
     </div>

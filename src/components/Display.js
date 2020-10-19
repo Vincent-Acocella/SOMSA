@@ -1,11 +1,21 @@
 import React from 'react'
-import data from '../catagories/homePage.json'
-import Card from 'react-bootstrap/Card';
+import AllDisplayedCards from '../displayHelper/AllDisplayedCards'
+import '../css/display.css'
 
 
-export default function Display(activePage) {
-    
-    switch(activePage){
+    // let activePage =0;
+    // switch(activePage){
+    //     case 1:
+    //         break;
+    //     case 2:
+    //         break;
+    //     default:
+    // }
+
+
+export default function Display({currentPage}) {
+
+    switch(currentPage){
         case 1:
             break;
         case 2:
@@ -13,24 +23,9 @@ export default function Display(activePage) {
         default:
     }
 
-
-    const newData = data.map((data) => {
-        return (
-            <Card key = {data.id}>
-                <Card.body>
-                    <Card.Title>{data.name}</Card.Title>
-                    <Card.Text>{data.publishedDate}</Card.Text>
-                    <Card.Text>{data.reaction}</Card.Text>
-                </Card.body>
-            </Card>
-        )
-    })
-
     return (
-        <div>
-            {newData}
-
+        <div className="display-all-cards--body">
+            <AllDisplayedCards></AllDisplayedCards>
         </div>
     )
 }
-

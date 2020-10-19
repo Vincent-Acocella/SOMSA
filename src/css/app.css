@@ -20,3 +20,8 @@ ul.trending-sentiment-list li{
     margin-top: 10px;
     font-size: 1.5rem;
 }
+.display-all-cards div{
+    margin: auto;
+    width: 100%;
+    top: -400px;
+}
