@@ -4,7 +4,7 @@ export default function SignIn(){
     
     return(
         <div>
-            <button>Sign In</button>
+            <button className="btn">Sign In</button>
         </div>
     )
 }

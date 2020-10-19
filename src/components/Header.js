@@ -4,7 +4,7 @@ import React, {Component} from 'react'
 import SignIn from './signIn'
 
 //All code inside will be a react component that we can render
-export default class Counter extends Component{
+export default class Header extends Component{
     constructor(props){
         super(props)
 
