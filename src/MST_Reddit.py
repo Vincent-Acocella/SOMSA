@@ -12,6 +12,7 @@ from scrapy.http import Request
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.common.action_chains import ActionChains
 from time import sleep
 
 
@@ -43,8 +44,45 @@ class MSTRedditSpider(Spider):
         post = self.driver.find_element_by_xpath('//*[@class="_32pB7ODBwG3OSx1u_17g58"]')
         post.click()
         # Give the page some time to load
-        sleep(1.5)
+        sleep(7.7)
         document_height = self.driver.execute_script("return document.body.scrollHeight")
-        select = Selector(text = self.driver.page_source)
+        print(str(document_height))
+        self.logger.info("DOCUMENT HEIGHT " + str(document_height))
+        # We want to view the comments on the page, put we have to reveal them first
+        #// *[ @ id = "SHORTCUT_FOCUSABLE_DIV"] / div[2] / div / div[3] / div[1] / div[2] / div[5] / div / button
+        #// *[ @ id = "SHORTCUT_FOCUSABLE_DIV"] / div[2] / div / div[3] / div[1] / div[2] / div[5] / div / div
+                #j9NixHqtN2j8SKHcdJ0om _2JBsHFobuapzGwpHQjrDlD _2nelDm85zKKmuD94NequP0
+                #j9NixHqtN2j8SKHcdJ0om_2JBsHFobuapzGwpHQjrD1D_2ne1Dm85zKKmuD94NequP0
+        #class ="j9NixHqtN2j8SKHcdJ0om_2JBsHFobuapzGwpHQjrD1D_2ne1Dm85zKKmuD94NequP0"]
+        #self.driver.execute("window.scrollTo(0, 100);")
+
+
+        sleep(5.0)
+        view_comments_button = self.driver.find_element_by_xpath('//*[@class="j9NixHqtN2j8SKHcdJ0om _2JBsHFobuapzGwpHQjrDlD _2nelDm85zKKmuD94NequP0"]')
+        #view_comments_button = self.driver.find_element_by_xpath('// *[ @ id = "SHORTCUT_FOCUSABLE_DIV"] / div[2] / div / div[3] / div[1] / div[2] / div[5] / div / button')
+        #self.driver.execute_script("arguments[0].scrollIntoView(true);", view_comments_button)
+        self.logger.info("SCROLL")
+        #ActionChains(self.driver).move_to_element(view_comments_button).perform()
+        self.driver.execute_script("window.scrollBy(0, 6000);")
+        # High sleep values so I have time to interpret what the drive is doing and look at the console
+        sleep(6.0)
+        self.driver.execute_script("window.scrollTo(0, 700);")
+        for i in range(1):
+            #self.driver.find_element_by_tag_name("body").send_keys(Keys.END)
+                                                          #_2GTMVdV2t3ka_zfkVHHo95
+            self.driver.find_element_by_xpath('//*[@class="_1k97Y32qzGNtuVGyt73TpR  wLV79_wV-ziNiWmf3Y7OV _2nelDm85zKKmuD94NequP0"]').send_keys(Keys.PAGE_DOWN)
+            sleep(4.0)
+            #view_comments_button.send_keys(Keys.PAGE_DOWN)
+        self.logger.info("SCROLL")
+        sleep(6.0)
+        #self.driver.execute_script("window.scrollTo(467, 950);")
+
+        view_comments_button.click()
+        sleep(0.4)
+        select = Selector(text=self.driver.page_source)
         self.logger.info('WEBSCRAPER TEST, ' + str(select))
+        # Let's try collecting a comment
+        comment = select.xpath('//*[@class="_3cjCphg1s6DH-irkVaA0GM"]')
+        self.logger.info('WEBSCRAPER TEST, ' + str(comment))
+
         self.driver.close()
