@@ -57,7 +57,7 @@ class MSTRedditSpider(Spider):
         #self.driver.execute("window.scrollTo(0, 100);")
 
 
-        sleep(5.0)
+        sleep(3.0)
         view_comments_button = self.driver.find_element_by_xpath('//*[@class="j9NixHqtN2j8SKHcdJ0om _2JBsHFobuapzGwpHQjrDlD _2nelDm85zKKmuD94NequP0"]')
         #view_comments_button = self.driver.find_element_by_xpath('// *[ @ id = "SHORTCUT_FOCUSABLE_DIV"] / div[2] / div / div[3] / div[1] / div[2] / div[5] / div / button')
         #self.driver.execute_script("arguments[0].scrollIntoView(true);", view_comments_button)
@@ -65,16 +65,16 @@ class MSTRedditSpider(Spider):
         #ActionChains(self.driver).move_to_element(view_comments_button).perform()
         self.driver.execute_script("window.scrollBy(0, 6000);")
         # High sleep values so I have time to interpret what the drive is doing and look at the console
-        sleep(6.0)
+        sleep(2.0)
         self.driver.execute_script("window.scrollTo(0, 700);")
-        for i in range(1):
+        for i in range(2):
             #self.driver.find_element_by_tag_name("body").send_keys(Keys.END)
                                                           #_2GTMVdV2t3ka_zfkVHHo95
-            self.driver.find_element_by_xpath('//*[@class="_1k97Y32qzGNtuVGyt73TpR  wLV79_wV-ziNiWmf3Y7OV _2nelDm85zKKmuD94NequP0"]').send_keys(Keys.PAGE_DOWN)
-            sleep(4.0)
+            #self.driver.find_element_by_xpath('//*[@class="_1k97Y32qzGNtuVGyt73TpR  wLV79_wV-ziNiWmf3Y7OV _2nelDm85zKKmuD94NequP0"]').send_keys(Keys.ARROW_DOWN)
+            view_comments_button.send_keys(Keys.ARROW_DOWN)
+            sleep(0.5)
             #view_comments_button.send_keys(Keys.PAGE_DOWN)
         self.logger.info("SCROLL")
-        sleep(6.0)
         #self.driver.execute_script("window.scrollTo(467, 950);")
 
         view_comments_button.click()
@@ -82,7 +82,7 @@ class MSTRedditSpider(Spider):
         select = Selector(text=self.driver.page_source)
         self.logger.info('WEBSCRAPER TEST, ' + str(select))
         # Let's try collecting a comment
-        comment = select.xpath('//*[@class="_3cjCphg1s6DH-irkVaA0GM"]')
-        self.logger.info('WEBSCRAPER TEST, ' + str(comment))
+        comment = select.xpath('//*[@class="_292iotee39Lmt0MkQZ2hPV RichTextJSON-root"]')
+        self.logger.info('COMMENT, ' + str(comment))
 
         self.driver.close()
