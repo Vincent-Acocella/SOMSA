@@ -44,7 +44,7 @@ class MSTRedditSpider(Spider):
         post = self.driver.find_element_by_xpath('//*[@class="_32pB7ODBwG3OSx1u_17g58"]')
         post.click()
         # Give the page some time to load
-        sleep(7.7)
+        sleep(4.7)
         document_height = self.driver.execute_script("return document.body.scrollHeight")
         print(str(document_height))
         self.logger.info("DOCUMENT HEIGHT " + str(document_height))
@@ -64,7 +64,7 @@ class MSTRedditSpider(Spider):
         self.logger.info("SCROLL")
         #ActionChains(self.driver).move_to_element(view_comments_button).perform()
         self.driver.execute_script("window.scrollBy(0, 6000);")
-        # High sleep values so I have time to interpret what the drive is doing and look at the console
+        # High sleep values so I have time to interpret what the driver is doing and look at the console
         sleep(2.0)
         self.driver.execute_script("window.scrollTo(0, 700);")
         for i in range(2):
@@ -82,7 +82,20 @@ class MSTRedditSpider(Spider):
         select = Selector(text=self.driver.page_source)
         self.logger.info('WEBSCRAPER TEST, ' + str(select))
         # Let's try collecting a comment
-        comment = select.xpath('//*[@class="_292iotee39Lmt0MkQZ2hPV RichTextJSON-root"]')
-        self.logger.info('COMMENT, ' + str(comment))
+        #// *[ @ id = "t1_g9t76jp"] / div[2] / div[3] / div[2] / div / p[1] / text()
+        #// *[ @ id = "t1_g9t76jp"] / div[2] / div[3] / div[2] / div / p[2] / text()
+        #_1YCqQVO - 9r - Up6QPB9H6_4_1YCqQVO - 9r - Up6QPB9H6_4
+
+        comments = select.xpath('//*[@class="_292iotee39Lmt0MkQZ2hPV RichTextJSON-root"]')
+        self.logger.info('COMMENT, ' + str(comments[0]))
+        self.logger.info(comments[0].xpath('//p[2]/text()').getall())
+        self.logger.info(comments[1].xpath('//p[2]/text()').getall())
+        self.logger.info(comments[2].xpath('//p[2]/text()').getall())
+        self.logger.info("...")
+        for i in range(len(comments)):
+            self.logger.info(comments.xpath('//p[' + str(i) + ']/text()').get())
+            self.logger.info(str(i))
+            break
+
 
         self.driver.close()
