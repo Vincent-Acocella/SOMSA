@@ -10,6 +10,7 @@ from scrapy.selector import Selector
 from scrapy.http import Request
 
 from selenium import webdriver
+from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.action_chains import ActionChains
@@ -43,6 +44,7 @@ class MSTRedditSpider(Spider):
         self.comments = {}
         self.logger.info("THREAD LOOKUP " + thread_xpath)
         post = self.driver.find_element_by_xpath(thread_xpath)
+
         post.click()
         # Give the page some time to load
         sleep(4.7)
@@ -112,45 +114,34 @@ class MSTRedditSpider(Spider):
         sleep(0.7)
 
 
+        select = Selector(text=self.driver.page_source)
+        # Get the Reddit threads currently loaded on the page
+
+        threads_selection = select.xpath('//div[@class="rpBJOHq2PR60pnwJlUyP0"]/div/div/div/@data-testid')
+        thread_classes = select.xpath('//div[@class="rpBJOHq2PR60pnwJlUyP0"]/div/div/div/@class').getall()
+        reddit_threads = threads_selection.getall()
+        titles = select.xpath('//h3[@class="_eYtD2XCVieq6emjKBH3m"]/text()').getall()
 
 
-        self.reddit_thread_lookup('//*[@data-testid="t3_ji3x01"]')
-        yield {
-            'One' : self.comments['//*[@data-testid="t3_ji3x01"]']
-        }
-
-        interactable = self.driver.find_element_by_xpath(
-            '//*[@class="_1UoeAeSRhOKSNdY_h3iS1O _1Hw7tY9pMr-T1F4P1C-xNU _2qww3J5KKzsD7e5DO0BvvU"]')
-        self.do_comment_scroll(interactable, 5)
-        self.reddit_thread_lookup('//*[@data-testid="t3_ji48ai"]')
-        yield {
-            'Two': self.comments['//*[@data-testid="t3_ji48ai"]']
-        }
-
-        interactable = self.driver.find_element_by_xpath(
-            '//*[@class="_1UoeAeSRhOKSNdY_h3iS1O _1Hw7tY9pMr-T1F4P1C-xNU _2qww3J5KKzsD7e5DO0BvvU"]')
-        self.do_comment_scroll(interactable, 10)
-        self.reddit_thread_lookup('//*[@data-testid="t3_ji4s64"]')
-        yield {
-            'Three': self.comments['//*[@data-testid="t3_ji4s64"]']
-        }
-
-        interactable = self.driver.find_element_by_xpath(
-            '//*[@class="_1UoeAeSRhOKSNdY_h3iS1O _1Hw7tY9pMr-T1F4P1C-xNU _2qww3J5KKzsD7e5DO0BvvU"]')
-        self.do_comment_scroll(interactable, 15)
-        self.reddit_thread_lookup('//*[@data-testid="t3_jhzov3"]')
-        yield {
-            'Four': self.comments['//*[@data-testid="t3_jhzov3"]']
-        }
-        interactable = self.driver.find_element_by_xpath(
-            '//*[@class="_1UoeAeSRhOKSNdY_h3iS1O _1Hw7tY9pMr-T1F4P1C-xNU _2qww3J5KKzsD7e5DO0BvvU"]')
-        self.do_comment_scroll(interactable, 20)
-        self.reddit_thread_lookup('//*[@data-testid="t3_jhy6gd"]')
-        yield {
-            'Five': self.comments['//*[@data-testid="t3_jhy6gd"]']
-        }
-
-
+        for i in range(5):
+            #select = Selector(text=self.driver.page_source)
+            interactable = self.driver.find_element_by_xpath(
+                '//*[@class="_1UoeAeSRhOKSNdY_h3iS1O _1Hw7tY9pMr-T1F4P1C-xNU _2qww3J5KKzsD7e5DO0BvvU"]')
+            self.do_comment_scroll(interactable, 5 * i)
+            next_thread = reddit_threads[i]
+            xpath = '//*[@data-testid="' + next_thread + '"]'
+            next_thread_selection = select.xpath(xpath)
+            #print("promotedlink" in thread_classes[i])
+            #print(self.driver.find_element_by_xpath(xpath + '/span'))
+            #print(next_thread_selection.xpath('//div[@class="_3AStxql1mQsrZuUIFP9xSg nU4Je7n-eSXStTBAPMYt8"]/span[contains(text(), "promoted")]'))
+            if not "promotedlink" in thread_classes[i]:
+                try:
+                    self.reddit_thread_lookup(xpath)
+                    yield {
+                        titles[i] : self.comments[xpath]
+                    }
+                except NoSuchElementException:
+                    self.logger.info("Page " + xpath + " not found")
 
 
         self.driver.close()
