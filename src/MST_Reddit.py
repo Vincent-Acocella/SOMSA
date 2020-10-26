@@ -21,6 +21,19 @@ class MSTRedditSpider(Spider):
     name = "Reddit_Spider"
     # Placeholder url, the real url we want to visit will be called on creation of the webdriver
     start_urls = ('http://example.com/',)
+    comments = {}
+
+    def do_comment_scroll(self, page_element):
+        for i in range(100):
+            page_element.send_keys(Keys.ARROW_DOWN)
+            sleep(0.3)
+
+
+    def get_comments(self, selection, key):
+        self.logger.info(selection.xpath('//p/text()').getall())
+        for comment in selection.xpath('//p/text()').getall():
+           # self.logger.info(comment)
+            self.comments[key].append(comment)
 
     def parse(self, response):
         self.header = {'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.111 Safari/537.36'}
@@ -57,16 +70,15 @@ class MSTRedditSpider(Spider):
         #self.driver.execute("window.scrollTo(0, 100);")
 
 
-        sleep(3.0)
         view_comments_button = self.driver.find_element_by_xpath('//*[@class="j9NixHqtN2j8SKHcdJ0om _2JBsHFobuapzGwpHQjrDlD _2nelDm85zKKmuD94NequP0"]')
-        #view_comments_button = self.driver.find_element_by_xpath('// *[ @ id = "SHORTCUT_FOCUSABLE_DIV"] / div[2] / div / div[3] / div[1] / div[2] / div[5] / div / button')
-        #self.driver.execute_script("arguments[0].scrollIntoView(true);", view_comments_button)
-        self.logger.info("SCROLL")
-        #ActionChains(self.driver).move_to_element(view_comments_button).perform()
-        self.driver.execute_script("window.scrollBy(0, 6000);")
-        # High sleep values so I have time to interpret what the driver is doing and look at the console
-        sleep(2.0)
-        self.driver.execute_script("window.scrollTo(0, 700);")
+        select = Selector(text=self.driver.page_source)
+        self.comments["Trending"] = []
+
+        comments_selector = select.xpath('//div[@class="_1ump7uMrSA43cqok14tPrG _1oTUrVtKJk1ue0r3fe31kJ"]')
+        comments_selector = comments_selector.xpath('//*[@id="t1_ga2312g"]/div[2]/div[3]/div[2]')
+       #self.get_comments(comments_selector, 0)
+        login_button = self.driver.find_element_by_xpath('//*[@class="_3fM1M9rFBqKwfG-KJLnxPY _1HunhFR-0b-AYs0WG9mU_P _2nelDm85zKKmuD94NequP0"]')
+
         for i in range(2):
             #self.driver.find_element_by_tag_name("body").send_keys(Keys.END)
                                                           #_2GTMVdV2t3ka_zfkVHHo95
@@ -79,23 +91,19 @@ class MSTRedditSpider(Spider):
 
         view_comments_button.click()
         sleep(0.4)
+        self.do_comment_scroll(login_button)
         select = Selector(text=self.driver.page_source)
         self.logger.info('WEBSCRAPER TEST, ' + str(select))
-        # Let's try collecting a comment
-        #// *[ @ id = "t1_g9t76jp"] / div[2] / div[3] / div[2] / div / p[1] / text()
-        #// *[ @ id = "t1_g9t76jp"] / div[2] / div[3] / div[2] / div / p[2] / text()
-        #_1YCqQVO - 9r - Up6QPB9H6_4_1YCqQVO - 9r - Up6QPB9H6_4
 
-        comments = select.xpath('//*[@class="_292iotee39Lmt0MkQZ2hPV RichTextJSON-root"]')
-        self.logger.info('COMMENT, ' + str(comments[0]))
-        self.logger.info(comments[0].xpath('//p[2]/text()').getall())
-        self.logger.info(comments[1].xpath('//p[2]/text()').getall())
-        self.logger.info(comments[2].xpath('//p[2]/text()').getall())
+        comments_selector = select.xpath('//*[@class="_292iotee39Lmt0MkQZ2hPV RichTextJSON-root"]')
+        #self.logger.info(comments.xpath('//p/text()').getall())
+        self.logger.info('COMMENT, ' + str(comments_selector[0]))
         self.logger.info("...")
-        for i in range(len(comments)):
-            self.logger.info(comments.xpath('//p[' + str(i) + ']/text()').get())
-            self.logger.info(str(i))
-            break
+
+        self.get_comments(comments_selector, "Trending")
+        yield {
+            'comments' : self.comments["Trending"],
+        }
 
 
         self.driver.close()
