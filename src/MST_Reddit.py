@@ -27,8 +27,8 @@ class MSTRedditSpider(Spider):
 
     AMOUNT_OF_PAGE_SCROLLS = 20
 
-    def do_comment_scroll(self, page_element):
-        for i in range(self.AMOUNT_OF_PAGE_SCROLLS):
+    def do_comment_scroll(self, page_element, num_scrolls):
+        for i in range(num_scrolls):
             page_element.send_keys(Keys.ARROW_DOWN)
             sleep(0.3)
 
@@ -71,7 +71,7 @@ class MSTRedditSpider(Spider):
 
         view_comments_button.click()
         sleep(0.4)
-        self.do_comment_scroll(login_button)
+        self.do_comment_scroll(login_button, self.AMOUNT_OF_PAGE_SCROLLS)
         select = Selector(text=self.driver.page_source)
         self.logger.info('WEBSCRAPER TEST, ' + str(select))
 
@@ -110,16 +110,46 @@ class MSTRedditSpider(Spider):
         # Send the request to our target site
         self.driver.get('https://www.reddit.com/r/worldnews/')
         sleep(0.7)
-        self.logger.info("CALLING reddit_thread_lookup")
-        self.reddit_thread_lookup('//*[@class="_32pB7ODBwG3OSx1u_17g58"]')
+
+
+
+
+        self.reddit_thread_lookup('//*[@data-testid="t3_ji3x01"]')
         yield {
-            'One' : self.comments['//*[@class="_32pB7ODBwG3OSx1u_17g58"]']
-         }
-        self.reddit_thread_lookup('//*[@class="_32pB7ODBwG3OSx1u_17g58"]')
-        yield {
-            'Two' : self.comments['//*[@class="_32pB7ODBwG3OSx1u_17g58"]']
+            'One' : self.comments['//*[@data-testid="t3_ji3x01"]']
         }
-        self.logger.info("CALLED")
+
+        interactable = self.driver.find_element_by_xpath(
+            '//*[@class="_1UoeAeSRhOKSNdY_h3iS1O _1Hw7tY9pMr-T1F4P1C-xNU _2qww3J5KKzsD7e5DO0BvvU"]')
+        self.do_comment_scroll(interactable, 5)
+        self.reddit_thread_lookup('//*[@data-testid="t3_ji48ai"]')
+        yield {
+            'Two': self.comments['//*[@data-testid="t3_ji48ai"]']
+        }
+
+        interactable = self.driver.find_element_by_xpath(
+            '//*[@class="_1UoeAeSRhOKSNdY_h3iS1O _1Hw7tY9pMr-T1F4P1C-xNU _2qww3J5KKzsD7e5DO0BvvU"]')
+        self.do_comment_scroll(interactable, 10)
+        self.reddit_thread_lookup('//*[@data-testid="t3_ji4s64"]')
+        yield {
+            'Three': self.comments['//*[@data-testid="t3_ji4s64"]']
+        }
+
+        interactable = self.driver.find_element_by_xpath(
+            '//*[@class="_1UoeAeSRhOKSNdY_h3iS1O _1Hw7tY9pMr-T1F4P1C-xNU _2qww3J5KKzsD7e5DO0BvvU"]')
+        self.do_comment_scroll(interactable, 15)
+        self.reddit_thread_lookup('//*[@data-testid="t3_jhzov3"]')
+        yield {
+            'Four': self.comments['//*[@data-testid="t3_jhzov3"]']
+        }
+        interactable = self.driver.find_element_by_xpath(
+            '//*[@class="_1UoeAeSRhOKSNdY_h3iS1O _1Hw7tY9pMr-T1F4P1C-xNU _2qww3J5KKzsD7e5DO0BvvU"]')
+        self.do_comment_scroll(interactable, 20)
+        self.reddit_thread_lookup('//*[@data-testid="t3_jhy6gd"]')
+        yield {
+            'Five': self.comments['//*[@data-testid="t3_jhy6gd"]']
+        }
+
 
 
 
