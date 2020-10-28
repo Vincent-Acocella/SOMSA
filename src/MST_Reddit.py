@@ -26,7 +26,45 @@ class MSTRedditSpider(Spider):
     # The key used represents what topic(s) they belong to
     comments = {}
 
+    current_home_url = 'http://example.com/'
+
     AMOUNT_OF_PAGE_SCROLLS = 20
+
+    def scrape_subreddit(self, url):
+
+        # Send the request to our target site
+        self.driver.get(url)
+        sleep(0.7)
+
+        select = Selector(text=self.driver.page_source)
+        # Get the Reddit threads currently loaded on the page
+
+        threads_selection = select.xpath('//div[@class="rpBJOHq2PR60pnwJlUyP0"]/div/div/div/@data-testid')
+        thread_classes = select.xpath('//div[@class="rpBJOHq2PR60pnwJlUyP0"]/div/div/div/@class').getall()
+        reddit_threads = threads_selection.getall()
+        titles = select.xpath('//h3[@class="_eYtD2XCVieq6emjKBH3m"]/text()').getall()
+
+        self.current_home_url = 'url'
+
+        for i in range(3):
+            # select = Selector(text=self.driver.page_source)
+            interactable = self.driver.find_element_by_xpath(
+                '//*[@class="_1UoeAeSRhOKSNdY_h3iS1O _1Hw7tY9pMr-T1F4P1C-xNU _2qww3J5KKzsD7e5DO0BvvU"]')
+            self.do_comment_scroll(interactable, 5 * i)
+            next_thread = reddit_threads[i]
+            xpath = '//*[@data-testid="' + next_thread + '"]'
+            next_thread_selection = select.xpath(xpath)
+            # print("promotedlink" in thread_classes[i])
+            # print(self.driver.find_element_by_xpath(xpath + '/span'))
+            # print(next_thread_selection.xpath('//div[@class="_3AStxql1mQsrZuUIFP9xSg nU4Je7n-eSXStTBAPMYt8"]/span[contains(text(), "promoted")]'))
+            if not "promotedlink" in thread_classes[i]:
+                try:
+                    self.reddit_thread_lookup(xpath)
+                    yield {
+                        titles[i]: self.comments[xpath]
+                    }
+                except NoSuchElementException:
+                    self.logger.info("Page " + xpath + " not found")
 
     def do_comment_scroll(self, page_element, num_scrolls):
         for i in range(num_scrolls):
@@ -88,7 +126,7 @@ class MSTRedditSpider(Spider):
        #     'Trending - ' + thread_xpath: self.comments[thread_xpath],
        # }
 
-        self.driver.get('https://www.reddit.com/r/worldnews/')
+        self.driver.get(self.current_home_url)
         sleep(4.0)
 
 
@@ -108,11 +146,21 @@ class MSTRedditSpider(Spider):
         # Location of the webdriver on your system
         self.driver = webdriver.Chrome('C:/ChromeDriver/chromedriver.exe', desired_capabilities=caps)
 
+        # These function calls will not work because yield needs to be in parse
+        # Which unfortunately means we don't have an easy way to streamline the below code
+        #self.scrape_subreddit('https://www.reddit.com/r/worldnews/')
+        #self.scrape_subreddit('https://www.reddit.com/r/sports/')
 
+
+        """
+        
+        SCRAPE WORLD NEWS
+        
+        """
         # Send the request to our target site
-        self.driver.get('https://www.reddit.com/r/worldnews/')
+        self.current_home_url = 'https://www.reddit.com/r/worldnews/'
+        self.driver.get(self.current_home_url)
         sleep(0.7)
-
 
         select = Selector(text=self.driver.page_source)
         # Get the Reddit threads currently loaded on the page
@@ -122,26 +170,64 @@ class MSTRedditSpider(Spider):
         reddit_threads = threads_selection.getall()
         titles = select.xpath('//h3[@class="_eYtD2XCVieq6emjKBH3m"]/text()').getall()
 
-
-        for i in range(5):
-            #select = Selector(text=self.driver.page_source)
+        for i in range(3):
+            # select = Selector(text=self.driver.page_source)
             interactable = self.driver.find_element_by_xpath(
                 '//*[@class="_1UoeAeSRhOKSNdY_h3iS1O _1Hw7tY9pMr-T1F4P1C-xNU _2qww3J5KKzsD7e5DO0BvvU"]')
             self.do_comment_scroll(interactable, 5 * i)
             next_thread = reddit_threads[i]
             xpath = '//*[@data-testid="' + next_thread + '"]'
             next_thread_selection = select.xpath(xpath)
-            #print("promotedlink" in thread_classes[i])
-            #print(self.driver.find_element_by_xpath(xpath + '/span'))
-            #print(next_thread_selection.xpath('//div[@class="_3AStxql1mQsrZuUIFP9xSg nU4Je7n-eSXStTBAPMYt8"]/span[contains(text(), "promoted")]'))
+            # print("promotedlink" in thread_classes[i])
+            # print(self.driver.find_element_by_xpath(xpath + '/span'))
+            # print(next_thread_selection.xpath('//div[@class="_3AStxql1mQsrZuUIFP9xSg nU4Je7n-eSXStTBAPMYt8"]/span[contains(text(), "promoted")]'))
             if not "promotedlink" in thread_classes[i]:
                 try:
                     self.reddit_thread_lookup(xpath)
                     yield {
-                        titles[i] : self.comments[xpath]
+                        titles[i]: self.comments[xpath]
                     }
                 except NoSuchElementException:
                     self.logger.info("Page " + xpath + " not found")
 
+
+
+        """
+        
+        SCRAPE SPORTS
+        
+        """
+        # Send the request to our target site
+        self.current_home_url = 'https://www.reddit.com/r/sports/'
+        self.driver.get(self.current_home_url)
+        sleep(0.7)
+
+        select = Selector(text=self.driver.page_source)
+        # Get the Reddit threads currently loaded on the page
+
+        threads_selection = select.xpath('//div[@class="rpBJOHq2PR60pnwJlUyP0"]/div/div/div/@data-testid')
+        thread_classes = select.xpath('//div[@class="rpBJOHq2PR60pnwJlUyP0"]/div/div/div/@class').getall()
+        reddit_threads = threads_selection.getall()
+        titles = select.xpath('//h3[@class="_eYtD2XCVieq6emjKBH3m"]/text()').getall()
+
+        for i in range(3):
+            # select = Selector(text=self.driver.page_source)
+            interactable = self.driver.find_element_by_xpath(
+            '//*[@class="_1UoeAeSRhOKSNdY_h3iS1O _1Hw7tY9pMr-T1F4P1C-xNU _2qww3J5KKzsD7e5DO0BvvU"]')
+            self.do_comment_scroll(interactable, 5 * i)
+            next_thread = reddit_threads[i]
+            xpath = '//*[@data-testid="' + next_thread + '"]'
+            next_thread_selection = select.xpath(xpath)
+            # print("promotedlink" in thread_classes[i])
+            # print(self.driver.find_element_by_xpath(xpath + '/span'))
+            # print(next_thread_selection.xpath('//div[@class="_3AStxql1mQsrZuUIFP9xSg nU4Je7n-eSXStTBAPMYt8"]/span[contains(text(), "promoted")]'))
+            if not "promotedlink" in thread_classes[i]:
+                try:
+                    self.reddit_thread_lookup(xpath)
+                    yield {
+                        titles[i]: self.comments[xpath]
+                    }
+                except NoSuchElementException:
+                    self.logger.info("Page " + xpath + " not found")
 
         self.driver.close()
