@@ -25,6 +25,7 @@ class MSTRedditSpider(Spider):
     # This is where we will store comments for every reddit page
     # The key used represents what topic(s) they belong to
     comments = {}
+    comment_chain = ""
 
     current_home_url = 'http://example.com/'
 
@@ -33,6 +34,7 @@ class MSTRedditSpider(Spider):
     def scrape_subreddit(self, url):
 
         # Send the request to our target site
+        self.comment_chain = ""
         self.driver.get(url)
         sleep(0.7)
 
@@ -61,7 +63,7 @@ class MSTRedditSpider(Spider):
                 try:
                     self.reddit_thread_lookup(xpath)
                     yield {
-                        titles[i]: self.comments[xpath]
+                        titles[i]: self.comment_chain
                     }
                 except NoSuchElementException:
                     self.logger.info("Page " + xpath + " not found")
@@ -75,11 +77,13 @@ class MSTRedditSpider(Spider):
        # self.logger.info(selection.xpath('//p/text()').getall())
         for comment in selection.xpath('//p/text()').getall():
            # self.logger.info(comment)
-            self.comments[key].append(comment)
+            #self.comments[key].append(comment)
+            self.comment_chain += comment + " "
 
     def reddit_thread_lookup(self, thread_xpath):
         # We want to clear the comments dictionary every run
-        self.comments = {}
+        #self.comments = {}
+        self.comment_chain = ""
         self.logger.info("THREAD LOOKUP " + thread_xpath)
         post = self.driver.find_element_by_xpath(thread_xpath)
 
@@ -91,7 +95,7 @@ class MSTRedditSpider(Spider):
             '//*[@class="j9NixHqtN2j8SKHcdJ0om _2JBsHFobuapzGwpHQjrDlD _2nelDm85zKKmuD94NequP0"]')
         select = Selector(text=self.driver.page_source)
         # The xpath as the key is TEMPORARY, will be changed to the thread title
-        self.comments[thread_xpath] = []
+        #self.comments[thread_xpath] = []
 
         comments_selector = select.xpath('//div[@class="_1ump7uMrSA43cqok14tPrG _1oTUrVtKJk1ue0r3fe31kJ"]')
         comments_selector = comments_selector.xpath('//*[@id="t1_ga2312g"]/div[2]/div[3]/div[2]')
@@ -170,7 +174,7 @@ class MSTRedditSpider(Spider):
         reddit_threads = threads_selection.getall()
         titles = select.xpath('//h3[@class="_eYtD2XCVieq6emjKBH3m"]/text()').getall()
 
-        for i in range(3):
+        for i in range(2):
             # select = Selector(text=self.driver.page_source)
             interactable = self.driver.find_element_by_xpath(
                 '//*[@class="_1UoeAeSRhOKSNdY_h3iS1O _1Hw7tY9pMr-T1F4P1C-xNU _2qww3J5KKzsD7e5DO0BvvU"]')
@@ -185,7 +189,7 @@ class MSTRedditSpider(Spider):
                 try:
                     self.reddit_thread_lookup(xpath)
                     yield {
-                        titles[i]: self.comments[xpath]
+                        titles[i]: self.comment_chain
                     }
                 except NoSuchElementException:
                     self.logger.info("Page " + xpath + " not found")
@@ -210,7 +214,7 @@ class MSTRedditSpider(Spider):
         reddit_threads = threads_selection.getall()
         titles = select.xpath('//h3[@class="_eYtD2XCVieq6emjKBH3m"]/text()').getall()
 
-        for i in range(3):
+        for i in range(2):
             # select = Selector(text=self.driver.page_source)
             interactable = self.driver.find_element_by_xpath(
             '//*[@class="_1UoeAeSRhOKSNdY_h3iS1O _1Hw7tY9pMr-T1F4P1C-xNU _2qww3J5KKzsD7e5DO0BvvU"]')
@@ -225,7 +229,7 @@ class MSTRedditSpider(Spider):
                 try:
                     self.reddit_thread_lookup(xpath)
                     yield {
-                        titles[i]: self.comments[xpath]
+                        titles[i]: self.comment_chain
                     }
                 except NoSuchElementException:
                     self.logger.info("Page " + xpath + " not found")
