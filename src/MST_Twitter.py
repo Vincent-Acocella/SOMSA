@@ -35,11 +35,7 @@ class MSTTwitterSpider(Spider):
             sleep(0.3)
 
     def get_comments(self, selection):
-       # self.logger.info(selection.xpath('//p/text()').getall())
-        for comment in selection.xpath('//span/text()').getall():
-           # self.logger.info(comment)
-            #self.comments[key].append(comment)
-            interactable = self.driver.find_element_by_xpath('//*[@data-testid="AppTabBar_Explore_Link"]')
+        for comment in selection.xpath('.//span/text()').getall():
             self.comment_chain += comment + " "
 
 
@@ -52,7 +48,8 @@ class MSTTwitterSpider(Spider):
         self.do_scroll(interactable, self.AMOUNT_OF_PAGE_SCROLLS)
         
         select = Selector(text=self.driver.page_source)
-        tweets = select.xpath('//div[@class="css-1dbjc4n"]')
+        tweets = select.xpath('//div[@data-testid="tweet"]')
+        print(tweets)
         self.get_comments(tweets)
 
 
@@ -72,36 +69,39 @@ class MSTTwitterSpider(Spider):
         caps = browser_options.to_capabilities()
         # Location of the webdriver on your system
         self.driver = webdriver.Chrome('C:/ChromeDriver/chromedriver.exe', desired_capabilities=caps)
-        self.current_home_url = 'https://twitter.com/explore'
+        self.current_home_url = 'https://twitter.com/explore/tabs/trending'
         self.driver.get(self.current_home_url)
         sleep(0.9)
 
         select = Selector(text=self.driver.page_source)
         # Get trends on the page
-        trends_selection = select.xpath('//div[@class="css-1dbjc4n"]/div/div[5]/div/@data-testid')
         trends_selection = select.xpath('//div[@data-testid="trend"]/@class')
         trends = trends_selection.getall()
-        #//*[@id="react-root"]/div/div/div[2]/main/div/div/div/div/div/div[2]/div/div/section/div/div/div[6]/div/div
+
         trend_path = '//div[@class="css-1dbjc4n"]'
         print(trends_selection)
         print(trends)
         for i in range(3):
-            #interactable = self.driver.find_element_by_xpath('//*[@class="class="css-4rbku5 css-18t94o4 css-1dbjc4n r-1habvwh r-1loqt21 r-6koalj r-eqz5dr r-16y2uox r-1ny4l3l r-1ag2gil r-13qz1uu""]')
+
             interactable = self.driver.find_element_by_xpath('//*[@data-testid="AppTabBar_Explore_Link"]')
             self.do_scroll(interactable, 5 * i)
             next_trend = trends[i]
             xpath = '//[@data-test'
-            #trend = self.driver.find_element_by_xpath('//div[@class="' + next_trend + '"]/div[' + str(i) + ']')
-            trend = trend_path + '/div/div[' + str(i + 6) + ']/div/div'
 
-            #select = select.xpath('//div[@class="css-1dbjc4n"]')
+            # At i = 0, this would be //div[@class="css_1dbjc4n"]/div/div[5]/div/div
+            trend = trend_path + '/div/div[' + str(i + 5) + ']/div/div'
+            trend_selection = select.xpath(trend_path + '/div/div[' + str(i + 5) + ']/div/div')
+            span = trend_selection.xpath('.//span[@class="css-901oao css-16my406 r-1qd0xha r-ad9z0x r-bcqeeo r-qvutc0"]/text()').getall()
+            title = ""
+            for p in range(2, len(span)):
+                title += span[p] + " "
+
             self.get_trend_comments(trend)
-           # self.logger.info(select.xpath('//*[@data-testid="tweet"]/@span').get())
-           # self.logger.info(select.xpath('//div[@class="css-901oao r-hkyrab r-1qd0xha r-a023e6 r-16dba41 r-ad9z0x r-bcqeeo r-bnwqim r-qvutc0"]').get())
-           # self.logger.info(select.xpath('//span[@class="css-901oao css-16my406 r-1qd0xha r-ad9z0x r-bcqeeo r-qvutc0"]').getall())
+
             if len(self.comment_chain) > 0:
                 yield {
-                    'Test' : self.comment_chain
+                    title : self.comment_chain,
+                    'Topic' : 'Hot Topics'
                 }
             sleep(3.0)
             self.logger.info(self.comment_chain)
