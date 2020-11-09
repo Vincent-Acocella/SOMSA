@@ -1,0 +1,21 @@
+version: '3'
+services:
+
+  mysql:
+    image: mysql:latest
+    ports:
+      - "3306:3306"
+
+    environment:
+      MYSQL_USER: SOMSA
+      MYSQL_PASSWORD: SOMSA
+      MYSQL_DATABASE: SOMSAdb
+      MYSQL_ROOT_PASSWORD: SOMSA
+
+    volumes:
+      - ./mysql-dump:/docker-entrypoint-initdb.d
+
+  adminer:
+    image: adminer
+    ports:
+      - 8080:8080
