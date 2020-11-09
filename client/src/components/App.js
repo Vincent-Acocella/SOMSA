@@ -14,7 +14,6 @@ function App() {
       <div className = "main">
         <h1>
           Trending <br/> Sentiments
-          
         </h1>
 
         <ul className="trending-sentiment-list">

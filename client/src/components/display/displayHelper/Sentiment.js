@@ -5,7 +5,7 @@ import { MDBContainer } from "mdbreact";
 class Sentiment extends React.Component {
   state = {
     dataPie: {
-      labels: ["Decrease", "Positive"],
+      labels: ["Negative", "Positive"],
       datasets: [
         {
           data: [60, 40],

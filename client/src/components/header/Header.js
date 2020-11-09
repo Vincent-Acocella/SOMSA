@@ -1,32 +1,24 @@
-//Header Component 
-//Import Component section of react
-import React, {Component} from 'react'
-import SignIn from './signIn'
+import React from 'react'
+import SignIn from './accounts/SignIn'
 
-//All code inside will be a react component that we can render
-export default class Header extends Component{
-    constructor(props){
-        super(props)
+/*
+0 is sign in page
+1 is User
+2 is admin
+Relearn Cashing
+*/
 
-        this.state ={
-            count: props.initialCount
-        }
-    }
 
-    render(){
-        return(
-            <>
+//This is where the account context should be stored {useContext} 
+/*
+Header contains the entire top bar 
+It will have the return home, search, drop down and sign in
+*/
+export default function Header() {
+
+    return (
+        <div>
             <SignIn/>
-            </>
-        )
-    }
-
-    changeCount(amount){
-        //Asyncronus Function setState
-        //calling prevState allows multiple calls
-        //Anytime that previous state to update current state you have to use fuction
-        this.setState(prevState => {
-           return { count: prevState.count + amount}
-        })
-    }
+        </div>
+    )
 }
