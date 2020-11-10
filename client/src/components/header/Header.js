@@ -18,8 +18,9 @@ It will have the return home, search, drop down and sign in
 const LOCAL_STORAGE_KEY = 'username';
 
 export default function Header() {
-
     const [user , setUser] = useState()
+
+    
 
   useEffect(()=> {
     //Store the username and change only when user changes

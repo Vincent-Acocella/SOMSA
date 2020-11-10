@@ -7,9 +7,10 @@ router.get('/', (req, res) => res.send(
 
     User.findAll()
     .then(user => {
-        res.sendStatus(200);
         console.log(user);
+        res.sendStatus(200);
     })
     .catch(err => console.log(err))
     ));
+
 module.exports = router;
