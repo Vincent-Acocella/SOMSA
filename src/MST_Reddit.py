@@ -30,6 +30,7 @@ class MSTRedditSpider(Spider):
     current_home_url = 'http://example.com/'
 
     AMOUNT_OF_PAGE_SCROLLS = 20
+    THREADS_TO_SCRAPE = 2
 
     def scrape_subreddit(self, url):
 
@@ -75,7 +76,7 @@ class MSTRedditSpider(Spider):
 
     def get_comments(self, selection, key):
        # self.logger.info(selection.xpath('//p/text()').getall())
-        for comment in selection.xpath('//p/text()').getall():
+        for comment in selection.xpath('.//p/text()').getall():
            # self.logger.info(comment)
             #self.comments[key].append(comment)
             self.comment_chain += comment + " "
@@ -90,10 +91,37 @@ class MSTRedditSpider(Spider):
         post.click()
         # Give the page some time to load
         sleep(4.7)
+        # We want to verify that the page has enough comments first
+        select = Selector(text=self.driver.page_source)
+        # Select the portion of the page that includes the number of comments on the thread
+        num_comments_selection = select.xpath('//div[@data-test-id="post-content"]')
+        num_comments_selection = num_comments_selection.xpath('.//a[@data-test-id="comments-page-link-num-comments"]')
+        num_comments_selection = num_comments_selection.xpath('.//span/text()').getall()
+        # This should be structured as a table of strings,
+        # the first indices will be the individual chars of the comment count
+        # The second to last index will be the actual number we want with the word 'comments'
+        # (And the last index is just the word 'comments')
+        index = len(num_comments_selection) - 2
+        num_comments = str(num_comments_selection[index]).split()
+        num_comments = num_comments[0]
+        try:
+            num_comments = int(num_comments)
+        except ValueError:
+            # Once the amount of comments on a thread become large enough
+            # Reddit displays them as 'x.0k comments'
+            # We cannot turn that into an int as-is
+            num_comments = num_comments.replace('.', '')
+            num_comments = num_comments.strip('k')
+            num_comments += "00"
+            num_comments = int(num_comments)
+
+        if num_comments < 10:
+            self.driver.get(self.current_home_url)
+            raise NoSuchElementException
 
         view_comments_button = self.driver.find_element_by_xpath(
             '//*[@class="j9NixHqtN2j8SKHcdJ0om _2JBsHFobuapzGwpHQjrDlD _2nelDm85zKKmuD94NequP0"]')
-        select = Selector(text=self.driver.page_source)
+        #select = Selector(text=self.driver.page_source)
         # The xpath as the key is TEMPORARY, will be changed to the thread title
         #self.comments[thread_xpath] = []
 
@@ -104,9 +132,7 @@ class MSTRedditSpider(Spider):
             '//*[@class="_3fM1M9rFBqKwfG-KJLnxPY _1HunhFR-0b-AYs0WG9mU_P _2nelDm85zKKmuD94NequP0"]')
 
         for i in range(2):
-            # self.driver.find_element_by_tag_name("body").send_keys(Keys.END)
-            # _2GTMVdV2t3ka_zfkVHHo95
-            # self.driver.find_element_by_xpath('//*[@class="_1k97Y32qzGNtuVGyt73TpR  wLV79_wV-ziNiWmf3Y7OV _2nelDm85zKKmuD94NequP0"]').send_keys(Keys.ARROW_DOWN)
+
             view_comments_button.send_keys(Keys.ARROW_DOWN)
             sleep(0.5)
             # view_comments_button.send_keys(Keys.PAGE_DOWN)
@@ -174,7 +200,7 @@ class MSTRedditSpider(Spider):
         reddit_threads = threads_selection.getall()
         titles = select.xpath('//h3[@class="_eYtD2XCVieq6emjKBH3m"]/text()').getall()
 
-        for i in range(2):
+        for i in range(self.THREADS_TO_SCRAPE):
             # select = Selector(text=self.driver.page_source)
             interactable = self.driver.find_element_by_xpath(
                 '//*[@class="_1UoeAeSRhOKSNdY_h3iS1O _1Hw7tY9pMr-T1F4P1C-xNU _2qww3J5KKzsD7e5DO0BvvU"]')
@@ -189,12 +215,11 @@ class MSTRedditSpider(Spider):
                 try:
                     self.reddit_thread_lookup(xpath)
                     yield {
-                        titles[i]: self.comment_chain
+                        titles[i]: self.comment_chain,
+                        'Topic': 'Hot Topics'
                     }
                 except NoSuchElementException:
                     self.logger.info("Page " + xpath + " not found")
-
-
 
         """
         
@@ -214,7 +239,7 @@ class MSTRedditSpider(Spider):
         reddit_threads = threads_selection.getall()
         titles = select.xpath('//h3[@class="_eYtD2XCVieq6emjKBH3m"]/text()').getall()
 
-        for i in range(2):
+        for i in range(self.THREADS_TO_SCRAPE):
             # select = Selector(text=self.driver.page_source)
             interactable = self.driver.find_element_by_xpath(
             '//*[@class="_1UoeAeSRhOKSNdY_h3iS1O _1Hw7tY9pMr-T1F4P1C-xNU _2qww3J5KKzsD7e5DO0BvvU"]')
@@ -229,7 +254,160 @@ class MSTRedditSpider(Spider):
                 try:
                     self.reddit_thread_lookup(xpath)
                     yield {
-                        titles[i]: self.comment_chain
+                        titles[i]: self.comment_chain,
+                        'Topic': "Sports"
+                    }
+                except NoSuchElementException:
+                    self.logger.info("Page " + xpath + " not found")
+
+        """
+
+        SCRAPE POLITICS
+
+        """
+        self.current_home_url = 'https://www.reddit.com/r/politics/'
+        self.driver.get(self.current_home_url)
+        sleep(0.7)
+
+        select = Selector(text=self.driver.page_source)
+        # Get the Reddit threads currently loaded on the page
+
+        threads_selection = select.xpath('//div[@class="rpBJOHq2PR60pnwJlUyP0"]/div/div/div/@data-testid')
+        thread_classes = select.xpath('//div[@class="rpBJOHq2PR60pnwJlUyP0"]/div/div/div/@class').getall()
+        reddit_threads = threads_selection.getall()
+        titles = select.xpath('//h3[@class="_eYtD2XCVieq6emjKBH3m"]/text()').getall()
+
+        for i in range(self.THREADS_TO_SCRAPE):
+            # select = Selector(text=self.driver.page_source)
+            interactable = self.driver.find_element_by_xpath(
+                '//*[@class="_1UoeAeSRhOKSNdY_h3iS1O _1Hw7tY9pMr-T1F4P1C-xNU _2qww3J5KKzsD7e5DO0BvvU"]')
+            self.do_comment_scroll(interactable, 5 * i)
+            next_thread = reddit_threads[i]
+            xpath = '//*[@data-testid="' + next_thread + '"]'
+            next_thread_selection = select.xpath(xpath)
+            # print("promotedlink" in thread_classes[i])
+            # print(self.driver.find_element_by_xpath(xpath + '/span'))
+            # print(next_thread_selection.xpath('//div[@class="_3AStxql1mQsrZuUIFP9xSg nU4Je7n-eSXStTBAPMYt8"]/span[contains(text(), "promoted")]'))
+            if not "promotedlink" in thread_classes[i]:
+                try:
+                    self.reddit_thread_lookup(xpath)
+                    yield {
+                        titles[i]: self.comment_chain,
+                        'Topic': 'Politcs'
+                    }
+                except NoSuchElementException:
+                    self.logger.info("Page " + xpath + " not found")
+
+        """
+
+        SCRAPE SCIENCE
+
+        """
+        self.current_home_url = 'https://www.reddit.com/r/science/'
+        self.driver.get(self.current_home_url)
+        sleep(0.7)
+
+        select = Selector(text=self.driver.page_source)
+        # Get the Reddit threads currently loaded on the page
+
+        threads_selection = select.xpath('//div[@class="rpBJOHq2PR60pnwJlUyP0"]/div/div/div/@data-testid')
+        thread_classes = select.xpath('//div[@class="rpBJOHq2PR60pnwJlUyP0"]/div/div/div/@class').getall()
+        reddit_threads = threads_selection.getall()
+        titles = select.xpath('//h3[@class="_eYtD2XCVieq6emjKBH3m"]/text()').getall()
+
+        for i in range(self.THREADS_TO_SCRAPE):
+            # select = Selector(text=self.driver.page_source)
+            interactable = self.driver.find_element_by_xpath(
+                '//*[@class="_1UoeAeSRhOKSNdY_h3iS1O _1Hw7tY9pMr-T1F4P1C-xNU _2qww3J5KKzsD7e5DO0BvvU"]')
+            self.do_comment_scroll(interactable, 5 * i)
+            next_thread = reddit_threads[i]
+            xpath = '//*[@data-testid="' + next_thread + '"]'
+            next_thread_selection = select.xpath(xpath)
+            # print("promotedlink" in thread_classes[i])
+            # print(self.driver.find_element_by_xpath(xpath + '/span'))
+            # print(next_thread_selection.xpath('//div[@class="_3AStxql1mQsrZuUIFP9xSg nU4Je7n-eSXStTBAPMYt8"]/span[contains(text(), "promoted")]'))
+            if not "promotedlink" in thread_classes[i]:
+                try:
+                    self.reddit_thread_lookup(xpath)
+                    yield {
+                        titles[i]: self.comment_chain,
+                        'Topic': 'Politcs'
+                    }
+                except NoSuchElementException:
+                    self.logger.info("Page " + xpath + " not found")
+
+        """
+
+        SCRAPE ENVIRONMENT
+
+        """
+        self.current_home_url = 'https://www.reddit.com/r/environment/'
+        self.driver.get(self.current_home_url)
+        sleep(0.7)
+
+        select = Selector(text=self.driver.page_source)
+        # Get the Reddit threads currently loaded on the page
+
+        threads_selection = select.xpath('//div[@class="rpBJOHq2PR60pnwJlUyP0"]/div/div/div/@data-testid')
+        thread_classes = select.xpath('//div[@class="rpBJOHq2PR60pnwJlUyP0"]/div/div/div/@class').getall()
+        reddit_threads = threads_selection.getall()
+        titles = select.xpath('//h3[@class="_eYtD2XCVieq6emjKBH3m"]/text()').getall()
+
+        for i in range(self.THREADS_TO_SCRAPE):
+            # select = Selector(text=self.driver.page_source)
+            interactable = self.driver.find_element_by_xpath(
+                '//*[@class="_1UoeAeSRhOKSNdY_h3iS1O _1Hw7tY9pMr-T1F4P1C-xNU _2qww3J5KKzsD7e5DO0BvvU"]')
+            self.do_comment_scroll(interactable, 5 * i)
+            next_thread = reddit_threads[i]
+            xpath = '//*[@data-testid="' + next_thread + '"]'
+            next_thread_selection = select.xpath(xpath)
+            # print("promotedlink" in thread_classes[i])
+            # print(self.driver.find_element_by_xpath(xpath + '/span'))
+            # print(next_thread_selection.xpath('//div[@class="_3AStxql1mQsrZuUIFP9xSg nU4Je7n-eSXStTBAPMYt8"]/span[contains(text(), "promoted")]'))
+            if not "promotedlink" in thread_classes[i]:
+                try:
+                    self.reddit_thread_lookup(xpath)
+                    yield {
+                        titles[i]: self.comment_chain,
+                        'Topic': 'Politcs'
+                    }
+                except NoSuchElementException:
+                    self.logger.info("Page " + xpath + " not found")
+
+        """
+
+        SCRAPE TECHNOLOGY
+
+        """
+        self.current_home_url = 'https://www.reddit.com/r/technology/'
+        self.driver.get(self.current_home_url)
+        sleep(0.7)
+
+        select = Selector(text=self.driver.page_source)
+        # Get the Reddit threads currently loaded on the page
+
+        threads_selection = select.xpath('//div[@class="rpBJOHq2PR60pnwJlUyP0"]/div/div/div/@data-testid')
+        thread_classes = select.xpath('//div[@class="rpBJOHq2PR60pnwJlUyP0"]/div/div/div/@class').getall()
+        reddit_threads = threads_selection.getall()
+        titles = select.xpath('//h3[@class="_eYtD2XCVieq6emjKBH3m"]/text()').getall()
+
+        for i in range(self.THREADS_TO_SCRAPE):
+            # select = Selector(text=self.driver.page_source)
+            interactable = self.driver.find_element_by_xpath(
+                '//*[@class="_1UoeAeSRhOKSNdY_h3iS1O _1Hw7tY9pMr-T1F4P1C-xNU _2qww3J5KKzsD7e5DO0BvvU"]')
+            self.do_comment_scroll(interactable, 5 * i)
+            next_thread = reddit_threads[i]
+            xpath = '//*[@data-testid="' + next_thread + '"]'
+            next_thread_selection = select.xpath(xpath)
+            # print("promotedlink" in thread_classes[i])
+            # print(self.driver.find_element_by_xpath(xpath + '/span'))
+            # print(next_thread_selection.xpath('//div[@class="_3AStxql1mQsrZuUIFP9xSg nU4Je7n-eSXStTBAPMYt8"]/span[contains(text(), "promoted")]'))
+            if not "promotedlink" in thread_classes[i]:
+                try:
+                    self.reddit_thread_lookup(xpath)
+                    yield {
+                        titles[i]: self.comment_chain,
+                        'Topic': 'Politcs'
                     }
                 except NoSuchElementException:
                     self.logger.info("Page " + xpath + " not found")
