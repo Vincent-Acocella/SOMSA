@@ -2,10 +2,12 @@ const Sequalize = require('sequelize');
 const db = require('../conf.d/database');
 
 const Topic = db.define('user', {
-    Topic_Id:{
+    
+    Topic_Id: {
         type: Sequalize.STRING
     },
-    Catagory:{
+
+    Catagory: {
         type: Sequalize.STRING
     }
 })

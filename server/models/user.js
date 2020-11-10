@@ -1,19 +1,17 @@
 const Sequalize = require('sequelize');
 const db = require('../conf.d/database');
 
-const User = db.define('user', {
-    Username:{
-        type: Sequalize.STRING
+const User = db.define('User' , {
+    User_ID:{
+        type: Sequalize.STRING,
+        primaryKey: true
     },
-    Email:{
+    Search_History:{
         type: Sequalize.STRING
-    },
-    Password:{
-        type: Sequalize.STRING
-    },
-    Favorites:{
-        type: Sequalize.ARRAY
     }
+    
+},{
+    freezeTableName: true,
+    timestamps: false
 })
-
 module.exports = User;

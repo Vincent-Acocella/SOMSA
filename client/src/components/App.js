@@ -3,10 +3,8 @@ import '../css/app.css';
 import Display from './display/Display'
 //This will be the entire layout 
 
-//export const ReactContext = ReactContext.createContext()
-//const LOCAL_STORAGE_KEY = 'username'
-
 function App() {
+
   const [selectedPage, setSelectedPage] = useState(0)
 
   return (
