@@ -86,9 +86,11 @@ class MSTRedditSpider(Spider):
         #self.comments = {}
         self.comment_chain = ""
         self.logger.info("THREAD LOOKUP " + thread_xpath)
-        post = self.driver.find_element_by_xpath(thread_xpath)
+        #post = self.driver.find_element_by_xpath(thread_xpath)
 
-        post.click()
+        #post.click()
+
+        self.driver.get(thread_xpath)
         # Give the page some time to load
         sleep(4.7)
         # Now, it's possible that the thread we clicked on could be a video
@@ -121,8 +123,10 @@ class MSTRedditSpider(Spider):
             num_comments += "00"
             num_comments = int(num_comments)
 
+        self.logger.info(num_comments)
         if num_comments < 20:
             self.driver.get(self.current_home_url)
+            sleep(4.0)
             raise NoSuchElementException
 
         view_comments_button = self.driver.find_element_by_xpath(
@@ -215,9 +219,13 @@ class MSTRedditSpider(Spider):
         # Get the Reddit threads currently loaded on the page
         select = Selector(text=self.driver.page_source)
         threads_selection = select.xpath('//div[@class="rpBJOHq2PR60pnwJlUyP0"]/div/div/div/@data-testid')
+        threads_selection = select.xpath('//*[@data-test-id="comments-page-link-num-comments"]/@href')
         thread_classes = select.xpath('//div[@class="rpBJOHq2PR60pnwJlUyP0"]/div/div/div/@class').getall()
         reddit_threads = threads_selection.getall()
+
         self.logger.info(reddit_threads)
+        #self.driver.get("https:/www.reddit.com" + reddit_threads[0])
+        sleep(30)
         titles = select.xpath('//h3[@class="_eYtD2XCVieq6emjKBH3m"]/text()').getall()
 
         for i in range(self.THREADS_TO_SCRAPE):
@@ -227,9 +235,9 @@ class MSTRedditSpider(Spider):
             self.do_comment_scroll(interactable, SCROLL_MULTIPLE * i)
             next_thread = reddit_threads[i]
             xpath = '//*[@data-testid="' + next_thread + '"]'
-            next_thread_selection = select.xpath(xpath)
-            # print("promotedlink" in thread_classes[i])
-            # print(self.driver.find_element_by_xpath(xpath + '/span'))
+            # The link to the next thread comments section
+            xpath = 'https://www.reddit.com' + next_thread
+
             # print(next_thread_selection.xpath('//div[@class="_3AStxql1mQsrZuUIFP9xSg nU4Je7n-eSXStTBAPMYt8"]/span[contains(text(), "promoted")]'))
             if not "promotedlink" in thread_classes[i]:
                 try:
@@ -258,16 +266,17 @@ class MSTRedditSpider(Spider):
         # In the cases where we use it here, it is the comments listing on the first thread
         interactable = self.driver.find_element_by_xpath(
             '//*[@class="_1UoeAeSRhOKSNdY_h3iS1O _1Hw7tY9pMr-T1F4P1C-xNU _2qww3J5KKzsD7e5DO0BvvU"]')
-        for i in range(2):
+        for i in range(4):
             interactable.send_keys(Keys.PAGE_DOWN)
             sleep(1.0)
-        for i in range(2):
+        for i in range(4):
             interactable.send_keys(Keys.PAGE_UP)
 
         select = Selector(text=self.driver.page_source)
         # Get the Reddit threads currently loaded on the page
 
         threads_selection = select.xpath('//div[@class="rpBJOHq2PR60pnwJlUyP0"]/div/div/div/@data-testid')
+        threads_selection = select.xpath('//*[@data-test-id="comments-page-link-num-comments"]/@href')
         thread_classes = select.xpath('//div[@class="rpBJOHq2PR60pnwJlUyP0"]/div/div/div/@class').getall()
         reddit_threads = threads_selection.getall()
         # Get the titles of the threads
@@ -280,9 +289,9 @@ class MSTRedditSpider(Spider):
             self.do_comment_scroll(interactable, SCROLL_MULTIPLE * i)
             next_thread = reddit_threads[i]
             xpath = '//*[@data-testid="' + next_thread + '"]'
-            next_thread_selection = select.xpath(xpath)
-            # print("promotedlink" in thread_classes[i])
-            # print(self.driver.find_element_by_xpath(xpath + '/span'))
+            # The link to the next thread comments section
+            xpath = 'https://www.reddit.com' + next_thread
+
             # print(next_thread_selection.xpath('//div[@class="_3AStxql1mQsrZuUIFP9xSg nU4Je7n-eSXStTBAPMYt8"]/span[contains(text(), "promoted")]'))
             if not "promotedlink" in thread_classes[i]:
                 try:
@@ -321,6 +330,7 @@ class MSTRedditSpider(Spider):
         # Get the Reddit threads currently loaded on the page
 
         threads_selection = select.xpath('//div[@class="rpBJOHq2PR60pnwJlUyP0"]/div/div/div/@data-testid')
+        threads_selection = select.xpath('//*[@data-test-id="comments-page-link-num-comments"]/@href')
         thread_classes = select.xpath('//div[@class="rpBJOHq2PR60pnwJlUyP0"]/div/div/div/@class').getall()
         reddit_threads = threads_selection.getall()
         titles = select.xpath('//h3[@class="_eYtD2XCVieq6emjKBH3m"]/text()').getall()
@@ -332,9 +342,9 @@ class MSTRedditSpider(Spider):
             self.do_comment_scroll(interactable, SCROLL_MULTIPLE * i)
             next_thread = reddit_threads[i]
             xpath = '//*[@data-testid="' + next_thread + '"]'
-            next_thread_selection = select.xpath(xpath)
-            # print("promotedlink" in thread_classes[i])
-            # print(self.driver.find_element_by_xpath(xpath + '/span'))
+            # The link to the next thread comments section
+            xpath = 'https://www.reddit.com' + next_thread
+
             # print(next_thread_selection.xpath('//div[@class="_3AStxql1mQsrZuUIFP9xSg nU4Je7n-eSXStTBAPMYt8"]/span[contains(text(), "promoted")]'))
             if not "promotedlink" in thread_classes[i]:
                 try:
@@ -372,6 +382,7 @@ class MSTRedditSpider(Spider):
         # Get the Reddit threads currently loaded on the page
 
         threads_selection = select.xpath('//div[@class="rpBJOHq2PR60pnwJlUyP0"]/div/div/div/@data-testid')
+        threads_selection = select.xpath('//*[@data-test-id="comments-page-link-num-comments"]/@href')
         thread_classes = select.xpath('//div[@class="rpBJOHq2PR60pnwJlUyP0"]/div/div/div/@class').getall()
         reddit_threads = threads_selection.getall()
         titles = select.xpath('//h3[@class="_eYtD2XCVieq6emjKBH3m"]/text()').getall()
@@ -383,9 +394,9 @@ class MSTRedditSpider(Spider):
             self.do_comment_scroll(interactable, SCROLL_MULTIPLE * i)
             next_thread = reddit_threads[i]
             xpath = '//*[@data-testid="' + next_thread + '"]'
-            next_thread_selection = select.xpath(xpath)
-            # print("promotedlink" in thread_classes[i])
-            # print(self.driver.find_element_by_xpath(xpath + '/span'))
+            # The link to the next thread comments section
+            xpath = 'https://www.reddit.com' + next_thread
+
             # print(next_thread_selection.xpath('//div[@class="_3AStxql1mQsrZuUIFP9xSg nU4Je7n-eSXStTBAPMYt8"]/span[contains(text(), "promoted")]'))
             if not "promotedlink" in thread_classes[i]:
                 try:
@@ -423,6 +434,7 @@ class MSTRedditSpider(Spider):
         # Get the Reddit threads currently loaded on the page
 
         threads_selection = select.xpath('//div[@class="rpBJOHq2PR60pnwJlUyP0"]/div/div/div/@data-testid')
+        threads_selection = select.xpath('//*[@data-test-id="comments-page-link-num-comments"]/@href')
         thread_classes = select.xpath('//div[@class="rpBJOHq2PR60pnwJlUyP0"]/div/div/div/@class').getall()
         reddit_threads = threads_selection.getall()
         titles = select.xpath('//h3[@class="_eYtD2XCVieq6emjKBH3m"]/text()').getall()
@@ -434,9 +446,9 @@ class MSTRedditSpider(Spider):
             self.do_comment_scroll(interactable, 5 * i)
             next_thread = reddit_threads[i]
             xpath = '//*[@data-testid="' + next_thread + '"]'
-            next_thread_selection = select.xpath(xpath)
-            # print("promotedlink" in thread_classes[i])
-            # print(self.driver.find_element_by_xpath(xpath + '/span'))
+            # The link to the next thread comments section
+            xpath = 'https://www.reddit.com' + next_thread
+
             # print(next_thread_selection.xpath('//div[@class="_3AStxql1mQsrZuUIFP9xSg nU4Je7n-eSXStTBAPMYt8"]/span[contains(text(), "promoted")]'))
             if not "promotedlink" in thread_classes[i]:
                 try:
@@ -474,6 +486,7 @@ class MSTRedditSpider(Spider):
             interactable.send_keys(Keys.PAGE_UP)
 
         threads_selection = select.xpath('//div[@class="rpBJOHq2PR60pnwJlUyP0"]/div/div/div/@data-testid')
+        threads_selection = select.xpath('//*[@data-test-id="comments-page-link-num-comments"]/@href')
         thread_classes = select.xpath('//div[@class="rpBJOHq2PR60pnwJlUyP0"]/div/div/div/@class').getall()
         reddit_threads = threads_selection.getall()
         titles = select.xpath('//h3[@class="_eYtD2XCVieq6emjKBH3m"]/text()').getall()
@@ -486,9 +499,9 @@ class MSTRedditSpider(Spider):
             self.do_comment_scroll(interactable, SCROLL_MULTIPLE * i)
             next_thread = reddit_threads[i]
             xpath = '//*[@data-testid="' + next_thread + '"]'
-            next_thread_selection = select.xpath(xpath)
-            # print("promotedlink" in thread_classes[i])
-            # print(self.driver.find_element_by_xpath(xpath + '/span'))
+            # The link to the next thread comments section
+            xpath = 'https://www.reddit.com' + next_thread
+
             # print(next_thread_selection.xpath('//div[@class="_3AStxql1mQsrZuUIFP9xSg nU4Je7n-eSXStTBAPMYt8"]/span[contains(text(), "promoted")]'))
             if not "promotedlink" in thread_classes[i]:
                 try:
