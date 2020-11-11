@@ -125,8 +125,8 @@ class MSTRedditSpider(Spider):
 
         self.logger.info(num_comments)
         if num_comments < 20:
-            self.driver.get(self.current_home_url)
-            sleep(4.0)
+            #self.driver.get(self.current_home_url)
+            #sleep(4.0)
             raise NoSuchElementException
 
         view_comments_button = self.driver.find_element_by_xpath(
@@ -220,6 +220,7 @@ class MSTRedditSpider(Spider):
         select = Selector(text=self.driver.page_source)
         threads_selection = select.xpath('//div[@class="rpBJOHq2PR60pnwJlUyP0"]/div/div/div/@data-testid')
         threads_selection = select.xpath('//*[@data-test-id="comments-page-link-num-comments"]/@href')
+        threads_selection = select.xpath('//*[@data-click-id="comments"]/@href')
         thread_classes = select.xpath('//div[@class="rpBJOHq2PR60pnwJlUyP0"]/div/div/div/@class').getall()
         reddit_threads = threads_selection.getall()
 
@@ -248,6 +249,7 @@ class MSTRedditSpider(Spider):
                     }
                 except NoSuchElementException:
                     self.logger.info("Page " + xpath + " not found")
+                    self.driver.get(self.current_home_url)
 
         """
         
@@ -277,6 +279,7 @@ class MSTRedditSpider(Spider):
 
         threads_selection = select.xpath('//div[@class="rpBJOHq2PR60pnwJlUyP0"]/div/div/div/@data-testid')
         threads_selection = select.xpath('//*[@data-test-id="comments-page-link-num-comments"]/@href')
+        threads_selection = select.xpath('//*[@data-click-id="comments"]/@href')
         thread_classes = select.xpath('//div[@class="rpBJOHq2PR60pnwJlUyP0"]/div/div/div/@class').getall()
         reddit_threads = threads_selection.getall()
         # Get the titles of the threads
@@ -302,6 +305,7 @@ class MSTRedditSpider(Spider):
                     }
                 except NoSuchElementException:
                     self.logger.info("Page " + xpath + " not found")
+                    self.driver.get(self.current_home_url)
 
         """
 
@@ -331,6 +335,7 @@ class MSTRedditSpider(Spider):
 
         threads_selection = select.xpath('//div[@class="rpBJOHq2PR60pnwJlUyP0"]/div/div/div/@data-testid')
         threads_selection = select.xpath('//*[@data-test-id="comments-page-link-num-comments"]/@href')
+        threads_selection = select.xpath('//*[@data-click-id="comments"]/@href')
         thread_classes = select.xpath('//div[@class="rpBJOHq2PR60pnwJlUyP0"]/div/div/div/@class').getall()
         reddit_threads = threads_selection.getall()
         titles = select.xpath('//h3[@class="_eYtD2XCVieq6emjKBH3m"]/text()').getall()
@@ -355,6 +360,7 @@ class MSTRedditSpider(Spider):
                     }
                 except NoSuchElementException:
                     self.logger.info("Page " + xpath + " not found")
+                    self.driver.get(self.current_home_url)
 
         """
 
@@ -383,6 +389,7 @@ class MSTRedditSpider(Spider):
 
         threads_selection = select.xpath('//div[@class="rpBJOHq2PR60pnwJlUyP0"]/div/div/div/@data-testid')
         threads_selection = select.xpath('//*[@data-test-id="comments-page-link-num-comments"]/@href')
+        threads_selection = select.xpath('//*[@data-click-id="comments"]/@href')
         thread_classes = select.xpath('//div[@class="rpBJOHq2PR60pnwJlUyP0"]/div/div/div/@class').getall()
         reddit_threads = threads_selection.getall()
         titles = select.xpath('//h3[@class="_eYtD2XCVieq6emjKBH3m"]/text()').getall()
@@ -407,6 +414,7 @@ class MSTRedditSpider(Spider):
                     }
                 except NoSuchElementException:
                     self.logger.info("Page " + xpath + " not found")
+                    self.driver.get(self.current_home_url)
 
         """
 
@@ -435,6 +443,7 @@ class MSTRedditSpider(Spider):
 
         threads_selection = select.xpath('//div[@class="rpBJOHq2PR60pnwJlUyP0"]/div/div/div/@data-testid')
         threads_selection = select.xpath('//*[@data-test-id="comments-page-link-num-comments"]/@href')
+        threads_selection = select.xpath('//*[@data-click-id="comments"]/@href')
         thread_classes = select.xpath('//div[@class="rpBJOHq2PR60pnwJlUyP0"]/div/div/div/@class').getall()
         reddit_threads = threads_selection.getall()
         titles = select.xpath('//h3[@class="_eYtD2XCVieq6emjKBH3m"]/text()').getall()
@@ -459,6 +468,7 @@ class MSTRedditSpider(Spider):
                     }
                 except NoSuchElementException:
                     self.logger.info("Page " + xpath + " not found")
+                    self.driver.get(self.current_home_url)
 
         """
 
@@ -487,6 +497,7 @@ class MSTRedditSpider(Spider):
 
         threads_selection = select.xpath('//div[@class="rpBJOHq2PR60pnwJlUyP0"]/div/div/div/@data-testid')
         threads_selection = select.xpath('//*[@data-test-id="comments-page-link-num-comments"]/@href')
+        threads_selection = select.xpath('//*[@data-click-id="comments"]/@href')
         thread_classes = select.xpath('//div[@class="rpBJOHq2PR60pnwJlUyP0"]/div/div/div/@class').getall()
         reddit_threads = threads_selection.getall()
         titles = select.xpath('//h3[@class="_eYtD2XCVieq6emjKBH3m"]/text()').getall()
@@ -512,5 +523,6 @@ class MSTRedditSpider(Spider):
                     }
                 except NoSuchElementException:
                     self.logger.info("Page " + xpath + " not found")
+                    self.driver.get(self.current_home_url)
 
         self.driver.close()
