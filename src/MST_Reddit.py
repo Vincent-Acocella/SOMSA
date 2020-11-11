@@ -24,50 +24,69 @@ class MSTRedditSpider(Spider):
     start_urls = ('http://example.com/',)
     # This is where we will store comments for every reddit page
     # The key used represents what topic(s) they belong to
-    comments = {}
+    thread_titles = []
+    comments = []
     comment_chain = ""
 
     current_home_url = 'http://example.com/'
 
     AMOUNT_OF_PAGE_SCROLLS = 50
-    THREADS_TO_SCRAPE = 15
+    THREADS_TO_SCRAPE = 2
 
-    def scrape_subreddit(self, url):
-
-        # Send the request to our target site
-        self.comment_chain = ""
-        self.driver.get(url)
+    def scrape_subreddit(self):
+        self.driver.get(self.current_home_url)
         sleep(0.7)
 
-        select = Selector(text=self.driver.page_source)
-        # Get the Reddit threads currently loaded on the page
+        # Scroll to the bottom of the page, then to the top
+        # This allows us to load in more Reddit Threads to grab
+        # interactable is simply something on the page we can interaction with
+        # We need it to actually do the scrolling
+        # In the cases where we use it here, it is the comments listing on the first thread
+        interactable = self.driver.find_element_by_xpath(
+            '//*[@class="_1UoeAeSRhOKSNdY_h3iS1O _1Hw7tY9pMr-T1F4P1C-xNU _2qww3J5KKzsD7e5DO0BvvU"]')
+        interactable = self.driver.find_element_by_xpath('//*[@id="USER_DROPDOWN_ID"]')
+        for i in range(5):
+            interactable.send_keys(Keys.PAGE_DOWN)
+            sleep(1.0)
+        for i in range(5):
+            interactable.send_keys(Keys.PAGE_UP)
 
+        # Get the Reddit threads currently loaded on the page
+        select = Selector(text=self.driver.page_source)
         threads_selection = select.xpath('//div[@class="rpBJOHq2PR60pnwJlUyP0"]/div/div/div/@data-testid')
+        threads_selection = select.xpath('//*[@data-test-id="comments-page-link-num-comments"]/@href')
+        threads_selection = select.xpath('//*[@data-click-id="comments"]/@href')
         thread_classes = select.xpath('//div[@class="rpBJOHq2PR60pnwJlUyP0"]/div/div/div/@class').getall()
         reddit_threads = threads_selection.getall()
-        titles = select.xpath('//h3[@class="_eYtD2XCVieq6emjKBH3m"]/text()').getall()
 
-        self.current_home_url = 'url'
+        self.logger.info(reddit_threads)
 
-        for i in range(3):
+        self.thread_titles = select.xpath('//h3[@class="_eYtD2XCVieq6emjKBH3m"]/text()').getall()
+
+        for i in range(self.THREADS_TO_SCRAPE):
             # select = Selector(text=self.driver.page_source)
             interactable = self.driver.find_element_by_xpath(
                 '//*[@class="_1UoeAeSRhOKSNdY_h3iS1O _1Hw7tY9pMr-T1F4P1C-xNU _2qww3J5KKzsD7e5DO0BvvU"]')
-            self.do_comment_scroll(interactable, 5 * i)
+            # self.do_comment_scroll(interactable, SCROLL_MULTIPLE * i)
             next_thread = reddit_threads[i]
             xpath = '//*[@data-testid="' + next_thread + '"]'
-            next_thread_selection = select.xpath(xpath)
-            # print("promotedlink" in thread_classes[i])
-            # print(self.driver.find_element_by_xpath(xpath + '/span'))
-            # print(next_thread_selection.xpath('//div[@class="_3AStxql1mQsrZuUIFP9xSg nU4Je7n-eSXStTBAPMYt8"]/span[contains(text(), "promoted")]'))
+            # The link to the next thread comments section
+            xpath = 'https://www.reddit.com' + next_thread
+
+            # Thread classes have the keyword 'promotedlink' in them if they are an advertisement
+            # That does not pertain to the subreddit
             if not "promotedlink" in thread_classes[i]:
                 try:
                     self.reddit_thread_lookup(xpath)
-                    yield {
-                        titles[i]: self.comment_chain
-                    }
+
                 except NoSuchElementException:
                     self.logger.info("Page " + xpath + " not found")
+                    self.driver.get(self.current_home_url)
+                    # Remove the title from the list since we're skipping it
+                    self.thread_titles.pop(i)
+            else:
+                self.thread_titles.pop(i)
+
 
     def do_comment_scroll(self, page_element, num_scrolls):
         for i in range(num_scrolls):
@@ -83,22 +102,15 @@ class MSTRedditSpider(Spider):
 
     def reddit_thread_lookup(self, thread_xpath):
         # We want to clear the comments dictionary every run
-        #self.comments = {}
         self.comment_chain = ""
         self.logger.info("THREAD LOOKUP " + thread_xpath)
-        #post = self.driver.find_element_by_xpath(thread_xpath)
 
-        #post.click()
 
         self.driver.get(thread_xpath)
         # Give the page some time to load
         sleep(4.7)
-        # Now, it's possible that the thread we clicked on could be a video
 
         select = Selector(text=self.driver.page_source)
-        close_button = self.driver.find_element_by_xpath('//button[@class="c_rRg_d32D6ZO5sV8DmMM _1McO-Omm_mC2bkTnVgD6NV "]')
-        #close_button.click()
-
         # Next we want to verify that the page has enough comments
         # Select the portion of the page that includes the number of comments on the thread
         num_comments_selection = select.xpath('//div[@data-test-id="post-content"]')
@@ -160,11 +172,7 @@ class MSTRedditSpider(Spider):
         self.logger.info("...")
 
         self.get_comments(comments_selector, thread_xpath)
-        #yield can't be called within this method, most be done in parse
-       # yield {
-       #     'Trending - ' + thread_xpath: self.comments[thread_xpath],
-       # }
-
+        self.comments.append(self.comment_chain)
         self.driver.get(self.current_home_url)
         sleep(4.0)
 
@@ -185,344 +193,69 @@ class MSTRedditSpider(Spider):
         # Location of the webdriver on your system
         self.driver = webdriver.Chrome('C:/ChromeDriver/chromedriver.exe', desired_capabilities=caps)
 
-        # These function calls will not work because yield needs to be in parse
-        # Which unfortunately means we don't have an easy way to streamline the below code
-        #self.scrape_subreddit('https://www.reddit.com/r/worldnews/')
-        #self.scrape_subreddit('https://www.reddit.com/r/sports/')
-
-        # With the way yield works, we have to copy paste a lot of code
-        # So it's best to avoid hardcoded values where we can
-        SCROLL_MULTIPLE  = 3
-        """
-        
-        SCRAPE WORLD NEWS
-        
-        """
-        # Send the request to our target site
+        # Scrape world news
         self.current_home_url = 'https://www.reddit.com/r/worldnews/'
-        self.driver.get(self.current_home_url)
-        sleep(0.7)
+        self.scrape_subreddit()
+        for i in range(len(self.comments)):
+            yield{
+                self.thread_titles[i]: self.comments[i],
+                'Topic': 'Hot Topics'
+            }
+        # Reset
+        self.comments = []
 
-        # Scroll to the bottom of the page, then to the top
-        # This allows us to load in more Reddit Threads to grab
-        # interactable is simply something on the page we can interaction with
-        # We need it to actually do the scrolling
-        # In the cases where we use it here, it is the comments listing on the first thread
-        interactable = self.driver.find_element_by_xpath(
-            '//*[@class="_1UoeAeSRhOKSNdY_h3iS1O _1Hw7tY9pMr-T1F4P1C-xNU _2qww3J5KKzsD7e5DO0BvvU"]')
-        for i in range(2):
-            interactable.send_keys(Keys.PAGE_DOWN)
-            sleep(1.0)
-        for i in range(2):
-            interactable.send_keys(Keys.PAGE_UP)
-
-        # Get the Reddit threads currently loaded on the page
-        select = Selector(text=self.driver.page_source)
-        threads_selection = select.xpath('//div[@class="rpBJOHq2PR60pnwJlUyP0"]/div/div/div/@data-testid')
-        threads_selection = select.xpath('//*[@data-test-id="comments-page-link-num-comments"]/@href')
-        threads_selection = select.xpath('//*[@data-click-id="comments"]/@href')
-        thread_classes = select.xpath('//div[@class="rpBJOHq2PR60pnwJlUyP0"]/div/div/div/@class').getall()
-        reddit_threads = threads_selection.getall()
-
-        self.logger.info(reddit_threads)
-        #self.driver.get("https:/www.reddit.com" + reddit_threads[0])
-        sleep(30)
-        titles = select.xpath('//h3[@class="_eYtD2XCVieq6emjKBH3m"]/text()').getall()
-
-        for i in range(self.THREADS_TO_SCRAPE):
-            # select = Selector(text=self.driver.page_source)
-            interactable = self.driver.find_element_by_xpath(
-                '//*[@class="_1UoeAeSRhOKSNdY_h3iS1O _1Hw7tY9pMr-T1F4P1C-xNU _2qww3J5KKzsD7e5DO0BvvU"]')
-            self.do_comment_scroll(interactable, SCROLL_MULTIPLE * i)
-            next_thread = reddit_threads[i]
-            xpath = '//*[@data-testid="' + next_thread + '"]'
-            # The link to the next thread comments section
-            xpath = 'https://www.reddit.com' + next_thread
-
-            # print(next_thread_selection.xpath('//div[@class="_3AStxql1mQsrZuUIFP9xSg nU4Je7n-eSXStTBAPMYt8"]/span[contains(text(), "promoted")]'))
-            if not "promotedlink" in thread_classes[i]:
-                try:
-                    self.reddit_thread_lookup(xpath)
-                    yield {
-                        titles[i]: self.comment_chain,
-                        'Topic': 'Hot Topics'
-                    }
-                except NoSuchElementException:
-                    self.logger.info("Page " + xpath + " not found")
-                    self.driver.get(self.current_home_url)
-
-        """
-        
-        SCRAPE SPORTS
-        
-        """
-        # Send the request to our target site
+        # Scrape Sports
         self.current_home_url = 'https://www.reddit.com/r/sports/'
-        self.driver.get(self.current_home_url)
-        sleep(0.7)
+        self.scrape_subreddit()
+        for i in range(len(self.comments)):
+            yield {
+                self.thread_titles[i]: self.comments[i],
+                'Topic': 'Sports'
+            }
+        # Reset
+        self.comments = []
 
-        # Scroll to the bottom of the page, then to the top
-        # This allows us to load in more Reddit Threads to grab
-        # interactable is simply something on the page we can interaction with
-        # We need it to actually do the scrolling
-        # In the cases where we use it here, it is the comments listing on the first thread
-        interactable = self.driver.find_element_by_xpath(
-            '//*[@class="_1UoeAeSRhOKSNdY_h3iS1O _1Hw7tY9pMr-T1F4P1C-xNU _2qww3J5KKzsD7e5DO0BvvU"]')
-        for i in range(4):
-            interactable.send_keys(Keys.PAGE_DOWN)
-            sleep(1.0)
-        for i in range(4):
-            interactable.send_keys(Keys.PAGE_UP)
-
-        select = Selector(text=self.driver.page_source)
-        # Get the Reddit threads currently loaded on the page
-
-        threads_selection = select.xpath('//div[@class="rpBJOHq2PR60pnwJlUyP0"]/div/div/div/@data-testid')
-        threads_selection = select.xpath('//*[@data-test-id="comments-page-link-num-comments"]/@href')
-        threads_selection = select.xpath('//*[@data-click-id="comments"]/@href')
-        thread_classes = select.xpath('//div[@class="rpBJOHq2PR60pnwJlUyP0"]/div/div/div/@class').getall()
-        reddit_threads = threads_selection.getall()
-        # Get the titles of the threads
-        titles = select.xpath('//h3[@class="_eYtD2XCVieq6emjKBH3m"]/text()').getall()
-
-        for i in range(self.THREADS_TO_SCRAPE):
-            # select = Selector(text=self.driver.page_source)
-            interactable = self.driver.find_element_by_xpath(
-            '//*[@class="_1UoeAeSRhOKSNdY_h3iS1O _1Hw7tY9pMr-T1F4P1C-xNU _2qww3J5KKzsD7e5DO0BvvU"]')
-            self.do_comment_scroll(interactable, SCROLL_MULTIPLE * i)
-            next_thread = reddit_threads[i]
-            xpath = '//*[@data-testid="' + next_thread + '"]'
-            # The link to the next thread comments section
-            xpath = 'https://www.reddit.com' + next_thread
-
-            # print(next_thread_selection.xpath('//div[@class="_3AStxql1mQsrZuUIFP9xSg nU4Je7n-eSXStTBAPMYt8"]/span[contains(text(), "promoted")]'))
-            if not "promotedlink" in thread_classes[i]:
-                try:
-                    self.reddit_thread_lookup(xpath)
-                    yield {
-                        titles[i]: self.comment_chain,
-                        'Topic': "Sports"
-                    }
-                except NoSuchElementException:
-                    self.logger.info("Page " + xpath + " not found")
-                    self.driver.get(self.current_home_url)
-
-        """
-
-        SCRAPE POLITICS
-
-        """
-
+        # Scrape Politics
         self.current_home_url = 'https://www.reddit.com/r/politics/'
-        self.driver.get(self.current_home_url)
-        sleep(0.7)
+        self.scrape_subreddit()
+        for i in range(len(self.comments)):
+            yield {
+                self.thread_titles[i]: self.comments[i],
+                'Topic': 'Politics'
+            }
+        # Reset
+        self.comments = []
 
-        # Scroll to the bottom of the page, then to the top
-        # This allows us to load in more Reddit Threads to grab
-        # interactable is simply something on the page we can interaction with
-        # We need it to actually do the scrolling
-        # In the cases where we use it here, it is the comments listing on the first thread
-        interactable = self.driver.find_element_by_xpath(
-            '//*[@class="_1UoeAeSRhOKSNdY_h3iS1O _1Hw7tY9pMr-T1F4P1C-xNU _2qww3J5KKzsD7e5DO0BvvU"]')
-        for i in range(2):
-            interactable.send_keys(Keys.PAGE_DOWN)
-            sleep(1.0)
-        for i in range(2):
-            interactable.send_keys(Keys.PAGE_UP)
-
-        select = Selector(text=self.driver.page_source)
-        # Get the Reddit threads currently loaded on the page
-
-        threads_selection = select.xpath('//div[@class="rpBJOHq2PR60pnwJlUyP0"]/div/div/div/@data-testid')
-        threads_selection = select.xpath('//*[@data-test-id="comments-page-link-num-comments"]/@href')
-        threads_selection = select.xpath('//*[@data-click-id="comments"]/@href')
-        thread_classes = select.xpath('//div[@class="rpBJOHq2PR60pnwJlUyP0"]/div/div/div/@class').getall()
-        reddit_threads = threads_selection.getall()
-        titles = select.xpath('//h3[@class="_eYtD2XCVieq6emjKBH3m"]/text()').getall()
-
-        for i in range(self.THREADS_TO_SCRAPE):
-            # select = Selector(text=self.driver.page_source)
-            interactable = self.driver.find_element_by_xpath(
-                '//*[@class="_1UoeAeSRhOKSNdY_h3iS1O _1Hw7tY9pMr-T1F4P1C-xNU _2qww3J5KKzsD7e5DO0BvvU"]')
-            self.do_comment_scroll(interactable, SCROLL_MULTIPLE * i)
-            next_thread = reddit_threads[i]
-            xpath = '//*[@data-testid="' + next_thread + '"]'
-            # The link to the next thread comments section
-            xpath = 'https://www.reddit.com' + next_thread
-
-            # print(next_thread_selection.xpath('//div[@class="_3AStxql1mQsrZuUIFP9xSg nU4Je7n-eSXStTBAPMYt8"]/span[contains(text(), "promoted")]'))
-            if not "promotedlink" in thread_classes[i]:
-                try:
-                    self.reddit_thread_lookup(xpath)
-                    yield {
-                        titles[i]: self.comment_chain,
-                        'Topic': 'Politcs'
-                    }
-                except NoSuchElementException:
-                    self.logger.info("Page " + xpath + " not found")
-                    self.driver.get(self.current_home_url)
-
-        """
-
-        SCRAPE SCIENCE
-
-        """
+        # Scrape Science
         self.current_home_url = 'https://www.reddit.com/r/science/'
-        self.driver.get(self.current_home_url)
-        sleep(0.7)
+        self.scrape_subreddit()
+        for i in range(len(self.comments)):
+            yield {
+                self.thread_titles[i]: self.comments[i],
+                'Topic': 'Science'
+            }
+        # Reset
+        self.comments = []
 
-        # Scroll to the bottom of the page, then to the top
-        # This allows us to load in more Reddit Threads to grab
-        # interactable is simply something on the page we can interaction with
-        # We need it to actually do the scrolling
-        # In the cases where we use it here, it is the comments listing on the first thread
-        interactable = self.driver.find_element_by_xpath(
-            '//*[@class="_1UoeAeSRhOKSNdY_h3iS1O _1Hw7tY9pMr-T1F4P1C-xNU _2qww3J5KKzsD7e5DO0BvvU"]')
-        for i in range(2):
-            interactable.send_keys(Keys.PAGE_DOWN)
-            sleep(1.0)
-        for i in range(2):
-            interactable.send_keys(Keys.PAGE_UP)
-
-        select = Selector(text=self.driver.page_source)
-        # Get the Reddit threads currently loaded on the page
-
-        threads_selection = select.xpath('//div[@class="rpBJOHq2PR60pnwJlUyP0"]/div/div/div/@data-testid')
-        threads_selection = select.xpath('//*[@data-test-id="comments-page-link-num-comments"]/@href')
-        threads_selection = select.xpath('//*[@data-click-id="comments"]/@href')
-        thread_classes = select.xpath('//div[@class="rpBJOHq2PR60pnwJlUyP0"]/div/div/div/@class').getall()
-        reddit_threads = threads_selection.getall()
-        titles = select.xpath('//h3[@class="_eYtD2XCVieq6emjKBH3m"]/text()').getall()
-
-        for i in range(self.THREADS_TO_SCRAPE):
-            # select = Selector(text=self.driver.page_source)
-            interactable = self.driver.find_element_by_xpath(
-                '//*[@class="_1UoeAeSRhOKSNdY_h3iS1O _1Hw7tY9pMr-T1F4P1C-xNU _2qww3J5KKzsD7e5DO0BvvU"]')
-            self.do_comment_scroll(interactable, SCROLL_MULTIPLE * i)
-            next_thread = reddit_threads[i]
-            xpath = '//*[@data-testid="' + next_thread + '"]'
-            # The link to the next thread comments section
-            xpath = 'https://www.reddit.com' + next_thread
-
-            # print(next_thread_selection.xpath('//div[@class="_3AStxql1mQsrZuUIFP9xSg nU4Je7n-eSXStTBAPMYt8"]/span[contains(text(), "promoted")]'))
-            if not "promotedlink" in thread_classes[i]:
-                try:
-                    self.reddit_thread_lookup(xpath)
-                    yield {
-                        titles[i]: self.comment_chain,
-                        'Topic': 'Science'
-                    }
-                except NoSuchElementException:
-                    self.logger.info("Page " + xpath + " not found")
-                    self.driver.get(self.current_home_url)
-
-        """
-
-        SCRAPE ENVIRONMENT
-
-        """
+        # Scrape Environment
         self.current_home_url = 'https://www.reddit.com/r/environment/'
-        self.driver.get(self.current_home_url)
-        sleep(0.7)
+        self.scrape_subreddit()
+        for i in range(len(self.comments)):
+            yield {
+                self.thread_titles[i]: self.comments[i],
+                'Topic': 'Environment'
+            }
+        # Reset
+        self.comments = []
 
-        # Scroll to the bottom of the page, then to the top
-        # This allows us to load in more Reddit Threads to grab
-        # interactable is simply something on the page we can interaction with
-        # We need it to actually do the scrolling
-        # In the cases where we use it here, it is the comments listing on the first thread
-        interactable = self.driver.find_element_by_xpath(
-            '//*[@class="_1UoeAeSRhOKSNdY_h3iS1O _1Hw7tY9pMr-T1F4P1C-xNU _2qww3J5KKzsD7e5DO0BvvU"]')
-        for i in range(2):
-            interactable.send_keys(Keys.PAGE_DOWN)
-            sleep(1.0)
-        for i in range(2):
-            interactable.send_keys(Keys.PAGE_UP)
-
-        select = Selector(text=self.driver.page_source)
-        # Get the Reddit threads currently loaded on the page
-
-        threads_selection = select.xpath('//div[@class="rpBJOHq2PR60pnwJlUyP0"]/div/div/div/@data-testid')
-        threads_selection = select.xpath('//*[@data-test-id="comments-page-link-num-comments"]/@href')
-        threads_selection = select.xpath('//*[@data-click-id="comments"]/@href')
-        thread_classes = select.xpath('//div[@class="rpBJOHq2PR60pnwJlUyP0"]/div/div/div/@class').getall()
-        reddit_threads = threads_selection.getall()
-        titles = select.xpath('//h3[@class="_eYtD2XCVieq6emjKBH3m"]/text()').getall()
-
-        for i in range(self.THREADS_TO_SCRAPE):
-            # select = Selector(text=self.driver.page_source)
-            interactable = self.driver.find_element_by_xpath(
-                '//*[@class="_1UoeAeSRhOKSNdY_h3iS1O _1Hw7tY9pMr-T1F4P1C-xNU _2qww3J5KKzsD7e5DO0BvvU"]')
-            self.do_comment_scroll(interactable, 5 * i)
-            next_thread = reddit_threads[i]
-            xpath = '//*[@data-testid="' + next_thread + '"]'
-            # The link to the next thread comments section
-            xpath = 'https://www.reddit.com' + next_thread
-
-            # print(next_thread_selection.xpath('//div[@class="_3AStxql1mQsrZuUIFP9xSg nU4Je7n-eSXStTBAPMYt8"]/span[contains(text(), "promoted")]'))
-            if not "promotedlink" in thread_classes[i]:
-                try:
-                    self.reddit_thread_lookup(xpath)
-                    yield {
-                        titles[i]: self.comment_chain,
-                        'Topic': 'Environment'
-                    }
-                except NoSuchElementException:
-                    self.logger.info("Page " + xpath + " not found")
-                    self.driver.get(self.current_home_url)
-
-        """
-
-        SCRAPE TECHNOLOGY
-
-        """
+        # Scrape Technology
         self.current_home_url = 'https://www.reddit.com/r/technology/'
-        self.driver.get(self.current_home_url)
-        sleep(0.7)
-
-        select = Selector(text=self.driver.page_source)
-        # Get the Reddit threads currently loaded on the page
-
-        # Scroll to the bottom of the page, then to the top
-        # This allows us to load in more Reddit Threads to grab
-        # interactable is simply something on the page we can interaction with
-        # We need it to actually do the scrolling
-        # In the cases where we use it here, it is the comments listing on the first thread
-        interactable = self.driver.find_element_by_xpath(
-            '//*[@class="_1UoeAeSRhOKSNdY_h3iS1O _1Hw7tY9pMr-T1F4P1C-xNU _2qww3J5KKzsD7e5DO0BvvU"]')
-        for i in range(2):
-            interactable.send_keys(Keys.PAGE_DOWN)
-            sleep(1.0)
-        for i in range(2):
-            interactable.send_keys(Keys.PAGE_UP)
-
-        threads_selection = select.xpath('//div[@class="rpBJOHq2PR60pnwJlUyP0"]/div/div/div/@data-testid')
-        threads_selection = select.xpath('//*[@data-test-id="comments-page-link-num-comments"]/@href')
-        threads_selection = select.xpath('//*[@data-click-id="comments"]/@href')
-        thread_classes = select.xpath('//div[@class="rpBJOHq2PR60pnwJlUyP0"]/div/div/div/@class').getall()
-        reddit_threads = threads_selection.getall()
-        titles = select.xpath('//h3[@class="_eYtD2XCVieq6emjKBH3m"]/text()').getall()
-
-
-        for i in range(self.THREADS_TO_SCRAPE):
-            # select = Selector(text=self.driver.page_source)
-            interactable = self.driver.find_element_by_xpath(
-                '//*[@class="_1UoeAeSRhOKSNdY_h3iS1O _1Hw7tY9pMr-T1F4P1C-xNU _2qww3J5KKzsD7e5DO0BvvU"]')
-            self.do_comment_scroll(interactable, SCROLL_MULTIPLE * i)
-            next_thread = reddit_threads[i]
-            xpath = '//*[@data-testid="' + next_thread + '"]'
-            # The link to the next thread comments section
-            xpath = 'https://www.reddit.com' + next_thread
-
-            # print(next_thread_selection.xpath('//div[@class="_3AStxql1mQsrZuUIFP9xSg nU4Je7n-eSXStTBAPMYt8"]/span[contains(text(), "promoted")]'))
-            if not "promotedlink" in thread_classes[i]:
-                try:
-                    self.reddit_thread_lookup(xpath)
-                    yield {
-                        titles[i]: self.comment_chain,
-                        'Topic': 'Technology'
-                    }
-                except NoSuchElementException:
-                    self.logger.info("Page " + xpath + " not found")
-                    self.driver.get(self.current_home_url)
-
+        self.scrape_subreddit()
+        for i in range(len(self.comments)):
+            yield {
+                self.thread_titles[i]: self.comments[i],
+                'Topic': 'Technology'
+            }
+        # Reset
+        self.comments = []
         self.driver.close()
