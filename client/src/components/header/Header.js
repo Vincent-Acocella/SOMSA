@@ -20,8 +20,6 @@ const LOCAL_STORAGE_KEY = 'username';
 export default function Header() {
     const [user , setUser] = useState()
 
-    
-
   useEffect(()=> {
     //Store the username and change only when user changes
     localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(user))

@@ -9,7 +9,6 @@ const User = db.define('User' , {
     Search_History:{
         type: Sequalize.STRING
     }
-    
 },{
     freezeTableName: true,
     timestamps: false

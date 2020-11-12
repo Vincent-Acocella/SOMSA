@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import SingleCard from './SingleCard'
 // import DisplayAPI from '.../API/DisplayAPI/ArticleAPI'
-import '../../../css/display.css'
+import '../css/display.css'
 
 class AllDisplayedCards extends Component {
   constructor() {
