@@ -11,6 +11,8 @@ class AllDisplayedCards extends Component {
     };
   }
 
+  // Get to DB
+  //Returns 
   render() {
     return ( 
       <div className="cardStack">

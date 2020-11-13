@@ -7,7 +7,7 @@ const User = db.define('User' , {
         primaryKey: true
     },
     Search_History:{
-        type: Sequalize.STRING
+        type: Sequalize.JSON
     }
 },{
     freezeTableName: true,
