@@ -33,25 +33,26 @@ ENGINE = InnoDB;
 
 -- -----------------------------------------------------
 -- Table `SOMSAdb`.`Admin`
+-- Depreciated 11/5/2020
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `SOMSAdb`.`Admin` (
   `Admin_ID` INT NOT NULL AUTO_INCREMENT,
-  `Username` VARCHAR(30) NOT NULL,
-  `Email` VARCHAR(45) NOT NULL,
   PRIMARY KEY (`Admin_ID`),
   UNIQUE INDEX `Admin_ID_UNIQUE` (`Admin_ID` ASC) VISIBLE,
-  UNIQUE INDEX `Username_UNIQUE` (`Username` ASC) VISIBLE,
-  UNIQUE INDEX `Email_UNIQUE` (`Email` ASC) VISIBLE)
 ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
 -- Table `SOMSAdb`.`Account`
+-- Edited 11/5/2020
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `SOMSAdb`.`Account` (
   `Account_ID` INT NOT NULL AUTO_INCREMENT,
   `User_ID` INT NOT NULL,
   `Password` VARCHAR(60) NOT NULL,
+  `Email` VARCHAR(60) NOT NULL,
+  `Username` VARCHAR(60) NOT NULL,
+  `Is_Admin` BOOLEAN NOT NULL DEFAULT 0,
   PRIMARY KEY (`Account_ID`, `User_ID`),
   UNIQUE INDEX `Account_ID_UNIQUE` (`Account_ID` ASC) VISIBLE,
   UNIQUE INDEX `User_ID_UNIQUE` (`User_ID` ASC) VISIBLE,
@@ -65,9 +66,11 @@ ENGINE = InnoDB;
 
 -- -----------------------------------------------------
 -- Table `SOMSAdb`.`Topic`
+   --Updated 11/5/2020
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `SOMSAdb`.`Topic` (
   `Topic_ID` INT NOT NULL AUTO_INCREMENT,
+  `Topic_Name` VARCHAR(120) NOT NULL,
   `Category` VARCHAR(45) NOT NULL,
   PRIMARY KEY (`Topic_ID`),
   UNIQUE INDEX `Topic_ID_UNIQUE` (`Topic_ID` ASC) VISIBLE)
@@ -76,6 +79,7 @@ ENGINE = InnoDB;
 
 -- -----------------------------------------------------
 -- Table `SOMSAdb`.`Publisher`
+--Depreciated 11/5/2020
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `SOMSAdb`.`Publisher` (
   `Publisher_ID` INT NOT NULL AUTO_INCREMENT,
