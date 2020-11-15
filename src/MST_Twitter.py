@@ -20,30 +20,49 @@ class MSTTwitterSpider(Spider):
     name = "Twitter_Spider"
     # Placeholder url, the real url we want to visit will be called on creation of the webdriver
     start_urls = ('http://example.com/',)
-    # This is where we will store comments for every reddit page
-    # The key used represents what topic(s) they belong to
-    comments = {}
+
+
+    comments = []
+    # A variable to concatenate every comment on a trend into a single chain
     comment_chain = ""
 
+    # The url to return to when we are done scraping a trend
     current_home_url = 'http://example.com/'
 
+    # How far down we will scroll down per trend
     AMOUNT_OF_PAGE_SCROLLS = 100
     TRENDS_TO_SCRAPE = 10
 
+    """
+    do_scroll
+    page_element: the Element to attach to so we may send keyboard input
+    num_scrolls: the number of times to scroll
+    """
     def do_scroll(self, page_element, num_scrolls):
         for i in range(num_scrolls):
             page_element.send_keys(Keys.ARROW_DOWN)
             sleep(0.3)
 
+    """
+    get_comments
+    selection: the selection that contains the spans we want to get
+    collections every span under selection into comment_chain
+    """
     def get_comments(self, selection):
         for comment in selection.xpath('.//span/text()').getall():
             self.comment_chain += comment + " "
 
-
-    def get_trend_comments(self, xpath):
+    """
+    get_trend_commetns
+    xpath: the xpath to the page went to visit
+    visits the given page, then selects every tweet from which comments are collected from
+    """
+    def get_trend_comments(self, xpath, title):
         self.comment_chain = ""
         trend = self.driver.find_element_by_xpath(xpath)
-        trend.click()
+        trend.send_keys(title)
+        trend.send_keys(Keys.RETURN)
+        #trend.click()
         sleep(1.8)
         interactable = self.driver.find_element_by_xpath('//*[@data-testid="AppTabBar_Explore_Link"]')
         self.do_scroll(interactable, self.AMOUNT_OF_PAGE_SCROLLS)
@@ -53,7 +72,11 @@ class MSTTwitterSpider(Spider):
         print(tweets)
         self.get_comments(tweets)
 
-
+    """
+    parse
+    Scrapy function run when the spider is called to perform a webcrawl
+    Crawl the trending page on Twitter
+    """
     def parse(self, response):
         self.header = {
             'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.111 Safari/537.36'}
@@ -87,7 +110,9 @@ class MSTTwitterSpider(Spider):
         # Get trends on the page
         trends_selection = select.xpath('//div[@data-testid="trend"]')
         self.logger.info(trends_selection)
-        #"//*[@id="react-root"]/div/div/div[2]/main/div/div/div/div[1]/div/div[2]/div/div/section/div/div/div[6]"
+
+        trend_titles = trends_selection.xpath('.//div/div[2]/span/text()').getall()
+        print(trend_titles)
         a = 0
         if a == 0:
             pass
@@ -97,7 +122,6 @@ class MSTTwitterSpider(Spider):
         print(trends_selection)
         print(trends)
         for i in range(self.TRENDS_TO_SCRAPE):
-
             interactable = self.driver.find_element_by_xpath('//*[@data-testid="AppTabBar_Explore_Link"]')
             self.do_scroll(interactable, 3 * i)
             next_trend = trends[i]
@@ -111,7 +135,9 @@ class MSTTwitterSpider(Spider):
             for p in range(2, len(span)):
                 title += span[p] + " "
 
-            self.get_trend_comments(trend)
+            # Get the search bar. This is how we will get to each trend
+            search_xpath = '//*[@data-testid="SearchBox_Search_Input"]'
+            self.get_trend_comments(search_xpath, trend_titles[i])
 
             if len(self.comment_chain) > 0:
                 yield {
