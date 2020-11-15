@@ -1,9 +1,9 @@
 const Sequalize = require('sequelize');
 const db = require('../conf.d/database');
 
-const Topic = db.define('user', {
+const Topic = db.define('Topic', {
     
-    Topic_Id: {
+    Topic_Name: {
         type: Sequalize.STRING
     },
 

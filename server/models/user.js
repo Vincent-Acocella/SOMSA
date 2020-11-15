@@ -1,7 +1,7 @@
 const Sequalize = require('sequelize');
 const db = require('../conf.d/database');
 
-const User = db.define('User' , {
+const User = db.define('User', {
     User_ID:{
         type: Sequalize.STRING,
         primaryKey: true

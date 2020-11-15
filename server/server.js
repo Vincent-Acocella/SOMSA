@@ -11,18 +11,19 @@ db.authenticate()
 const app = express();
 
 //Cors allows helps with the blocking of SSL by browsers
-// app.use(function(req, res, next) {
-//   res.header("Access-Control-Allow-Origin", "*");
+ //app.use(function(req, res, next) {
+   //res.header("Access-Control-Allow-Origin", "*");
 //   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
 //   res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-//   next();
-// });
+   //next();
+//});
 app.use(cors());
 
 //Body parser
-
-app.use(bodyParser.urlencoded({extended: false}));
-app.use(bodyParser.json())
+app.use(bodyParser.urlencoded({
+    extended: true
+  }));
+  app.use(bodyParser.json());
 
 //Account routes
 app.use('/user', require('./routes/users_route' ));
