@@ -58,7 +58,7 @@ class MSTTwitterSpider(Spider):
     visits the given page, then selects every tweet from which comments are collected from
     """
     def get_trend_comments(self, xpath, title):
-        self.comment_chain = ""
+
         trend = self.driver.find_element_by_xpath(xpath)
         trend.send_keys(title)
         trend.send_keys(Keys.RETURN)
@@ -112,10 +112,7 @@ class MSTTwitterSpider(Spider):
         self.logger.info(trends_selection)
 
         trend_titles = trends_selection.xpath('.//div/div[2]/span/text()').getall()
-        print(trend_titles)
-        a = 0
-        if a == 0:
-            pass
+
         trends = trends_selection.getall()
 
         trend_path = '//div[@class="css-1dbjc4n"]'
@@ -124,26 +121,27 @@ class MSTTwitterSpider(Spider):
         for i in range(self.TRENDS_TO_SCRAPE):
             interactable = self.driver.find_element_by_xpath('//*[@data-testid="AppTabBar_Explore_Link"]')
             self.do_scroll(interactable, 3 * i)
-            next_trend = trends[i]
-            xpath = '//[@data-test'
 
-            # At i = 0, this would be //div[@class="css_1dbjc4n"]/div/div[5]/div/div
-            trend = trend_path + '/div/div[' + str(i + 5) + ']'
             trend_selection = select.xpath(trend_path + '/div/div[' + str(i + 5) + ']/div/div')
             span = trend_selection.xpath('.//span[@class="css-901oao css-16my406 r-1qd0xha r-ad9z0x r-bcqeeo r-qvutc0"]/text()').getall()
-            title = ""
+            topic = ""
             for p in range(2, len(span)):
-                title += span[p] + " "
+                topic += span[p] + " "
 
+            title = trend_titles[i]
             # Get the search bar. This is how we will get to each trend
             search_xpath = '//*[@data-testid="SearchBox_Search_Input"]'
-            self.get_trend_comments(search_xpath, trend_titles[i])
+            self.logger.info(title)
+
+            if len(title) > 1:
+                self.get_trend_comments(search_xpath, title)
 
             if len(self.comment_chain) > 0:
                 yield {
                     title : self.comment_chain,
-                    'Topic' : 'Hot Topics'
+                    'Topic' : topic
                 }
+            self.comment_chain = ""
             sleep(3.0)
             self.logger.info(self.comment_chain)
             self.driver.get(self.current_home_url)
