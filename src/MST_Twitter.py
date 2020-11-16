@@ -31,7 +31,7 @@ class MSTTwitterSpider(Spider):
 
     # How far down we will scroll down per trend
     AMOUNT_OF_PAGE_SCROLLS = 100
-    TRENDS_TO_SCRAPE = 10
+    TRENDS_TO_SCRAPE = 15
 
     """
     do_scroll
@@ -111,24 +111,34 @@ class MSTTwitterSpider(Spider):
         trends_selection = select.xpath('//div[@data-testid="trend"]')
         self.logger.info(trends_selection)
 
-        trend_titles = trends_selection.xpath('.//div/div[2]/span/text()').getall()
+        trend_span = trends_selection.xpath('.//span/text()').getall()
+        trend_topics = []
+        trend_titles = []
+        for i in range(len(trend_span)):
+            try:
+                # trends_span is organized as so
+                # The trend number
+                # Unicode \u2592
+                # The trend's topic
+                # The trend title
+                # The trend description should it exist
+                # The amount of tweets should it exist
+                # This logic will find each trend number, then grab the trend title and topic belonging to them
+                a = int(trend_span[i])
+                trend_topics.append(trend_span[i + 2])
+                trend_titles.append(trend_span[i + 3])
+            except ValueError:
+                pass
 
-        trends = trends_selection.getall()
+        #print(trend_titles)
+        #print(trend_topics)
 
-        trend_path = '//div[@class="css-1dbjc4n"]'
-        print(trends_selection)
-        print(trends)
         for i in range(self.TRENDS_TO_SCRAPE):
             interactable = self.driver.find_element_by_xpath('//*[@data-testid="AppTabBar_Explore_Link"]')
             self.do_scroll(interactable, 3 * i)
 
-            trend_selection = select.xpath(trend_path + '/div/div[' + str(i + 5) + ']/div/div')
-            span = trend_selection.xpath('.//span[@class="css-901oao css-16my406 r-1qd0xha r-ad9z0x r-bcqeeo r-qvutc0"]/text()').getall()
-            topic = ""
-            for p in range(2, len(span)):
-                topic += span[p] + " "
-
             title = trend_titles[i]
+            topic = trend_topics[i]
             # Get the search bar. This is how we will get to each trend
             search_xpath = '//*[@data-testid="SearchBox_Search_Input"]'
             self.logger.info(title)
@@ -139,7 +149,7 @@ class MSTTwitterSpider(Spider):
             if len(self.comment_chain) > 0:
                 yield {
                     title : self.comment_chain,
-                    'Topic' : topic
+                    "Topic" : topic
                 }
             self.comment_chain = ""
             sleep(3.0)
