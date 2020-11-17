@@ -17,8 +17,13 @@ router.get('/', (req, res) =>
 
 router.post('/add', (req,res)=> {
 
+    //(getSingle(req.body.user.email);
+
     Account.create({
-         
+
+        Username: '',
+        Email: '',
+        Password: ''
     })
 
     .then(user => res.redirect('/user'))
@@ -31,23 +36,23 @@ router.post('/signin', (req,res) => {
     var email = String(req.body.user.email)
     var password = String(req.body.user.password)
 
-
     console.log("The email is: " + email + "the password is: " + password)
     res.status(200).send(req.body.user.email);
 });   
 
 function getSingle(email, password){
     if(password === null){
-       let ifExists = Account.findAll({
-            //Select --
+       return Account.findAll({
+            //Select
             attributes: ['Email'],
             where:{
                 Email: {email}
             }    
         });
 
-    }else{            
+    }else{  
 
     }
 }
+
 module.exports = router;
