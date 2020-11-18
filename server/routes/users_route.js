@@ -18,7 +18,6 @@ router.get('/', (req, res) =>
 router.post('/add', (req,res)=> {
 
     //(getSingle(req.body.user.email);
-
     Account.create({
 
         Username: '',

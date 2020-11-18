@@ -21,9 +21,9 @@ app.use(cors());
 
 //Body parser
 app.use(bodyParser.urlencoded({
-    extended: true
+    extended: false
   }));
-  app.use(bodyParser.json());
+// app.use(bodyParser.json());
 
 //Account routes
 app.use('/user', require('./routes/users_route' ));
