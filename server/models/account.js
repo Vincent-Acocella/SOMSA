@@ -28,16 +28,15 @@ const Account = db.define('Account', {
 },
 {
     freezeTableName: true,
-    timestamps: false,
-    instanceMethods:{
-        generateHash(password) {
-            return bcrypt.hash(password, bcrypt.genSaltSync(8));
-        },
-        validPassword(password) {
-            return bcrypt.compare(password, this.password);
-        }
-    }
+    timestamps: false
 });     
 
+Account.prototype.hashPassword = function(password){
+    console.log(" ddjifjiolasdfioasdiofjiopassword")
+    return bcrypt.hash(password, bcrypt.genSaltSync(8));
+}
+Account.prototype.validPassword = function(password){
+    return bcrypt.compare(password, this.Password);
+}
 
 module.exports = Account;

@@ -24,7 +24,7 @@ export default class Guest extends Component {
      handleSubmit = event => {
 
         //Avoid page refresh
-        event.preventDefault()
+        event.preventDefault();
 
         const user = {
             email: this.state.email,

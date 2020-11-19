@@ -16,7 +16,6 @@ router.get('/', (req, res) => {
 
 //Add a user
 router.post('/signup', signUpUser) 
-
 router.post('/signin', signInUser)
 
 router.get('/:id', (req,res) =>{

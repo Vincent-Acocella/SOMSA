@@ -10,10 +10,10 @@ db.authenticate()
 
 const app = express();
 
+//Avoid SSL error
 app.use(cors());
 
 //Body parser
-
 app.use(bodyParser.json());
 
 //Account routes

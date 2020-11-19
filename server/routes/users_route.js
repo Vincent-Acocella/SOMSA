@@ -24,8 +24,6 @@ router.post('/add', (req,res)=> {
         Email: '',
         Password: ''
     })
-
-   
 })
 
 router.post('/signin', (req,res) => {
