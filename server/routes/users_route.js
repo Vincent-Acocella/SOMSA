@@ -7,7 +7,7 @@ const Account = require('../models/account');
 //Get a single and or password from the db
 router.get('/', (req, res) => 
 
-    User.findAll()
+    Account.findAll()
     .then(user => {
         console.log(user);
         res.sendStatus(200);
@@ -25,8 +25,7 @@ router.post('/add', (req,res)=> {
         Password: ''
     })
 
-    .then(user => res.redirect('/user'))
-    .catch(err => console.log(err))
+   
 })
 
 router.post('/signin', (req,res) => {
