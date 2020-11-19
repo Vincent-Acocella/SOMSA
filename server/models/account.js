@@ -35,13 +35,4 @@ Account.prototype.validPassword = function(password){
     return bcrypt.compare(password, this.Password);
 }
 
-Account.prototype.passwordHash = function(password){
-    return bcrypt.compare(password, this.Password);
-}
-
-// Account.prototype.passwordHash = function(password){
-//     console.log("HFUNJNUIDCIDISMCIMIDCICIMDCIMIDMCI");
-//     return bcrypt.hash(password, bcrypt.genSaltSync(8));
-// }
-
 module.exports = Account;

@@ -1,6 +1,7 @@
 
-const Account = require('../models/account')
-
+const Account = require('../models/account');
+const bcrypt = require('bcrypt');
+const JWT = require('json')
 exports.signUpUser = async (req,res) => {
 
     let newUser = new Account();
@@ -10,12 +11,10 @@ exports.signUpUser = async (req,res) => {
     }
     let password = req.body.password;
     try{
-         password = await newUser.hashPassword(req.body.password);
+         password = await bcrypt.hash(password, bcrypt.genSaltSync(8))
     }catch(e){
         console.log({e});
     }
-
-   console.log(password)
    
     await Account.create({
             Email: req.body.email,
@@ -34,12 +33,11 @@ exports.signInUser = async (req,res) =>{
     if(newUser === null){
         return res.status(401).json({success: false, error: 'User not found'});
     }
-    console.log(req.body.password)
-    let isMatch = await newUser.validPassword(req.body.password);
-    console.log(isMatch)
 
-    // if(!isMatch){
-    //     return res.status(401).json({success: false, error: 'Password does not match email'});
-    // }
+    let isMatch = await newUser.validPassword(req.body.password);
+
+    if(!isMatch){
+        return res.status(401).json({success: false, error: 'Password does not match email'});
+    }
     res.json({success:true, newUser});
 }
