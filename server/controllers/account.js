@@ -4,13 +4,19 @@ const Account = require('../models/account')
 exports.signUpUser = async (req,res) => {
 
     let newUser = new Account();
-    newUser = await Account.findOne({where: {Email: req.body.email}})
+    newUser = await Account.findOne({where: {Email: req.body.email}});
     if(newUser !== null){
-        return res.status(400).json({success: false, error: 'This email already in use'})
+        return res.status(400).json({success: false, error: 'This email already in use'});
     }
-    console.log(req.body.password)
-    let password = await newUser.hashPassword(req.body.password);
+    let password = req.body.password;
+    try{
+         password = await newUser.hashPassword(req.body.password);
+    }catch(e){
+        console.log({e});
+    }
 
+   console.log(password)
+   
     await Account.create({
             Email: req.body.email,
             Username: req.body.username,
@@ -23,12 +29,12 @@ exports.signUpUser = async (req,res) => {
 exports.signInUser = async (req,res) =>{
    
     let newUser = new Account();
-
     newUser = await Account.findOne({where: {Email: req.body.email}}); 
     
     if(newUser === null){
         return res.status(401).json({success: false, error: 'User not found'});
     }
+    console.log(req.body.password)
     let isMatch = await newUser.validPassword(req.body.password);
     console.log(isMatch)
 
