@@ -2,12 +2,12 @@ import React, {useState, useEffect} from 'react'
 import '../css/app.css';
 import Display from './display/Display'
 //This will be the entire layout 
-import {BrowserRouter, Route} from 'react-router-dom'
-import Navbar from './navbar/navbar';
+import {BrowserRouter, Route, Switch} from 'react-router-dom'
+import Navbar from './navbar/navbar1';
 import HeroSection from './HeroSection/heroSection'
-
-
-
+import About from './HeroSection/about'
+import SignIn from './HeroSection/signin'
+import SignUp from './HeroSection/signup'
 
 const LOGIN_KEY = 'currentUser';
 
@@ -33,8 +33,6 @@ export default function App() {
 
   const [topicList, setTopicsList] = useState(sentiments)
 
-
-    
   useEffect(()=> {
     //Store the username and change only when user changes
     localStorage.setItem(LOGIN_KEY, JSON.stringify(currentUser))
@@ -52,37 +50,19 @@ export default function App() {
       <div className='logo-container'>
           <BrowserRouter>
             <Navbar/>
-            <Route path='/' exact component={HeroSection}></Route>
+
+            <Switch>
+              <Route path='/' exact component={SignIn}></Route>  
+              <Route path='/signup' component={SignUp}></Route>
+              <Route path='/home' exact component={HeroSection}></Route>
+              <Route path='/about' component={About}></Route>
+
+              {/* if link is this, render whatever */}
+              <Route path='/home/:id' component/>
+            </Switch>
           </BrowserRouter>
       </div>
-
     </div>
-
-    //   <div>
-    //     <div className = "main">
-    //       <h1>
-    //         Trending <br/> Sentiments
-    //       </h1>
-
-    //       <ul className="trending-sentiment-list">
-    //         <li>
-    //         <button onClick = {()=>  setSelectedPage(1)} className="btn catagory-btn">Hot Topics</button> 
-    //         </li>
-    //         <li>
-    //         <button onClick = {()=> setSelectedPage(2)} className="btn catagory-btn">Sports</button>
-    //         </li>
-    //         <li>
-    //         <button onClick = {()=> setSelectedPage(3)} className="btn catagory-btn">Politics</button>
-    //         </li>
-    //       </ul>
-    //     </div>
-
-    //     <div className= "display-all-cards">
-    //       <Display currentPage = {selectedPage}/>
-    //     </div>
-    //   </div>
-
-    // </div>
   )
 }
 

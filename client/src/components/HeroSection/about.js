@@ -3,11 +3,10 @@ import MainContainer from '../maincontainer/mainContainer'
 import Heading from '../header/heading'
 import CTA from '../CTA/cta'
 
-export default function heroSection() {
+export default function about() {
     return (
        <MainContainer>
-            <Heading>Plan your Day with Vincent</Heading>
-            <CTA target = '/signin'>Start Now</CTA>
+            <Heading>PooPoo</Heading>
         </MainContainer>
     )
 }
