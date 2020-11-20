@@ -2,9 +2,9 @@ const express = require('express');
 const db = require('./conf.d/database');
 const cors = require('cors')
 const bodyParser = require('body-parser')
-const cookieParser = require('cookie-parser')
-require("dotenv").config();
-console.log(process.env.JWT_KEY)
+const cookieParser = require('cookie-parser');
+require('dotenv').config();
+
 //Test DB
 db.authenticate()
   .then(() => console.log('Database Working'))
