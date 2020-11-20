@@ -1,4 +1,4 @@
-import React from 'react'
+import React, {useContext} from 'react'
 import ReactDom from 'react-dom'
 import Guest from './options/Guest'
 import '../../css/modal.css'
@@ -7,7 +7,6 @@ import '../../css/modal.css'
 This the the actual pop up mewnu 
 it will be used for sign in such as sign in, create account, admin view and user view
 */
-
 
 const POPUP_STYLE = {
     position: 'fixed',
@@ -31,6 +30,8 @@ const OVERLAY_STYLE = {
 
 
 function Modal({open, onClose, pageLoad}) {
+    
+
     const guestPop = ReactDom.createPortal(
         <>
         <div style = {OVERLAY_STYLE}>

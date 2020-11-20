@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react'
+import React, {useEffect} from 'react'
 import SignIn from './accounts/SignIn'
 
 /*
@@ -18,16 +18,15 @@ It will have the return home, search, drop down and sign in
 const LOCAL_STORAGE_KEY = 'username';
 
 export default function Header() {
-    const [user , setUser] = useState()
+    
+  // useEffect(()=> {
+  //   //Store the username and change only when user changes
+  //   localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(user))
+  // },[user])
 
-  useEffect(()=> {
-    //Store the username and change only when user changes
-    localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(user))
-  },[user])
-
-  useEffect(()=>{
-      //Set original on page load
-  },[])
+  // useEffect(()=>{
+  //     //Set original on page load
+  // },[])
 
     return (
         <div>

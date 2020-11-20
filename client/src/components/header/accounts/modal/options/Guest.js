@@ -10,16 +10,6 @@ export default class Guest extends Component {
         password: '',
     };
 
-    // async componentDidMount(){
-    //     await axios.get('/input',)
-    //     .then(res =>
-    //         {
-    //             console.log(res)
-    //         }).catch(err=>{
-    //             console.log(err)
-    //         })
-    // }
-
  //Anythimg you want to pass to be handled on server side
      handleSubmit = event => {
 
@@ -32,7 +22,7 @@ export default class Guest extends Component {
         }
 
         //First is url
-       axios.post('/user/add', {user})
+       axios.post('/user/signIn', {user})
         .then(res => {
             console.log({res})
         }).catch(res => {
