@@ -2,8 +2,11 @@ import React, {useState, useEffect} from 'react'
 import '../css/app.css';
 import Display from './display/Display'
 //This will be the entire layout 
-import {Router} from 'react-router-dom'
+import {BrowserRouter, Route} from 'react-router-dom'
 import Navbar from './navbar/navbar';
+import HeroSection from './HeroSection/heroSection'
+
+
 
 
 const LOGIN_KEY = 'currentUser';
@@ -45,11 +48,12 @@ export default function App() {
 
 
   return (
-    <div>
-      <div>
-          <Router>
+    <div className='main-header'>
+      <div className='logo-container'>
+          <BrowserRouter>
             <Navbar/>
-          </Router>
+            <Route path='/' exact component={HeroSection}></Route>
+          </BrowserRouter>
       </div>
 
     </div>
