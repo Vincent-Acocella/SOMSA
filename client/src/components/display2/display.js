@@ -14,8 +14,6 @@ export default function display() {
 
    // const getTopicList = 
 
-
-
     return (
         <div>
             {topicList.map(topic =>(

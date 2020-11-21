@@ -1,4 +1,3 @@
--- Adminer 4.7.7 MySQL dump
 
 SET NAMES utf8;
 SET time_zone = '+00:00';
@@ -10,7 +9,6 @@ SET NAMES utf8mb4;
 DROP TABLE IF EXISTS `Account`;
 CREATE TABLE `Account` (
   `Account_ID` int NOT NULL AUTO_INCREMENT,
-  `Username` varchar(60) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
   `Email` varchar(60) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
   `Password` varchar(60) NOT NULL,
   `Favorites` json NOT NULL,
@@ -19,8 +17,8 @@ CREATE TABLE `Account` (
   UNIQUE KEY `Account_ID_UNIQUE` (`Account_ID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
-INSERT INTO `Account` (`Account_ID`, `Username`, `Email`, `Password`, `Favorites`, `Is_Admin`) VALUES
-(1,	'admin',	'',	'admin',	'{}',	1);
+INSERT INTO `Account` (`Account_ID`, `Email`, `Password`, `Favorites`, `Is_Admin`) VALUES
+(1,	'',	'admin',	'{}',	1);
 
 DROP TABLE IF EXISTS `Sentiment`;
 CREATE TABLE `Sentiment` (
@@ -35,10 +33,8 @@ CREATE TABLE `Sentiment` (
 DROP TABLE IF EXISTS `Topic`;
 CREATE TABLE `Topic` (
   `Topic_ID` int NOT NULL AUTO_INCREMENT,
+  `Topic_Name` varchar(60) NOT NULL,
   `Category` varchar(45) NOT NULL,
   PRIMARY KEY (`Topic_ID`),
   UNIQUE KEY `Topic_ID_UNIQUE` (`Topic_ID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
-
--- 2020-11-17 04:34:04

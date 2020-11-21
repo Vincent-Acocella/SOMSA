@@ -24,7 +24,6 @@ exports.signUpUser = async (req,res) => {
                     
        newUser = await Account.create({
             Email: req.body.email,
-            Username: req.body.username,
             Password: password,
             Favorites: {}
         }) 
@@ -35,7 +34,7 @@ exports.signUpUser = async (req,res) => {
         })
 
 
-        res.status(201).json({success:true, email: req.body.email, username: req.body.username});
+        res.status(201).json({success:true, email: req.body.email});
     }catch(error){
         res.status(500).json({success: false, error: 'An error Occured'})
 
