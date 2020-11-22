@@ -3,27 +3,41 @@ const db = require('./conf.d/database');
 const cors = require('cors')
 const bodyParser = require('body-parser')
 const cookieParser = require('cookie-parser');
+const { exec } = require("child_process");
 require('dotenv').config();
 
+exec("scrapy runspider -o Test.json MST_Twitter.py", (error, stdout, stderr) => {
+  if (error) {
+      console.log(`error: ${error.message}`);
+      return;
+  }
+  if (stderr) {
+      console.log(`stderr: ${stderr}`);
+      return;
+  }
+  console.log(`stdout: ${stdout}`);
+});
+
 //Test DB
-db.authenticate()
-  .then(() => console.log('Database Working'))
-  .catch(err => console.log('Error: ' + err))
+//db.authenticate()
+//  .then(() => console.log('Database Working'))
+//  .catch(err => console.log('Error: ' + err))
 
 const app = express();
 
 //Avoid SSL error
-app.use(cors());
+//app.use(cors());
 
 //Body parser
-app.use(bodyParser.json());
+//app.use(bodyParser.json());
 
 //Cookie Parser
-app.use(cookieParser());
+//app.use(cookieParser());
  
 //Account routes
 app.use('/user', require('./routes/account_route' ));
-app.use('/api', require('./routes/sentiment_route'));
+//app.use('/api', require('./routes/sentiment_route'));
+
 
 const api_port = process.env.PORT || 5000;
 
