@@ -23,6 +23,7 @@
     "jsonwebtoken": "^8.5.1",
     "mysql": "^2.18.1",
     "mysql2": "^2.2.5",
+    "node": "^15.2.1",
     "python-shell": "^2.0.2",
     "sequelize": "^6.3.5"
   },

@@ -2,7 +2,7 @@ const Sequelize = require('sequelize');
 
  module.exports = new Sequelize('SOMSAdb','SOMSA','SOMSA', {
 
-    host: 'localhost',
+    host: 'mysql',
     dialect: 'mysql',
     port: 3306,
     operatorsAliases: 0,
