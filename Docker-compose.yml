@@ -1,0 +1,35 @@
+version: '3.5'
+
+services:
+
+  server:
+    build: ./server
+    volumes:
+      - ./server:/usr/src/app
+      - /usr/src/app/node_modules
+    ports:
+       - "5001:5000"
+    depends_on: 
+      - "mysql"
+    command: ["node", "server.js"]
+
+  mysql:
+    image: mysql:latest
+    ports:
+      - "3306:3306"
+    cap_add:
+      - SYS_NICE
+
+    environment:
+      MYSQL_USER: SOMSA
+      MYSQL_PASSWORD: SOMSA
+      MYSQL_DATABASE: SOMSAdb
+      MYSQL_ROOT_PASSWORD: SOMSA
+
+    volumes:
+      - ./mysql-dump:/docker-entrypoint-initdb.d
+
+  adminer:
+    image: adminer
+    ports:
+      - 8080:8080
