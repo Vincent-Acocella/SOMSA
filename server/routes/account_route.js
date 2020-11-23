@@ -19,6 +19,7 @@ router.get('/', (req, res) => {
 });
 
 //Add a user
+
 router.post('/signup', userValidator, userValidatorResult, signUpUser); 
 //Sign in user
 router.post('/signin', signInUser)
