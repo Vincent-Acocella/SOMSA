@@ -25,9 +25,18 @@ app.use(cookieParser());
 app.use('/user', require('./routes/account_route' ));
 app.use('/api', require('./routes/sentiment_route'));
 
-const api_port = process.env.PORT || 5000;
+const PORT = process.env.PORT || 5000;
+const HOST = '0.0.0.0';
 
-app.listen(api_port, console.log(`Server started on port ${api_port}`));
+// App
+app.get('/', (req, res) => {
+  res.send('Hello World');
+});
+
+app.listen(PORT, HOST);
+console.log(`Running on http://${HOST}:${PORT}`);
+
+// app.listen(api_port, console.log(`Server started on port ${api_port}`));
 
 // app.get('/api/sentiments', (req, res) => {
 //   const sentiments = [
