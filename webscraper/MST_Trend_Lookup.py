@@ -34,6 +34,7 @@ class MSTTwitterSpider(Spider):
     def __init__(self, trend=None, *args, **kwargs):
         super(MSTTwitterSpider, self).__init__(*args, **kwargs)
         self.trend_to_scrape = trend
+        self.trend_to_scrape = self.trend_to_scrape.replace("_", " ")
 
     """
     do_scroll
