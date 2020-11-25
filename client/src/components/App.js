@@ -1,54 +1,53 @@
-import React, {useState} from 'react'
-import '../css/app.css';
-import Display from './Display'
+import React, {useState, useEffect} from 'react'
 //This will be the entire layout 
+import {BrowserRouter, Route, Switch} from 'react-router-dom'
+import HeroSection from './HeroSection/heroSection'
+import About from './HeroSection/about'
+import SignIn from './HeroSection/signin'
+import SignUp from './HeroSection/signup'
+import Navbar from './navbar/navbar'
+import 'bootstrap/dist/css/bootstrap.min.css'
 
-//export const ReactContext = ReactContext.createContext()
-//const LOCAL_STORAGE_KEY = 'username'
+const LOGIN_KEY = 'currentUser';
 
 
-function App() {
-  const [selectedPage, setSelectedPage] = useState(0)
+export default function App() {
+
+  // const [selectedPage, setSelectedPage] = useState(0)
+  // const [currentUser, setCurrentUser] = useState(0)
+
+  // const [topicList, setTopicsList] = useState(sentiments)
 
   // useEffect(()=> {
-  //   const recipeJSON = localStorage.getItem(LOCAL_STORAGE_KEY)
-  //   if (recipeJSON != null) setRecipes(JSON.parse(recipeJSON))
-  // })
+  //   //Store the username and change only when user changes
+  //   localStorage.setItem(LOGIN_KEY, JSON.stringify(currentUser))
+  // },[currentUser])
 
+  // //firsttime
   // useEffect(()=>{
-  //   <Display selectedPage={selectedPage}/>
-  // }, [], [selectedPage])
+  //     //Set original on page load
+  //     localStorage.setItem(LOGIN_KEY, JSON.stringify(topicList))
+  // },[])
 
-  function changeCatagory(id){
-    setSelectedPage(id)
-    console.log(selectedPage)
-  }
 
   return (
     <div>
-      <div className = "main">
-        <h1>
-          Trending <br/> Sentiments
-        </h1>
-
-        <ul className="trending-sentiment-list">
-          <li>
-          <button onClick = {() => changeCatagory(1)} className="btn catagory-btn">Hot Topics</button> 
-          </li>
-          <li>
-          <button onClick = {()=>changeCatagory(2)} className="btn catagory-btn">Sports</button>
-          </li>
-          <li>
-          <button onClick = {()=>changeCatagory(3)} className="btn catagory-btn">Politics</button>
-          </li>
-        </ul>
-      </div>
-      <div className= "display-all-cards">
-        <Display currentPage = {selectedPage}/>
-      </div>
+     <Navbar/>
     </div>
   )
 }
 
 
-export default App;
+// <BrowserRouter>
+// <Navbar/>
+
+// <Switch>
+//   <Route path='/' exact component={SignIn}></Route>  
+//   <Route path='/signup' component={SignUp}></Route>
+//   <Route path='/home' exact component={HeroSection}></Route>
+//   <Route path='/about' component={About}></Route>
+
+//   {/* if link is this, render whatever */}
+//   <Route path='/home/:id' component/>
+// </Switch>
+// </BrowserRouter>

@@ -17,10 +17,6 @@ const Account = db.define('Account', {
     Password: {
         type: Sequalize.STRING
     },
-
-    Username:{
-        type: Sequalize.STRING
-    },
     
     Favorites:{
         type: Sequalize.JSON
