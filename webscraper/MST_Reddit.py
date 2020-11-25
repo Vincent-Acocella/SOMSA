@@ -30,8 +30,8 @@ class MSTRedditSpider(Spider):
 
     current_home_url = 'http://example.com/'
 
-    AMOUNT_OF_PAGE_SCROLLS = 50
-    THREADS_TO_SCRAPE = 2
+    AMOUNT_OF_PAGE_SCROLLS = 10
+    THREADS_TO_SCRAPE = 1
 
     def scrape_subreddit(self):
         self.driver.get(self.current_home_url)
@@ -198,8 +198,8 @@ class MSTRedditSpider(Spider):
         self.scrape_subreddit()
         for i in range(len(self.comments)):
             yield{
-                self.thread_titles[i]: self.comments[i],
-                'Topic': 'Hot Topics'
+                self.thread_titles[i]: [self.comments[i], 'Trending'],
+                'Topic': 'Trending'
             }
         # Reset
         self.comments = []
@@ -209,7 +209,7 @@ class MSTRedditSpider(Spider):
         self.scrape_subreddit()
         for i in range(len(self.comments)):
             yield {
-                self.thread_titles[i]: self.comments[i],
+                self.thread_titles[i]: [self.comments[i], 'Sports'],
                 'Topic': 'Sports'
             }
         # Reset
@@ -220,7 +220,7 @@ class MSTRedditSpider(Spider):
         self.scrape_subreddit()
         for i in range(len(self.comments)):
             yield {
-                self.thread_titles[i]: self.comments[i],
+                self.thread_titles[i]: [self.comments[i], 'Politics'],
                 'Topic': 'Politics'
             }
         # Reset
@@ -231,7 +231,7 @@ class MSTRedditSpider(Spider):
         self.scrape_subreddit()
         for i in range(len(self.comments)):
             yield {
-                self.thread_titles[i]: self.comments[i],
+                self.thread_titles[i]: [self.comments[i], 'Science'], 
                 'Topic': 'Science'
             }
         # Reset
@@ -242,7 +242,7 @@ class MSTRedditSpider(Spider):
         self.scrape_subreddit()
         for i in range(len(self.comments)):
             yield {
-                self.thread_titles[i]: self.comments[i],
+                self.thread_titles[i]: [self.comments[i], 'Environment'],
                 'Topic': 'Environment'
             }
         # Reset
@@ -253,7 +253,7 @@ class MSTRedditSpider(Spider):
         self.scrape_subreddit()
         for i in range(len(self.comments)):
             yield {
-                self.thread_titles[i]: self.comments[i],
+                self.thread_titles[i]: [self.comments[i], 'Technology'],
                 'Topic': 'Technology'
             }
         # Reset

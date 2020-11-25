@@ -30,8 +30,8 @@ class MSTTwitterSpider(Spider):
     current_home_url = 'http://example.com/'
 
     # How far down we will scroll down per trend
-    AMOUNT_OF_PAGE_SCROLLS = 100
-    TRENDS_TO_SCRAPE = 15
+    AMOUNT_OF_PAGE_SCROLLS = 10
+    TRENDS_TO_SCRAPE = 5
 
     """
     do_scroll
@@ -139,6 +139,8 @@ class MSTTwitterSpider(Spider):
 
             title = trend_titles[i]
             topic = trend_topics[i]
+            topic = topic.replace('\u00b7 Trending', '')
+            topic = topic.strip()
             # Get the search bar. This is how we will get to each trend
             search_xpath = '//*[@data-testid="SearchBox_Search_Input"]'
             self.logger.info(title)
@@ -148,7 +150,7 @@ class MSTTwitterSpider(Spider):
 
             if len(self.comment_chain) > 0:
                 yield {
-                    title : self.comment_chain,
+                    title : [self.comment_chain, topic],
                     "Topic" : topic
                 }
             self.comment_chain = ""

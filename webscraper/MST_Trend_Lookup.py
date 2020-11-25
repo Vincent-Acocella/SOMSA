@@ -115,7 +115,7 @@ class MSTTwitterSpider(Spider):
 
             if len(self.comment_chain) > 0:
                 yield {
-                    t: self.comment_chain
+                    t: [self.comment_chain, 'NONE']
                 }
                 self.comment_chain = ""
 
