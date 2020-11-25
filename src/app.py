@@ -1,25 +1,18 @@
-import flask
-app = flask.Flask(__name__)
-app.config['JSONIFY_PRETTYPRINT_REGULAR'] = False
+from flask import Flask, render_template
+app = Flask(__name__)
 
 
-# define a predict function as an endpoint 
-@app.route("/predict", methods=["GET","POST"])
-def predict():
-    data = {"success": False}
+@app.route('/')
+def hello_world():
+    return render_template('index.html')
 
-    # get the request parameters
-    params = flask.request.json
-    if (params == None):
-        params = flask.request.args
+import MST_Twitter
 
-    # if parameters are found, echo the msg parameter 
-    if (params != None):
-        data["response"] = params.get("msg")
-        data["success"] = True
+#Call webscrapper 
+MST_Twitter.twitter()
 
-    # return a response in json format 
-    return flask.jsonify(data)
+
+
 
 if __name__ == '__main__':
     app.run(debug=True,host='0.0.0.0')
