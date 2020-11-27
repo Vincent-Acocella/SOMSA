@@ -1,12 +1,14 @@
-import React, {useState, useEffect} from 'react'
+import React, {useState, useEffect, useRef} from 'react'
 //This will be the entire layout 
 import {BrowserRouter, Route, Switch} from 'react-router-dom'
-import HeroSection from './HeroSection/heroSection'
-import About from './HeroSection/about'
-import SignIn from './HeroSection/signin'
-import SignUp from './HeroSection/signup'
-import Navbar from './navbar/navbar'
+import SignIn from './Pages/SignIn/SignIn'
+import SignUp from './Pages/SignUp/SignUp'
+import Navbar from './navbar/Navbar'
 import 'bootstrap/dist/css/bootstrap.min.css'
+import { ThemeProvider } from 'styled-components';
+
+import { GlobalStyles } from './global';
+import {theme} from './theme'
 
 const LOGIN_KEY = 'currentUser';
 
@@ -29,25 +31,18 @@ export default function App() {
   //     localStorage.setItem(LOGIN_KEY, JSON.stringify(topicList))
   // },[])
 
-
   return (
-    <div>
-     <Navbar/>
-    </div>
+    <BrowserRouter>
+    <ThemeProvider theme={theme}>
+      <Navbar/> 
+    </ThemeProvider>
+  <Switch>
+    {/* <Route path='/' exact component={SignIn}></Route>   */} 
+    {/* <Route path='/account' component={SignUp}></Route> */}
+
+    {/* if link is this, render whatever */}
+    <Route path='/home/:id' component/>
+  </Switch>
+</BrowserRouter>
   )
 }
-
-
-// <BrowserRouter>
-// <Navbar/>
-
-// <Switch>
-//   <Route path='/' exact component={SignIn}></Route>  
-//   <Route path='/signup' component={SignUp}></Route>
-//   <Route path='/home' exact component={HeroSection}></Route>
-//   <Route path='/about' component={About}></Route>
-
-//   {/* if link is this, render whatever */}
-//   <Route path='/home/:id' component/>
-// </Switch>
-// </BrowserRouter>

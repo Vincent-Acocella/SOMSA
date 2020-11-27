@@ -1,35 +1,68 @@
-import React from 'react'
-import {
-    Navbar,
-    Nav,
-    Button,
-    NavDropdown,
-    Form,
-    FormControl
-} from 'react-bootstrap'
+import React, {useState, useRef} from 'react'
+import styled from 'styled-components';
+import { Burger, Menu, SearchBar, SearchIcon, Account } from '.';
+import { useOnClickOutside } from '../hooks';
+import FocusLock from 'react-focus-lock';
+import {StyledNav} from './Navbar.styled'
 
-export default function navbar() {
+
+const SomsaHeader = styled.a.attrs({
+  href:"#",
+   onClick: evt => {
+  evt.preventDefault();
+}})`
+    display: flex;
+    text-align: center;
+    text-decoration: none;
+    color: white;
+    font-weight: bold;
+  
+`;
+
+const Account_btn = styled.a.attrs({
+  href:"/account",
+ })`
+    display: flex;
+    text-align: center;
+    text-decoration: none;
+    color: white;
+    font-weight: bold;
+    left: 50rem;
+
+`;
+
+export default function Navbar() {
+
+  const [open_burg, setOpen_burg] = useState(false);
+  const [open_ser, setOpen_ser] = useState(false);
+  const burger = useRef();
+  const menuId = "main-menu";
+
+  useOnClickOutside(burger, () => setOpen_burg(false));
+
     return (
-<Navbar bg="light" expand="lg">
-  <Navbar.Brand href="#home">Somsa</Navbar.Brand>
-  <Navbar.Toggle aria-controls="basic-navbar-nav" />
-  <Navbar.Collapse id="basic-navbar-nav">
-    <Nav className="mr-auto">
-      <Nav.Link href="#home">Home</Nav.Link>
-      <Nav.Link href="#link">Link</Nav.Link>
-      <NavDropdown title="Dropdown" id="basic-nav-dropdown">
-        <NavDropdown.Item href="#action/3.1">Action</NavDropdown.Item>
-        <NavDropdown.Item href="#action/3.2">Another action</NavDropdown.Item>
-        <NavDropdown.Item href="#action/3.3">Something</NavDropdown.Item>
-        <NavDropdown.Divider />
-        <NavDropdown.Item href="#action/3.4">Separated link</NavDropdown.Item>
-      </NavDropdown>
-    </Nav>
-    <Form inline>
-      <FormControl type="text" placeholder="Search" className="mr-sm-2" />
-      <Button variant="outline-success">Search</Button>
-    </Form>
-  </Navbar.Collapse>
-</Navbar>
+      <StyledNav>
+        <>
+          <div ref={burger}>
+            <FocusLock disabled={!open_burg}>
+              <Burger open={open_burg} setOpen={setOpen_burg} aria-controls={menuId} />
+              <Menu open={open_burg} setOpen={setOpen_burg} id={menuId} />
+            </FocusLock>
+          </div>
+          <h3>MENU</h3>
+
+          <FocusLock disabled={!open_ser}>
+            <SearchIcon open={open_ser} setOpen={setOpen_ser} aria-controls={menuId}/>
+            <SearchBar open={open_ser} setOpen={setOpen_ser} />
+          </FocusLock>
+          
+
+          <SomsaHeader>
+            <h2> SOMSA</h2>
+          </SomsaHeader>
+          
+      </>
+    </StyledNav>
+
     )
 }
