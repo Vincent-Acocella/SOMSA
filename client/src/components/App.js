@@ -1,4 +1,4 @@
-import React, {useState, useEffect, useRef} from 'react'
+import React from 'react'
 //This will be the entire layout 
 import {BrowserRouter, Route, Switch} from 'react-router-dom'
 import SignIn from './Pages/SignIn/SignIn'
@@ -37,7 +37,7 @@ export default function App() {
       <Navbar/> 
     </ThemeProvider>
   <Switch>
-    {/* <Route path='/' exact component={SignIn}></Route>   */} 
+    <Route path='/signin' exact component={SignIn}></Route>   
     {/* <Route path='/account' component={SignUp}></Route> */}
 
     {/* if link is this, render whatever */}

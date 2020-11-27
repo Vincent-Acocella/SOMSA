@@ -42,15 +42,16 @@ exports.signUpUser = async (req,res) => {
 }
 
 exports.signInUser = async (req,res) =>{
+    console.log(req.body.user);
 
     try{
-    let newUser = await Account.findOne({where: {Email: req.body.email}}); 
+    let newUser = await Account.findOne({where: {Email: req.body.user.email}}); 
     
     if(newUser === null){
         return res.status(401).json({success: false, error: 'User not found'});
     }
 
-    let isMatch = await newUser.validPassword(req.body.password);
+    let isMatch = await newUser.validPassword(req.body.user.password);
 
     if(!isMatch){
         return res.status(401).json({success: false, error: 'Password does not match email'});
