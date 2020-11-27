@@ -6,7 +6,6 @@ WORKDIR /usr/src/app
 #We need the depenedcies
 COPY package*.json ./
 
-
 #Download node as well as bcrypt
 RUN apk add --no-cache make gcc g++ python && \
   npm install && \
