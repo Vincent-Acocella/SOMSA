@@ -44,11 +44,11 @@ callExec = async function (argument) {
 }
 
 onRequest = async function() {
-   /* topics = await topic.findAll({
-        attributes: ['Topic_Name', 'Category']
-    });*/
+    //topics = await topic.findAll({
+    //    attributes: ['Topic_Name', 'Category']
+    //});
     //For testing purposes we will use this simple table
-    topics = ["Major League Baseball", "US Election", "Joe Biden", "Playstation 5"]
+    topics = ["Major League Baseball", "US Election", "Joe Biden", "Playstation 5", "EarthBound", "FreeMelee", "India", "Mother 3"]
     var spider_arg = "trend="
     for(var i = 0; i < topics.length; i++) {
         //We need to send the topics into the spider in a way that it can work with them, replace white space with underscores and concatenate by a period
@@ -59,19 +59,20 @@ onRequest = async function() {
     }
     console.log(spider_arg);
 
-    process_db = exec("scrapy runspider -o ../../machinelearning/data_out.json -a " + spider_arg + " ../../webscraper/MST_Trend_Lookup.py", 
+    process_db = exec("scrapy runspider -o ../../machinelearning/lookup_data_in.json -a " + spider_arg + " ../../webscraper/MST_Trend_Lookup.py", 
         {maxBuffer: 1024 * 2000}, (error, stdout, stderr) => {
     });
 
     process_db.on('exit', async function() {
         //Run the reddit scraper
-        process_reddit = exec("scrapy runspider -o ../../machinelearning/data_out.json ../../webscraper/MST_Reddit.py",
+        process_reddit = exec("scrapy runspider -o ../../machinelearning/reddit_data_in.json ../../webscraper/MST_Reddit.py",
         {maxBuffer: 1024 * 2000}, (error, stdout, stderr) => {
         });
         process_reddit.on('exit', async function() {
             //Run the twitter scraper
-            process_reddit = exec("scrapy runspider -o ../../machinelearning/data_out.json ../../webscraper/MST_Twitter.py",
+            process_reddit = exec("scrapy runspider -o ../../machinelearning/twitter_data_in.json ../../webscraper/MST_Twitter.py",
             {maxBuffer: 1024 * 2000}, (error, stdout, stderr) => {
+                //All of our spiders are complete and have collected their data
             });
         })
     })
