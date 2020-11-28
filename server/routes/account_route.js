@@ -2,10 +2,7 @@ const express = require('express');
 const router = express.Router();
 const Account = require('../models/account');
 const {signUpUser, signInUser, signOutUser} = require('../controllers/account')
-const {
-    userValidatorResult,
-     userValidator
-    } = require('../validators/userValidator')
+const {userValidatorResult, userValidator} = require('../validators/userValidator')
 
 const {isAuth} = require('../middlewares/auth')
 

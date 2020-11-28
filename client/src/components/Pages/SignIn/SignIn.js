@@ -1,49 +1,50 @@
 import React, { Component } from 'react'
 import {axios} from '../../API/axios'
+import {StyledSignIn} from './SignIn.styled'
+
 
 export default class SignIn extends Component {
     state = {
         email: '',
         password: '',
-    };
+    };    
+
     handleSubmit = event => {
 
         //Avoid page refresh
         event.preventDefault();
-
-        const user = {
-            email: this.state.email,
-            password: this.state.password
-        };
-
-        console.log(user)
-
         //First is url
-       axios.post('/user/signin', {user})
+       axios.post('/user/signin', {
+           email: this.state.email,
+            password: this.state.password})
         .then(res => {
-            console.log({res})
+            localStorage.setItem('currentUser', JSON.stringify(res.data.newUser))
+            console.log(res)
         }).catch(res => {
-            console.log({res});
+            console.log("sadfasf");
         })
     }
 
     handleChange = event => {
             this.setState({[event.target.name]: event.target.value});
     }
-   render(){ return (
-        <div className ="guest--format">
 
+   render(){ 
+       return (
+        <StyledSignIn>
+            <h1>Sign in to Account</h1>
+            <h2>Hi! Log in or Sign Up Below</h2>
+
+            <hr color="#2C698D"/>
+            
             <form onSubmit = {this.handleSubmit}>
-                <label>
-                    Email:
-                    <input type ="text" name= "email" onChange = {this.handleChange}/>
-                </label>
-                <label>
-                    Password:
-                    <input type ="text" name= "password" onChange = {this.handleChange}/>
-                </label>
+               
+            <input type ="email" size = "40" name= "email" placeholder="Email" required = {true} onChange = {this.handleChange}/>
+               <br/>
+                    <input type ="password" size = "40" name= "password" placeholder="Password" required = {true} onChange = {this.handleChange}/>
+                <br/>    
                 <button type="submit">Sign In</button>
             </form>
-    </div>
+        </StyledSignIn>
     )}
 }
