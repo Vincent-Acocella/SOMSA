@@ -4,45 +4,6 @@ const topic = require('../models/topic');
 const {exec} = require("child_process");
 const { on } = require('process');
 
-var isAnalyzerReady = true;
-
-callExec = async function (argument) {
-
-    //Call the Reddit Spider and parse the output
-    //scrapy runspider -o data_out.json MST_Reddit.py
-    process = exec(argument, {maxBuffer: 1024 * 2000}, (error, stdout, stderr) => {
-        if (error) {
-            console.log(`error: ${error.message}`);
-            return 0;
-        }
-        if(stderr) {
-            console.log(`stderr: ${stderr}`);
-            return 0;
-        }
-
-    });
-    process.on('exit', await async function() {
-
-    })
-    /*process.on('exit', function() {
-        console.log("Call " + argument + " complete");
-        while(!isAnalyzerReady) {
-            console.log();
-        }
-        //Either callExec, or send a POST to Flask depending on what we elect to do
-        //With the latter option I'm not entirely sure how we'll know when our response is ready
-        //With the former method, we invoke exec, set isAnalyzerReady to false
-        //then use another process.on 'exit' to know when the SA is done and set isAnalyzerReady to true
-        //That way, we're only calling the SA one at a  time
-        //This *shouldn't* cause any issues with holding the entire backend since this while loops is asynchronous
-        isAnalyzerReady = false;
-        isAnalyzerReady = true;
-        return 1
-        
-    });*/
-    return 1;
-}
-
 onRequest = async function() {
     //topics = await topic.findAll({
     //    attributes: ['Topic_Name', 'Category']
@@ -73,8 +34,50 @@ onRequest = async function() {
             process_reddit = exec("scrapy runspider -o ../../machinelearning/twitter_data_in.json ../../webscraper/MST_Twitter.py",
             {maxBuffer: 1024 * 2000}, (error, stdout, stderr) => {
                 //All of our spiders are complete and have collected their data
+                //Call a POST to the TensorFlow Serving container
+                $.ajax({
+                    url: 'http://localhost:8501/',
+                    beforeSend: function(xhr) {
+                        console.log("Sending request to the Sentiment Analyzer");
+                    },
+                    success: function(data) {
+                        //process the newly created json file by the Sentiment Analyzer
+                        alert(data);
+                        
+                        Object.keys(data).forEach(function(key) {
+                            console.log(key);
+                            //If the data does not have a category, then that means it all ready exists in the table
+                            //Attach the category we orignally found to it
+                            if (data[key][1] === "NONE") {
+                                category = topic.find({
+                                    where: {title: key},
+                                    attributes: ['Topic_Category']
+                                })
+                                data[key][1] = category
+                            }
+                            //Add the topic data to the topic table
+                            newTopic = await topic.create({
+                                Topic_Name: key,
+                                Topic_Category: data[key][1] 
+
+                            });
+                            //Add the sentiment data to the sentiment table
+                            newSentiment = await sentiment.create({
+                                Sentiment: data[key][2],
+                                Confidence_Interval: data[key][3],
+                                Table_Data: data[key]
+                            });
+                            
+                            //Link the two tables together
+                            topic_sentiment.create({
+                                Topic_ID: newTopic.Topic_ID,
+                                Sentiment_ID: newSentiment.SentimentID
+                            });
+                        });
+                    }
+                });     
             });
-        })
+        });
     })
 
     //process_reddit = exec("scrapy runspider -o ../../machinelearning/data_out.json ../../webscraper/MST_Reddit.py");
