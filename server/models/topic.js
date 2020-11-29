@@ -1,6 +1,6 @@
 const Sequalize = require('sequelize');
 const db = require('../conf.d/database');
-const Sentiment = require('./sentiment';)
+const Sentiment = require('./sentiment');
 const Topic = db.define('Topic', {
 
     Topic_ID:{
@@ -23,6 +23,6 @@ const Topic = db.define('Topic', {
     timestamps: false
 })
 
-Topic.belongsTop(Sentiment.Sentiment);
+Topic.belongsTo(Sentiment.Sentiment);
 
 module.exports = Topic;
