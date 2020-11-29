@@ -16,20 +16,13 @@ export default function Navbar({currentUser, setCurrentUser}) {
   const menuId = "main-menu";
   let disLink = "/signup";
   let userToShow = "REGISTER/SIGN IN";
-  console.log(currentUser)
 
   if(currentUser !== null){
     console.log(currentUser)
      disLink = "/signin";
-    //userToShow = JSON.parse(localStorage.getItem("currentUser"));
+     userToShow = JSON.parse(localStorage.getItem("currentUser"));
      console.log(userToShow);
   }
-
-  useEffect(()=>{
-    console.log(currentUser)
-
-  }, [currentUser])
-
 
   useOnClickOutside(burger, () => setOpen_burg(false));
 
@@ -53,7 +46,7 @@ export default function Navbar({currentUser, setCurrentUser}) {
             <h2>SOMSA</h2>
           </Link>
           <Link to= {disLink}>
-            <h1>{userToShow}</h1> 
+            <h1>poo</h1> 
           </Link>  
       </>
     </StyledNav>

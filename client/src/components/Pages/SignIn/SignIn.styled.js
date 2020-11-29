@@ -15,7 +15,17 @@ input {
     margin-top: 5px;
     margin-bottom: 5px;
     text-align: center;
-    white opacity 30%
+    white opacity 30%;
+    color: white;
+    
+}
+h2 {
+    text-align: center;
+    font-size: 10px;
+    color: white;
+    font-weight: bold
+    opacity: 0.3
+
 }
 
 h1 {
@@ -33,7 +43,7 @@ hr {
 }
 
 button {
-    margin-left: 200px;
+    margin-right: 200px;
     text-decoration: none;
     cursor: pointer;
     border-radius: 20px;
@@ -41,8 +51,19 @@ button {
     font-size: 15px;
     padding: 8px 30px;
     background-color: #b2ffff;
-    filter: brightness(3.00);
 
+}
+
+div {
+    margin-left: 200px;
+    margin-top: -35px;
+    text-decoration: none;
+    cursor: pointer;
+    border-radius: 20px;
+    border:none;
+    font-size: 15px;
+    padding: 8px 30px;
+    background-color: #b2ffff;
 }
 
 button:hover {

@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import {axios} from '../../API/axios'
 import {StyledSignUp} from './SignUp.styled'
 import styled from 'styled-components'
-import cookies from 'universal-cookie'
+import cookies from 'universal-cookie' 
 
 const LogIn = styled.a.attrs({
     href:"/signin"
@@ -18,7 +18,7 @@ export default class Signup extends Component {
         password: '',
         passwordAgain: ''
     };
-
+    
     componentDidMount = event => {
         
         axios.get('/', (req, res) => {
@@ -38,8 +38,7 @@ export default class Signup extends Component {
         //First is url
        axios.post('/user/signup', {email: this.state.email, password: this.state.password })
         .then(res => {
-            console.log("hello")
-            console.log({res})
+           console.log(res.data.email)
         }).catch(res => {
             console.log({res});
         })
@@ -56,16 +55,14 @@ export default class Signup extends Component {
             <>
             <h1>Hello, Friend!</h1>
             <h1>Let's Set Up Your Account!</h1>
-            
-            <span></span>
-            <LogIn>Log In</LogIn><br/>
+            <hr/>
 
             <form onSubmit = {this.handleSubmit}>
-                    <input type ="email" size = "40" name= "email" placeholder="Email" required ="true" onChange = {this.handleChange}/>
-               <br/>
-                    <input type ="password" size = "40" name= "password" placeholder="Password" required = "true" onChange = {this.handleChange}/>
+                    <input type ="email" size = "40" name= "email" placeholder="Email" required ={true} onChange = {this.handleChange}/>
+                 <br/>
+                    <input type ="password" size = "40" name= "password" placeholder="Password" required = {true} onChange = {this.handleChange}/>
                 <br/>
-                <input type ="paswsord" size = "40" name= "passwordAgain" placeholder="Confirm Password" required = "true" onChange = {this.handleChange}/>
+                <input type ="password" size = "40" name= "passwordAgain" placeholder="Confirm Password" required = {true} onChange = {this.handleChange}/>
                 <br/>
 
                 <button type="submit">Complete</button>

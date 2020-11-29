@@ -3,7 +3,7 @@ const {check, validationResult} = require('express-validator')
 exports.userValidatorResult = (req,res,next) =>{
     const result = validationResult(req);
     if(!result.isEmpty()){
-        const error = result.array();
+        const error = result.array()[0];
         return res.status(422).json({success:false, error});
     }
     next();
