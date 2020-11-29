@@ -1,6 +1,6 @@
 const Sequalize = require('sequelize');
 const db = require('../conf.d/database');
-
+const Sentiment = require('./sentiment';)
 const Topic = db.define('Topic', {
 
     Topic_ID:{
@@ -22,5 +22,7 @@ const Topic = db.define('Topic', {
     freezeTableName: true,
     timestamps: false
 })
+
+Topic.belongsTop(Sentiment.Sentiment);
 
 module.exports = Topic;
