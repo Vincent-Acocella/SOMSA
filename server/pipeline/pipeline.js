@@ -1,10 +1,72 @@
+const fs = require('fs');
 const Sequalize = require('sequelize');
 const db = require('../conf.d/database');
 const topic = require('../models/topic');
 const {exec} = require("child_process");
-const { on } = require('process');
+const { JSDOM } = require( "jsdom" );
+const { window } = new JSDOM( "" );
+const $ = require('jquery')(window);
 
-onRequest = async function() {
+readJson = function(filePath, callback) {
+    fs.readFile(filepath, (err, fileData) => {
+        if(err) {
+            return callback && callback(err);
+        }
+        try {
+            const dataObj = JSON.parse(fileData);
+            return callback && callback(null, dataObj);
+        }
+        catch(err) {
+            return callback && callback(err);
+        }
+    });
+}
+
+sendSentimentRequest = function(d) {
+    $.ajax({
+        data: d,
+        url: 'http://localhost:8501/',
+        beforeSend: function(xhr) {
+            console.log("Sending request to the Sentiment Analyzer");
+        },
+        success: function(data) {
+            //process the newly created json file by the Sentiment Analyzer
+            alert(data);
+            
+            Object.keys(data).forEach(async function(key) {
+                console.log(key);
+                //If the data does not have a category, then that means it all ready exists in the table
+                //Attach the category we orignally found to it
+                if (data[key][1] === "NONE") {
+                    category = topic.find({
+                        where: {title: key},
+                        attributes: ['Topic_Category']
+                    })
+                    data[key][1] = category
+                }
+                //Add the sentiment data to the sentiment table
+                newSentiment = await sentiment.create({
+                    Sentiment: data[key][2],
+                    Confidence_Interval: data[key][3],
+                    Table_Data: data[key]
+                });
+
+                 //Add the topic data to the topic table
+                 newTopic = await topic.create({
+                    Topic_Name: key,
+                    Sentiment_ID: newSentiment.Sentiment_ID,
+                    Topic_Category: data[key][1] 
+
+                });
+                
+            });
+        }
+    });
+}
+
+
+
+onReceiveDataRequest = async function() {
     //topics = await topic.findAll({
     //    attributes: ['Topic_Name', 'Category']
     //});
@@ -20,65 +82,58 @@ onRequest = async function() {
     }
     console.log(spider_arg);
 
-    process_db = exec("scrapy runspider -o ../../machinelearning/lookup_data_in.json -a " + spider_arg + " ../../webscraper/MST_Trend_Lookup.py", 
+    //Run the lookup scraper
+    processDb = exec("scrapy runspider -o lookup_data_in.json -a " + spider_arg + " ../../webscraper/MST_Trend_Lookup.py", 
         {maxBuffer: 1024 * 2000}, (error, stdout, stderr) => {
     });
 
-    process_db.on('exit', async function() {
-        //Run the reddit scraper
-        process_reddit = exec("scrapy runspider -o ../../machinelearning/reddit_data_in.json ../../webscraper/MST_Reddit.py",
+    //Run the Reddit scraper
+    processReddit = exec("scrapy runspider -o reddit_data_in.json ../../webscraper/MST_Reddit.py",
         {maxBuffer: 1024 * 2000}, (error, stdout, stderr) => {
-        });
-        process_reddit.on('exit', async function() {
-            //Run the twitter scraper
-            process_reddit = exec("scrapy runspider -o ../../machinelearning/twitter_data_in.json ../../webscraper/MST_Twitter.py",
-            {maxBuffer: 1024 * 2000}, (error, stdout, stderr) => {
-                //All of our spiders are complete and have collected their data
-                //Call a POST to the TensorFlow Serving container
-                $.ajax({
-                    url: 'http://localhost:8501/',
-                    beforeSend: function(xhr) {
-                        console.log("Sending request to the Sentiment Analyzer");
-                    },
-                    success: function(data) {
-                        //process the newly created json file by the Sentiment Analyzer
-                        alert(data);
-                        
-                        Object.keys(data).forEach(function(key) {
-                            console.log(key);
-                            //If the data does not have a category, then that means it all ready exists in the table
-                            //Attach the category we orignally found to it
-                            if (data[key][1] === "NONE") {
-                                category = topic.find({
-                                    where: {title: key},
-                                    attributes: ['Topic_Category']
-                                })
-                                data[key][1] = category
-                            }
-                            //Add the topic data to the topic table
-                            newTopic = await topic.create({
-                                Topic_Name: key,
-                                Topic_Category: data[key][1] 
+    });
 
-                            });
-                            //Add the sentiment data to the sentiment table
-                            newSentiment = await sentiment.create({
-                                Sentiment: data[key][2],
-                                Confidence_Interval: data[key][3],
-                                Table_Data: data[key]
-                            });
-                            
-                            //Link the two tables together
-                            topic_sentiment.create({
-                                Topic_ID: newTopic.Topic_ID,
-                                Sentiment_ID: newSentiment.SentimentID
-                            });
-                        });
-                    }
-                });     
-            });
+    //Run the Twitter scraper
+    processTwitter = exec("scrapy runspider -o twitter_data_in.json ../../webscraper/MST_Twitter.py",
+        {maxBuffer: 1024 * 2000}, (error, stdout, stderr) => {
+
+                 
+    });
+    processDb.on('exit', async function() {
+        console.log("Lookup Scraper complete")
+        readJson('./lookup_data_in', (err, data) => {
+            if(err) {
+                console.log(err);
+                return;
+            }
+            console.log(data);
+            sendSentimentRequest(data);
         });
-    })
+    });
+
+    processReddit.on('exit', async function() {
+        console.log("Reddit Scraper complete")
+        readJson('./lookup_data_in', (err, data) => {
+            if(err) {
+                console.log(err);
+                return;
+            }
+            console.log(data);
+            sendSentimentRequest(data);
+        });
+    });
+
+    processTwitter.on('exit', async function() {
+        console.log("Twitter Scraper complete")
+        readJson('./lookup_data_in', (err, data) => {
+            if(err) {
+                console.log(err);
+                return;
+            }
+            console.log(data);
+            sendSentimentRequest(data);
+        });
+        
+    });
 
     //process_reddit = exec("scrapy runspider -o ../../machinelearning/data_out.json ../../webscraper/MST_Reddit.py");
 
@@ -88,5 +143,5 @@ onRequest = async function() {
     //callExec("scrapy runspider -o ../../machinelearning/data_out.json ../../webscraper/MST_Twitter.py");
 }
 
-onRequest();
+onReceiveDataRequest();
 
