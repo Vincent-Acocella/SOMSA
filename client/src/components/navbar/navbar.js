@@ -1,42 +1,28 @@
-import React, {useState, useRef} from 'react'
+import React, {useState, useRef, useEffect} from 'react'
 import styled from 'styled-components';
 import { Burger, Menu, SearchBar, SearchIcon, Account } from '.';
 import { useOnClickOutside } from '../hooks';
 import FocusLock from 'react-focus-lock';
-import {StyledNav} from './Navbar.styled'
+import {StyledNav} from './Navbar.styled';
+import {Link} from 'react-router-dom';
 
 
-const SomsaHeader = styled.a.attrs({
-  href:"#",
-   onClick: evt => {
-  evt.preventDefault();
-}})`
-    display: flex;
-    text-align: center;
-    text-decoration: none;
-    color: white;
-    font-weight: bold;
-  
-`;
+export default function Navbar({currentUser, setCurrentUser}) {
 
-const Account_btn = styled.a.attrs({
-  href:"/account",
- })`
-    display: flex;
-    text-align: center;
-    text-decoration: none;
-    color: white;
-    font-weight: bold;
-    left: 50rem;
-
-`;
-
-export default function Navbar() {
 
   const [open_burg, setOpen_burg] = useState(false);
   const [open_ser, setOpen_ser] = useState(false);
   const burger = useRef();
   const menuId = "main-menu";
+  let disLink = "/signup";
+  let userToShow = "REGISTER/SIGN IN";
+
+  if(currentUser !== null){
+    console.log(currentUser)
+     disLink = "/signin";
+     userToShow = JSON.parse(localStorage.getItem("currentUser"));
+     console.log(userToShow);
+  }
 
   useOnClickOutside(burger, () => setOpen_burg(false));
 
@@ -56,11 +42,12 @@ export default function Navbar() {
             <SearchBar open={open_ser} setOpen={setOpen_ser} />
           </FocusLock>
           
-
-          <SomsaHeader>
-            <h2> SOMSA</h2>
-          </SomsaHeader>
-          
+          <Link to= "/">
+            <h2>SOMSA</h2>
+          </Link>
+          <Link to= {disLink}>
+            <h1>poo</h1> 
+          </Link>  
       </>
     </StyledNav>
 

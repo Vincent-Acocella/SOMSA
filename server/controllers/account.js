@@ -8,6 +8,7 @@ const signToken = (userID)=> {
 }
 //Used for signup
 exports.signUpUser = async (req,res) => {
+    console.log(req.body.email);
     try{
 
         let newUser = await Account.findOne({where: {Email: req.body.email}});
@@ -42,6 +43,7 @@ exports.signUpUser = async (req,res) => {
 }
 
 exports.signInUser = async (req,res) =>{
+    console.log(req.body.user);
 
     try{
     let newUser = await Account.findOne({where: {Email: req.body.email}}); 
@@ -56,7 +58,6 @@ exports.signInUser = async (req,res) =>{
         return res.status(401).json({success: false, error: 'Password does not match email'});
     }
 
-    
     const token = signToken(newUser.Account_ID)
     res.cookie('auth_token', token,{
         httpOnly: true
