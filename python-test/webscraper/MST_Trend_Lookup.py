@@ -32,7 +32,7 @@ class MSTTrendSpider(Spider):
     trend_to_scrape = []
 
     def __init__(self, trend=None, *args, **kwargs):
-        super(MSTTwitterSpider, self).__init__(*args, **kwargs)
+        super(MSTTrendSpider, self).__init__(*args, **kwargs)
        # self.trend_to_scrape = trend
         trend = trend.replace("_", " ")
         self.trend_to_scrape = trend.split(".")

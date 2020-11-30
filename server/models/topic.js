@@ -23,6 +23,6 @@ const Topic = db.define('Topic', {
     timestamps: false
 })
 
-Topic.belongsTo(Sentiment.Sentiment);
+Topic.belongsTo(Sentiment);
 
 module.exports = Topic;

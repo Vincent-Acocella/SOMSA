@@ -66,8 +66,7 @@ sendSentimentRequest = function(d) {
 }
 
 
-
-onReceiveDataRequest = async function() {
+exports.onReceiveTimeout = async function() {
     //topics = await topic.findAll({
     //    attributes: ['Topic_Name', 'Category']
     //});
@@ -83,18 +82,23 @@ onReceiveDataRequest = async function() {
     }
     console.log(spider_arg);
 
+    process = exec("echo p", 
+        {maxBuffer: 1024 * 2400}, (error, stdout, stderr) => {
+            console.log(stdout);
+    });
+
     //Run the lookup scraper
-    processDb = exec("scrapy runspider -o lookup_data_in.json -a " + spider_arg + " ../../python-test/webscraper/MST_Trend_Lookup.py", 
+    processDb = exec("scrapy runspider -o ../../python-test/webscraper/lookup_data_in.json -a " + spider_arg + " ../python-test/webscraper/MST_Trend_Lookup.py", 
         {maxBuffer: 1024 * 2400}, (error, stdout, stderr) => {
     });
 
     //Run the Reddit scraper
-    processReddit = exec("scrapy runspider -o reddit_data_in.json ../../python-test/webscraper/MST_Reddit.py",
+    processReddit = exec("scrapy runspider -o ../python-test/webscraper/reddit_data_in.json ../python-test/webscraper/MST_Reddit.py",
         {maxBuffer: 1024 * 2000}, (error, stdout, stderr) => {
     });
 
     //Run the Twitter scraper
-    processTwitter = exec("scrapy runspider -o twitter_data_in.json ../../python-test/webscraper/MST_Twitter.py",
+    processTwitter = exec("scrapy runspider -o ../../python-test/twitter_data_in.json ../python-test/webscraper/MST_Twitter.py",
         {maxBuffer: 1024 * 2000}, (error, stdout, stderr) => {
 
                  
@@ -146,6 +150,4 @@ onReceiveDataRequest = async function() {
     //})
     //callExec("scrapy runspider -o ../../machinelearning/data_out.json ../../webscraper/MST_Twitter.py");
 }
-
-onReceiveDataRequest();
 
