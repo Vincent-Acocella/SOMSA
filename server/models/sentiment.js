@@ -1,21 +1,25 @@
 const Sequalize = require('sequelize');
 const db = require('../conf.d/database');
-const Sentiment = require('./sentiment');
-const Topic = db.define('Topic', {
 
-    Topic_ID:{
+const Sentiment = db.define('Sentiment', {
+
+    Sentiment_ID:{
         type: Sequalize.INTEGER,
         autoIncrement: true,
         primaryKey: true
 
     },
     
-    Topic_Name: {
-        type: Sequalize.STRING
+    Sentiment: {
+        type: Sequalize.BOOLEAN
     },
 
-    Category: {
-        type: Sequalize.STRING
+    Confidence_Interval: {
+        type: Sequalize.INTEGER
+    },
+
+    Table_Data: {
+        type: Sequalize.JSON
     }
 },
 {
@@ -23,6 +27,4 @@ const Topic = db.define('Topic', {
     timestamps: false
 })
 
-Topic.belongsTo(Sentiment.Sentiment);
-
-module.exports = Topic;
+module.exports = Sentiment;
