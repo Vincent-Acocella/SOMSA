@@ -28,13 +28,14 @@ class MSTTwitterSpider(Spider):
     current_home_url = 'http://example.com/'
 
     # How far down we will scroll down per trend
-    AMOUNT_OF_PAGE_SCROLLS = 100
-    trend_to_scrape = None
+    AMOUNT_OF_PAGE_SCROLLS = 20
+    trend_to_scrape = []
 
     def __init__(self, trend=None, *args, **kwargs):
         super(MSTTwitterSpider, self).__init__(*args, **kwargs)
-        self.trend_to_scrape = trend
-
+       # self.trend_to_scrape = trend
+        trend = trend.replace("_", " ")
+        self.trend_to_scrape = trend.split(".")
     """
     do_scroll
     page_element: the Element to attach to so we may send keyboard input
@@ -43,7 +44,7 @@ class MSTTwitterSpider(Spider):
 
     def do_scroll(self, page_element, num_scrolls):
         for i in range(num_scrolls):
-            page_element.send_keys(Keys.ARROW_DOWN)
+            page_element.send_keys(Keys.PAGE_DOWN)
             sleep(0.3)
 
     """
@@ -76,6 +77,8 @@ class MSTTwitterSpider(Spider):
         tweets = select.xpath('//div[@data-testid="tweet"]')
         print(tweets)
         self.get_comments(tweets)
+        self.driver.get('https://twitter.com/explore/tabs/trending')
+        sleep(0.9)
 
     """
     parse
@@ -107,12 +110,13 @@ class MSTTwitterSpider(Spider):
         sleep(0.9)
 
         search_xpath = '//*[@data-testid="SearchBox_Search_Input"]'
+        for t in self.trend_to_scrape:
+            self.get_trend_comments(search_xpath, t)
 
-        self.get_trend_comments(search_xpath, self.trend_to_scrape)
-
-        if len(self.comment_chain) > 0:
-            yield {
-                self.trend_to_scrape: self.comment_chain
-            }
+            if len(self.comment_chain) > 0:
+                yield {
+                    t: [self.comment_chain, 'NONE']
+                }
+                self.comment_chain = ""
 
         self.driver.close()

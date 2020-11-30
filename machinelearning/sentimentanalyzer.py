@@ -1,9 +1,27 @@
+"""Using the Model"""
+
 import json
 import numpy as np
+import tensorflow as tf
 import keras
 import keras.preprocessing.text as kpt
 from keras.preprocessing.text import Tokenizer
 from keras.models import model_from_json
+
+def doPrediction(data_dict):
+  data = {} 
+  for entry in data_dict:
+    for key in entry:
+      #print(key)
+      comment_string = entry[key][0]
+      #print(comment_string)
+      topic_category = entry[key][1]
+      a = convert_text_to_index_array(comment_string)
+      a = tokenizer.sequences_to_matrix([a], mode = 'binary')
+      prediction = model.predict(a)
+      #print(prediction)
+      data[key] = [comment_string, topic_category, labels[np.argmax(prediction)], prediction[0][np.argmax(prediction)] * 100]
+  return data
 
 # Utilizing Tokenizer
 tokenizer = Tokenizer(num_words = 3000)
@@ -12,7 +30,7 @@ tokenizer = Tokenizer(num_words = 3000)
 labels = ['Negative', 'Positive']
 
 # Accessing our Dictionary
-with open('dictionary.json', 'r') as dictionary_file:
+with open('/content/dictionary.json', 'r') as dictionary_file:
   dictionary = json.load(dictionary_file)
 
 # Checking to Make Sure Words were in Training Corpus
@@ -28,6 +46,7 @@ def convert_text_to_index_array(text):
       #print("'%s' is not in the Training Corpus, Ignoring." %(word))
   return wordIndices
 
+''''
 # Read our Saved Model Structure
 json_file = open('model.json', 'r')
 loaded_model_json = json_file.read()
@@ -37,17 +56,45 @@ json_file.close()
 model = model_from_json(loaded_model_json)
 # Adding Weight to the Nodes
 model.load_weights('model.h5')
+'''
 
-# THIS IS WHERE YOU INPUT THE FILE OR SENTENCE
+#model = open('/content/saved_model/saved_model.pb')
+model = keras.models.load_model('/content/saved_model')
+#model.summary()
+# The file that contains the data we want to feed to the analyzer
+# The JSON is organized to have the topic title as the key to a table that contains
+# the data collected and the category they fall under
+data_in = open('/data_in_lookup.json')
+data_ini = json.load(data_in)
+data_fin = {}
 
-str = open('/content/SentimentAnalysisDataset2.csv', 'r').read()
-# evalSentence = ('You are amazing')
+
+# Iterate the data we received, produce a sentiment for each
+temp = doPrediction(data_ini)
+for key in temp:
+  data_fin[key] = temp[key]
 
 
-testArr = convert_text_to_index_array(str)#evalSentence)
-input = tokenizer.sequences_to_matrix([testArr], mode = 'binary')
+data_in = open('/data_in_reddit.json')
+data_ini = json.load(data_in)
+temp = doPrediction(data_ini)
+for key in temp:
+  data_fin[key] = temp[key]
 
-    # Predict if Positive or Negative
-pred = model.predict(input)
+  
 
-print("%s Sentiment and %f%% Confidence" % (labels[np.argmax(pred)], pred[0][np.argmax(pred)] * 100))
+data_in = open('/data_in_twitter.json')
+data_ini = json.load(data_in)
+temp = doPrediction(data_ini)
+for key in temp:
+  data_fin[key] = temp[key]
+
+for key in data_fin:
+  print(key)
+  print(data_fin[key][2])
+
+# Create a json file that will contain the the topic title as a key to a table that contains
+# The original data collected, the category they fall under, the sentiment, and the confidence interval
+# Change 'w' (create if does not exist) to 'x' (create file, throw error if it exists)?
+with open('/data_out.json', 'x') as data_out:
+  json.dump(data_fin, data_out)
