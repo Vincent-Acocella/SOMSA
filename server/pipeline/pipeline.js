@@ -25,13 +25,14 @@ readJson = function(filePath, callback) {
 sendSentimentRequest = function(d) {
     $.ajax({
         data: d,
-        url: 'http://localhost:5000/predict',
+        url: 'http://localhost:8000/predict',
         beforeSend: function(xhr) {
             console.log("Sending request to the Sentiment Analyzer");
         },
         success: function(data) {
             //process the newly created json file by the Sentiment Analyzer
             alert(data);
+            console.log(data);
             
             Object.keys(data).forEach(async function(key) {
                 console.log(key);
@@ -83,17 +84,17 @@ onReceiveDataRequest = async function() {
     console.log(spider_arg);
 
     //Run the lookup scraper
-    processDb = exec("scrapy runspider -o lookup_data_in.json -a " + spider_arg + " ../../webscraper/MST_Trend_Lookup.py", 
+    processDb = exec("scrapy runspider -o lookup_data_in.json -a " + spider_arg + " ../../python-test/webscraper/MST_Trend_Lookup.py", 
         {maxBuffer: 1024 * 2400}, (error, stdout, stderr) => {
     });
 
     //Run the Reddit scraper
-    processReddit = exec("scrapy runspider -o reddit_data_in.json ../../webscraper/MST_Reddit.py",
+    processReddit = exec("scrapy runspider -o reddit_data_in.json ../../python-test/webscraper/MST_Reddit.py",
         {maxBuffer: 1024 * 2000}, (error, stdout, stderr) => {
     });
 
     //Run the Twitter scraper
-    processTwitter = exec("scrapy runspider -o twitter_data_in.json ../../webscraper/MST_Twitter.py",
+    processTwitter = exec("scrapy runspider -o twitter_data_in.json ../../python-test/webscraper/MST_Twitter.py",
         {maxBuffer: 1024 * 2000}, (error, stdout, stderr) => {
 
                  
