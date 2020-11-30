@@ -1,10 +1,7 @@
 import React, {useState, useEffect} from 'react';
 import {HomeStyled} from './Home.styled';
-import {Link} from 'react-router-dom';
 import styled from 'styled-components';
-import SpecificPage from './Bubbles'
-
-
+import Bubbles from './Bubbles'
 
 const StyledButton = styled.button`
     text-decoration: none;
