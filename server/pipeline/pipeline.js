@@ -25,7 +25,7 @@ readJson = function(filePath, callback) {
 sendSentimentRequest = function(d) {
     $.ajax({
         data: d,
-        url: 'http://localhost:8501/',
+        url: 'http://localhost:5000/predict',
         beforeSend: function(xhr) {
             console.log("Sending request to the Sentiment Analyzer");
         },
@@ -84,7 +84,7 @@ onReceiveDataRequest = async function() {
 
     //Run the lookup scraper
     processDb = exec("scrapy runspider -o lookup_data_in.json -a " + spider_arg + " ../../webscraper/MST_Trend_Lookup.py", 
-        {maxBuffer: 1024 * 2000}, (error, stdout, stderr) => {
+        {maxBuffer: 1024 * 2400}, (error, stdout, stderr) => {
     });
 
     //Run the Reddit scraper
@@ -106,6 +106,7 @@ onReceiveDataRequest = async function() {
                 return;
             }
             console.log(data);
+            data = JSON.stringify(data)
             sendSentimentRequest(data);
         });
     });
@@ -118,6 +119,7 @@ onReceiveDataRequest = async function() {
                 return;
             }
             console.log(data);
+            data = JSON.stringify(data)
             sendSentimentRequest(data);
         });
     });
@@ -130,6 +132,7 @@ onReceiveDataRequest = async function() {
                 return;
             }
             console.log(data);
+            data = JSON.stringify(data)
             sendSentimentRequest(data);
         });
         
