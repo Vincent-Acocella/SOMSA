@@ -16,7 +16,6 @@ ul {
     text-align: left;
 }
 
-
 li {
     opacity: 0.3;
     margin-top: 20px;

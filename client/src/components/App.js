@@ -1,14 +1,12 @@
 import React, {useEffect,useState} from 'react'
 //This will be the entire layout 
 import {BrowserRouter, Route, Switch} from 'react-router-dom'
-import SignIn from './Pages/SignIn/SignIn'
-import SignUp from './Pages/SignUp/SignUp'
-import Home from './Pages/Home/Home'
+import {Home} from './SignInSignUp'
 import Navbar from './navbar/Navbar'
-import 'bootstrap/dist/css/bootstrap.min.css'
+import Dashboard from './DashboardPages/Dashboard'
 import { ThemeProvider } from 'styled-components';
 import {theme} from './theme'
-import SpecificPage from './Pages/SpecificPage/SpecificPage'
+import {ProtectedRoute, UnProtectedRoute} from './ProtectedRoute'
 
 
 const LOGIN_KEY = 'currentUser';
@@ -18,7 +16,8 @@ export const UserContext = React.createContext();
 export default function App() {
 
   // const [selectedPage, setSelectedPage] = useState(0)
-  const [currentUser, setCurrentUser] = useState(null)
+  const [logInState, setLogInState] = useState("none")
+  const [currentUser, setCurrentUser] = useState("potato")
 
   // const [topicList, setTopicsList] = useState(sentiments)
   useEffect(()=> {
@@ -26,6 +25,7 @@ export default function App() {
     let curUser = localStorage.getItem(LOGIN_KEY);
     console.log(curUser)
     if(curUser !== null) setCurrentUser(JSON.parse(curUser));
+    
   },[]);
   
   useEffect(()=> {
@@ -42,14 +42,30 @@ export default function App() {
   return (
     <BrowserRouter>
     <ThemeProvider theme={theme}>
-        <Navbar currentUser = {currentUser} setCurrentUser = {setCurrentUser}/> 
+    <Navbar currentUser = {currentUser} setCurrentUser = {setCurrentUser}/> 
     </ThemeProvider>
       <Switch>
-       <Route path='/signin' exact render={(props) => ( <SignIn user = {currentUser}/> )}/>  
-       <Route path='/signup' exact render={(props) => ( <SignUp setCurrentUser = {setCurrentUser}/> )}/>
+
+      <UnProtectedRoute
+        exact
+        path={"/home:where"}
+        component={Home}
+      />
+  
+
+      <Route
+        exact
+        path={"/"}
+        render={props => (
+          <Dashboard
+            {...props}
+            loggedInStatus={this.state.loggedInStatus}
+          />
+        )}
+      />
+      <Route path="*" component={()=> "Insert Default dance Emote"}/>      
       </Switch>
-       <Route path='/home/'  component={Home}></Route>
-       {/* <Route path='/home/:name'  component ={SpecificPage}/> */}
+       
        
     {/* if link is this, render whatever */}
     {/* <Route path='/home/:id' component/> */}

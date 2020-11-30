@@ -21,6 +21,7 @@ export default class SignIn extends Component {
             password: this.state.password})
         .then(res => {
 
+
             localStorage.setItem('currentUser', JSON.stringify(res.data.newUser))
         }).catch(res => {
             this.error = (res.response.data.error);
