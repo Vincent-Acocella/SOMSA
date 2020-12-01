@@ -1,6 +1,6 @@
 const Sequalize = require('sequelize');
 const db = require('../conf.d/database');
-
+const Topic = require('./topic');
 const Sentiment = db.define('Sentiment', {
 
     Sentiment_ID:{

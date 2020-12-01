@@ -2,18 +2,27 @@ const fs = require('fs');
 const Sequalize = require('sequelize');
 const db = require('../conf.d/database');
 const topic = require('../models/topic');
+const sentiment = require('../models/sentiment');
 const {exec} = require("child_process");
 const { JSDOM } = require( "jsdom" );
 const { window } = new JSDOM( "" );
 const $ = require('jquery')(window);
 
+const TOPIC_CATEGORIES = [
+    "Trending",
+    "Politics",
+    "Sports",
+    "Science",
+    "Technology"
+]
+
 readJson = function(filePath, callback) {
-    fs.readFile(filepath, (err, fileData) => {
+    fs.readFile(filePath, 'utf-8', (err, fileData) => {
         if(err) {
             return callback && callback(err);
         }
         try {
-            const dataObj = JSON.parse(fileData);
+            var dataObj = JSON.parse(fileData);
             return callback && callback(null, dataObj);
         }
         catch(err) {
@@ -23,19 +32,23 @@ readJson = function(filePath, callback) {
 }
 
 sendSentimentRequest = function(d) {
+    console.log("sendSentimentRequest");
+    console.log(d);
     $.ajax({
-        data: d,
+        type: 'POST',
         url: 'http://localhost:8000/predict',
-        beforeSend: function(xhr) {
-            console.log("Sending request to the Sentiment Analyzer");
+        data: JSON.stringify(d),
+        contentType: 'application/json',
+        //dataType: 'json',
+        error: function() {
+            console.log("Request could not be processed.");
         },
         success: function(data) {
             //process the newly created json file by the Sentiment Analyzer
-            alert(data);
-            console.log(data);
+            //console.log(data);
             
             Object.keys(data).forEach(async function(key) {
-                console.log(key);
+               // console.log(key);
                 //If the data does not have a category, then that means it all ready exists in the table
                 //Attach the category we orignally found to it
                 if (data[key][1] === "NONE") {
@@ -43,19 +56,29 @@ sendSentimentRequest = function(d) {
                         where: {title: key},
                         attributes: ['Topic_Category']
                     })
-                    data[key][1] = category
+                    data[key][1] = category;
+                }
+
+                //If the topic is not one of our predetermined ones, then default it to Trending
+                if(!(TOPIC_CATEGORIES.includes(data[key][1]))) {
+                    data[key][1] = "Trending";
                 }
                 //Add the sentiment data to the sentiment table
+                var s = false;
+                if (data[key][2] === "Positive") {
+                    s = true;
+                }
                 newSentiment = await sentiment.create({
-                    Sentiment: data[key][2],
+                    Sentiment: s,
                     Confidence_Interval: data[key][3],
                     Table_Data: data[key]
                 });
 
                  //Add the topic data to the topic table
+                 console.log(newSentiment.Sentiment_ID)
                  newTopic = await topic.create({
-                    Topic_Name: key,
                     Sentiment_ID: newSentiment.Sentiment_ID,
+                    Topic_Name: key,
                     Topic_Category: data[key][1] 
 
                 });
@@ -67,78 +90,122 @@ sendSentimentRequest = function(d) {
 
 
 exports.onReceiveTimeout = async function() {
-    //topics = await topic.findAll({
-    //    attributes: ['Topic_Name', 'Category']
-    //});
+    topics = await topic.findAll({
+        attributes: ['Topic_Name', 'Category']
+    });
     //For testing purposes we will use this simple table
-    topics = ["Major League Baseball", "US Election", "Joe Biden", "Playstation 5", "EarthBound", "FreeMelee", "India", "Mother 3"]
+    
+    //topics = ["US Election"]
     var spider_arg = "trend="
+    var doTrendLookup = false; 
+    var uniqueTopics = []
     for(var i = 0; i < topics.length; i++) {
         //We need to send the topics into the spider in a way that it can work with them, replace white space with underscores and concatenate by a period
         //topics[i] would become topics[i].Topic_Name
-        var portion = topics[i];
-        portion = portion.replace(new RegExp(" ", "g"), "_");
-        spider_arg += portion + ".";
+        doTrendLookup = true;
+        if (!(uniqueTopics.includes(topics[i].Topic_Name))) {
+            var portion = topics[i].Topic_Name;
+            portion = portion.replace(new RegExp(" ", "g"), "_");
+            spider_arg += portion + ".";
+            uniqueTopics.push(topics[i].Topic_Name);
+        }       
     }
     console.log(spider_arg);
 
-    process = exec("echo p", 
-        {maxBuffer: 1024 * 2400}, (error, stdout, stderr) => {
-            console.log(stdout);
-    });
-
     //Run the lookup scraper
-    processDb = exec("scrapy runspider -o ../../python-test/webscraper/lookup_data_in.json -a " + spider_arg + " ../python-test/webscraper/MST_Trend_Lookup.py", 
-        {maxBuffer: 1024 * 2400}, (error, stdout, stderr) => {
-    });
+    processDb = null;
+    if (doTrendLookup) {
+        processDb = exec("scrapy runspider -o ../python-test/webscraper/lookup_data_in.json -a " + spider_arg + " ../python-test/webscraper/MST_Trend_Lookup.py", 
+            {maxBuffer: 1024 * 2400}, (error, stdout, stderr) => {
+                if(error) {
+                    console.log(stderr);
+                }
+        });
+    }
 
-    //Run the Reddit scraper
+    //Run the Reddit scraper                                                                ../python-test/webscraper/MST_Trend_Lookup.py"
     processReddit = exec("scrapy runspider -o ../python-test/webscraper/reddit_data_in.json ../python-test/webscraper/MST_Reddit.py",
         {maxBuffer: 1024 * 2000}, (error, stdout, stderr) => {
+            if(error) {
+                console.log(stderr);
+            }
     });
 
     //Run the Twitter scraper
-    processTwitter = exec("scrapy runspider -o ../../python-test/twitter_data_in.json ../python-test/webscraper/MST_Twitter.py",
+    processTwitter = exec("scrapy runspider -o ../python-test/webscraper/twitter_data_in.json ../python-test/webscraper/MST_Twitter.py",
         {maxBuffer: 1024 * 2000}, (error, stdout, stderr) => {
-
-                 
+            if(error) {
+                console.log(stderr);
+            }    
     });
-    processDb.on('exit', async function() {
-        console.log("Lookup Scraper complete")
-        readJson('./lookup_data_in', (err, data) => {
-            if(err) {
-                console.log(err);
-                return;
-            }
-            console.log(data);
-            data = JSON.stringify(data)
-            sendSentimentRequest(data);
+    try {
+        processDb.on('exit', async function() {
+            console.log("Lookup Scraper complete")
+            readJson('../python-test/webscraper/lookup_data_in.json', (err, data) => {
+                if(err) {
+                    console.log(err);
+                    return;
+                }
+                fs.rm('../python-test/webscraper/lookup_data_in.json', (err) => {
+                    if(err) {
+                        console.log(err);
+                    }
+                });
+                
+               // data = JSON.stringify(data);
+                console.log(data);
+                sendSentimentRequest(data);
+                //return 0;
+                
+            });
         });
-    });
+    }
+    catch(err) {
+        console.log("Database is empty. No topics to parse.")
+    }
+    
 
     processReddit.on('exit', async function() {
         console.log("Reddit Scraper complete")
-        readJson('./lookup_data_in', (err, data) => {
+        readJson('../python-test/webscraper/reddit_data_in.json', (err, data) => {
             if(err) {
                 console.log(err);
                 return;
             }
+            fs.rm('../python-test/webscraper/reddit_data_in.json', (err) => {
+                if(err) {
+                    console.log(err);
+                }
+            });
+            
+            //data = JSON.stringify(data);
             console.log(data);
-            data = JSON.stringify(data)
-            sendSentimentRequest(data);
+            //Object.keys(data).forEach(function(key) {
+            //   sendSentimentRequest(data[key]);
+            //});
+           sendSentimentRequest(data);
         });
     });
 
     processTwitter.on('exit', async function() {
         console.log("Twitter Scraper complete")
-        readJson('./lookup_data_in', (err, data) => {
+        readJson('../python-test/webscraper/twitter_data_in.json', (err, data) => {
             if(err) {
                 console.log(err);
                 return;
             }
-            console.log(data);
-            data = JSON.stringify(data)
-            sendSentimentRequest(data);
+            fs.rm('../python-test/webscraper/twitter_data_in.json', (err) => {
+                if(err) {
+                    console.log(err);
+                }
+            });
+        
+           //data = JSON.stringify(data)
+           //console.log(data);
+           //Object.keys(data).forEach(function(key) {
+           //    sendSentimentRequest(data[key]);
+           //});
+           sendSentimentRequest(data);
         });
         
     });
