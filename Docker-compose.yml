@@ -2,16 +2,13 @@ version: '3.5'
 
 services:
 
-  # data:
-  #   build: docker/data/.
-
   server:
     build: ./server
     volumes:
       - ./server:/usr/src/app
       - /usr/src/app/node_modules
     ports:
-       - "5001:5000"
+       - "5000:5000"
     depends_on: 
       - "mysql"
     command: ["node", "server.js"]
@@ -31,6 +28,14 @@ services:
 
     volumes:
       - ./mysql-dump:/docker-entrypoint-initdb.d
+  
+  # python:
+  #   build: ./python
+  #   volumes:
+  #     - ./python-test:/usr/src/python
+  #   ports:
+  #     - "8000:8000"
+  #   command: ["python", "app.py"]
 
   adminer:
     image: adminer

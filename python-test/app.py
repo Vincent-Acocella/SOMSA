@@ -11,7 +11,10 @@ from keras.models import model_from_json
 from flask import request
 from flask import jsonify
 import flask
+from flask_cors import CORS
+
 app = flask.Flask(__name__)
+CORS(app)
 
 @app.route("/predict", methods=["GET","POST"])
 def predict():
@@ -103,4 +106,4 @@ def predict():
     # Change 'w' (create if does not exist) to 'x' (create file, throw error if it exists)?
     return jsonify(data_fin)
  
-app.run(host='0.0.0.0')
+app.run(host='0.0.0.0000', port=8000)

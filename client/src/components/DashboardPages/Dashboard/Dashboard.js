@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from 'react';
-import {HomeStyled} from './Home.styled';
+import {HomeStyled} from './Dashboard.styled';
 import styled from 'styled-components';
 import Bubbles from './Bubbles'
 
@@ -49,20 +49,8 @@ export default function Home() {
                     </li>
                ))}
             </ul>
-
+            
             <div>
-
-
-
-
-
-
-
-
-
-
-
-
 
             </div>
             </>
