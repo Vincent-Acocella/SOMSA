@@ -1,37 +1,35 @@
 import React, {useEffect,useState} from 'react'
 //This will be the entire layout 
 import {BrowserRouter, Route, Switch} from 'react-router-dom'
-import SignIn from './Pages/SignIn/SignIn'
-import SignUp from './Pages/SignUp/SignUp'
-import Home from './Pages/Home/Home'
-import Navbar from './navbar/Navbar'
-import 'bootstrap/dist/css/bootstrap.min.css'
+import {Home} from './SignInSignUp'
+import Navbar from './Navbar/Navbar'
+import Dashboard from './DashboardPages/Dashboard'
 import { ThemeProvider } from 'styled-components';
 import {theme} from './theme'
-import SpecificPage from './Pages/SpecificPage/SpecificPage'
-
-
+import {ProtectedRoute, UnProtectedRoute} from './ProtectedRoute'
+import ErrorPage from './DashboardPages/ErrorPage'
+import auth from './Auth'
 const LOGIN_KEY = 'currentUser';
+const FAVORITES = 'favorites';
 
 export const UserContext = React.createContext();
 
 export default function App() {
 
   // const [selectedPage, setSelectedPage] = useState(0)
-  const [currentUser, setCurrentUser] = useState(null)
+  const [currentUser, setCurrentUser] = useState(0);
+  const [FAVORITES, setFavorites] = useState({});
 
   // const [topicList, setTopicsList] = useState(sentiments)
   useEffect(()=> {
     //Store the username and change only when user changes
     let curUser = localStorage.getItem(LOGIN_KEY);
-    console.log(curUser)
-    if(curUser !== null) setCurrentUser(JSON.parse(curUser));
-  },[]);
+    let favorites = localStorage.getItem(FAVORITES);
   
-  useEffect(()=> {
-    //Store the username and change only when user changes
-    localStorage.setItem(LOGIN_KEY, JSON.stringify(currentUser));
-  },[currentUser]);
+    if(favorites !== {}) setFavorites(favorites)
+    if(curUser !== 0) setCurrentUser(curUser);
+
+  },[]);
 
   // //firsttime
   // useEffect(()=>{
@@ -42,14 +40,30 @@ export default function App() {
   return (
     <BrowserRouter>
     <ThemeProvider theme={theme}>
-        <Navbar currentUser = {currentUser} setCurrentUser = {setCurrentUser}/> 
+    <Navbar currentUser = {currentUser} setCurrentUser = {setCurrentUser}/> 
     </ThemeProvider>
       <Switch>
-       <Route path='/signin' exact render={(props) => ( <SignIn user = {currentUser}/> )}/>  
-       <Route path='/signup' exact render={(props) => ( <SignUp setCurrentUser = {setCurrentUser}/> )}/>
+
+      <UnProtectedRoute
+        id = {currentUser}
+        path={"/home/:name"}
+        component={Home}
+      />
+
+      <Route
+        exact
+        path={"/"}
+        render={props => (
+          <Dashboard
+            {...props}
+          />
+        )}
+      />
+
+      <Route path="*" component={ErrorPage}/>
       </Switch>
-       <Route path='/home/'  component={Home}></Route>
-       {/* <Route path='/home/:name'  component ={SpecificPage}/> */}
+
+       
        
     {/* if link is this, render whatever */}
     {/* <Route path='/home/:id' component/> */}

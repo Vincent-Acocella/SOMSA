@@ -35,7 +35,7 @@ exports.signUpUser = async (req,res) => {
         })
 
 
-        res.status(201).json({success:true, email: req.body.email});
+        res.status(201).json({success:true, email: req.body.email, favorites: req.body.favorites});
     }catch(error){
         res.status(500).json({success: false, error})
 
@@ -43,7 +43,7 @@ exports.signUpUser = async (req,res) => {
 }
 
 exports.signInUser = async (req,res) =>{
-    console.log(req.body.user);
+    console.log(req.body)
 
     try{
     let newUser = await Account.findOne({where: {Email: req.body.email}}); 
@@ -54,16 +54,16 @@ exports.signInUser = async (req,res) =>{
 
     let isMatch = await newUser.validPassword(req.body.password);
 
+
     if(!isMatch){
         return res.status(401).json({success: false, error: 'Password does not match email'});
     }
 
-    const token = signToken(newUser.Account_ID)
-    res.cookie('auth_token', token,{
-        httpOnly: true
-    })
 
-    res.json({success:true, newUser});
+    let email = newUser.Email;
+    let favorites = newUser.Favorites;
+
+    res.json({success:true, email, favorites});
 
     }catch(error){
         res.status(500).json({success: false, error: 'An error Occured'})

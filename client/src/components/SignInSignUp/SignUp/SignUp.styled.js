@@ -34,11 +34,9 @@ export const StyledSignUp = styled.div`
         font-size: 15px;
         padding: 8px 30px;
     }
-
     button:hover {
         background-color: #3e8e41
     }
-
     input:hover {
         border: 3px solid black
     }
