@@ -7,31 +7,31 @@ import Dashboard from './DashboardPages/Dashboard'
 import { ThemeProvider } from 'styled-components';
 import {theme} from './theme'
 import {ProtectedRoute, UnProtectedRoute} from './ProtectedRoute'
-
-
+import ErrorPage from './DashboardPages/ErrorPage'
+import SignOutUser from './SignInSignUp/SignOutUser'
+import auth from './Auth'
 const LOGIN_KEY = 'currentUser';
+const FAVORITES = 'favorites';
 
 export const UserContext = React.createContext();
 
 export default function App() {
 
   // const [selectedPage, setSelectedPage] = useState(0)
-  const [logInState, setLogInState] = useState("none")
-  const [currentUser, setCurrentUser] = useState("potato")
+  const [logInState, setLogInState] = useState("none");
+  const [currentUser, setCurrentUser] = useState();
+  const [FAVORITES, setFavorites] = useState({});
 
   // const [topicList, setTopicsList] = useState(sentiments)
   useEffect(()=> {
     //Store the username and change only when user changes
     let curUser = localStorage.getItem(LOGIN_KEY);
-    console.log(curUser)
-    if(curUser !== null) setCurrentUser(JSON.parse(curUser));
+    let favorites = localStorage.getItem(FAVORITES);
+  
+    if(favorites !== {}) setFavorites(favorites)
+    if(curUser !== null) setCurrentUser(curUser);
     
   },[]);
-  
-  useEffect(()=> {
-    //Store the username and change only when user changes
-    localStorage.setItem(LOGIN_KEY, JSON.stringify(currentUser));
-  },[currentUser]);
 
   // //firsttime
   // useEffect(()=>{
@@ -46,12 +46,17 @@ export default function App() {
     </ThemeProvider>
       <Switch>
 
-      <UnProtectedRoute
+      <ProtectedRoute
         exact
-        path={"/home:where"}
+        path={"home/signout"}
+        component={SignOutUser}
+      />
+
+      <UnProtectedRoute
+        id = {currentUser}
+        path={"/home/:name"}
         component={Home}
       />
-  
 
       <Route
         exact
@@ -59,12 +64,13 @@ export default function App() {
         render={props => (
           <Dashboard
             {...props}
-            loggedInStatus={this.state.loggedInStatus}
           />
         )}
       />
-      <Route path="*" component={()=> "Insert Default dance Emote"}/>      
+
+      <Route path="*" component={ErrorPage}/>
       </Switch>
+
        
        
     {/* if link is this, render whatever */}

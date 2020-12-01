@@ -1,21 +1,18 @@
 import React, { Component } from 'react'
-import {axios} from '../../Axios/axios'
+import {axios} from '../../API/axios'
 import {StyledSignUp} from './SignUp.styled'
+import {withRouter} from 'react-router-dom'
+import auth from '../../Auth';
 
-
-export default class Signup extends Component {
+//30px
+ class Signup extends Component {
     state = {
         email: '',
         password: '',
         passwordAgain: '',
-        error: false
+        error: false,
+        errorMessage: ''
     };
-    
-    componentDidMount = event => {
-        
-       console.log(this.state.error)
-
-    }
 
     handleSubmit = event => {
         
@@ -26,18 +23,29 @@ export default class Signup extends Component {
             //First is url
             axios.post('/user/signup', {email: this.state.email, password: this.state.password })
             .then(res => {
-                console.log(res.data.email)
+                localStorage.setItem('currentUser', JSON.stringify(res.data.email));
+                localStorage.setItem('favorites', JSON.stringify(res.data.favorites));
+                auth.login(()=> {
+                    this.props.history.push('/');
+                })
             }).catch(res => {
-                console.log({res});
+                this.setState({
+                    error:true,
+                    error: (res.response.data.error)
+                })
             })
         }else{
-            this.state.error = true
+
+            this.setState({
+                error:true,
+                errorMessage: 'Passwords do not Match'
+            })
         }
     }
 
     handleChange = event => {
             this.setState({[event.target.name]: event.target.value});
-            console.log(this.state.passwordAgain)
+            console.log(this.state.passwordAgain);
     }
 
    render(){ 
@@ -46,13 +54,12 @@ export default class Signup extends Component {
             <>
             <h1>Hello, Friend!</h1>
             <h1>Let's Set Up Your Account!</h1>
+            {this.state.error && <h2 style ={{color: "red"}}>{this.state.errorMessage}</h2>}
             <hr/>
-
-            
 
             <form onSubmit = {this.handleSubmit}>
                 { 
-                this.state.error && <h1> error </h1> 
+                this.state.error && <h1 style = {{color: "red"}}> {this.state.errorMessage} </h1> 
                 }
                 <input type ="email" size = "40" name= "email" placeholder="Email" required ={true} onChange = {this.handleChange}/>
                 <br/>
@@ -66,3 +73,5 @@ export default class Signup extends Component {
         </StyledSignUp>
     )}
 }
+
+export default withRouter(Signup);

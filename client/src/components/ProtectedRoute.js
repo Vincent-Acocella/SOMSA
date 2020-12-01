@@ -1,13 +1,13 @@
 import React from 'react'
 import {Route, Redirect} from 'react-router-dom'
-import Auth from './Auth'
+import auth from './Auth'
 
 export const ProtectedRoute = ({component: Component, ...rest}) => {
     return (
         <Route
          {...rest} 
          render = {(props) => {
-             if(Auth.isAuthenticated()){
+             if(auth.isAuthenticated()){
 
                 return <Component {...props}/>;
 
@@ -21,35 +21,50 @@ export const ProtectedRoute = ({component: Component, ...rest}) => {
                      }
                  }
                   } />
-
             }
         }}/>
     )
 }
 
-export const UnProtectedRoute = ({component: Component, ...rest}) => {
+export const UnProtectedRoute = ({component: Component, id, ...rest}) => {
     return (
         <Route
          {...rest} 
          render = {(props) => {
-             if(!Auth.isAuthenticated()){
-
-                return <Component {...props}/>;
-
-             }else{
-
+             if('/home/signout'.localeCompare(props.location.pathname)===0){
+                 localStorage.removeItem('currentUser')
                  return <Redirect to={
-                 {
-                     pathname: '/',
-                     state:{
-                         from:props.location
-                     }
-                 }
-                  } />
-
+                    {
+                        pathname: '/',
+                        state:{
+                            from:props.location
+                        }
+                    }
+                     } />
+             }else{
+                 
+             
+             if(!id){
+                return <Component {...props}/>;
+             }else{
+                return <Redirect to={
+                    {
+                        pathname: '/',
+                        state:{
+                            from:props.location
+                        }
+                    }
+                     } />
             }
+        }
         }}/>
     )
+}
+
+
+
+function HomeWeGo(){
+    
 }
 
 
