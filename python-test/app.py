@@ -1,5 +1,6 @@
 """Using the Model"""
 
+
 import json
 import numpy as np
 import keras
@@ -11,11 +12,16 @@ from keras.models import model_from_json
 from flask import request
 from flask import jsonify
 import flask
+from flask_cors import CORS
 app = flask.Flask(__name__)
+#cors =
+CORS(app)
 
 @app.route("/predict", methods=["GET","POST"])
 def predict():
     JSONdata = request.get_json()
+    #JSONdata = request.data
+    #JSONdata = json.loads(JSONdata)
     # Utilizing Tokenizer
 
     tokenizer = Tokenizer(num_words = 3000)
@@ -42,11 +48,12 @@ def predict():
 
     def doPrediction(data_dict):
         data = {}
-        for key in data_dict:
+        for json in data_dict:
+          for key in json:
             #print(key)
-            comment_string = data_dict[key][0]
+            comment_string = json[key][0]
             #print(comment_string)
-            topic_category = data_dict[key][1]
+            topic_category = json[key][1]
             a = convert_text_to_index_array(comment_string)
             a = tokenizer.sequences_to_matrix([a], mode = 'binary')
             prediction = model.predict(a)
@@ -103,4 +110,4 @@ def predict():
     # Change 'w' (create if does not exist) to 'x' (create file, throw error if it exists)?
     return jsonify(data_fin)
  
-app.run(host='0.0.0.0')
+app.run(host='0.0.0.0000', port=8000)
