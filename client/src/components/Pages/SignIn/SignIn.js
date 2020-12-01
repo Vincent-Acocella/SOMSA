@@ -1,18 +1,16 @@
 import React, { Component } from 'react';
 import {axios} from '../../API/axios';
 import {StyledSignIn} from './SignIn.styled';
-import {Link, withRouter} from 'react-router-dom';
-import auth from '../../Auth';
+import {Link} from 'react-router-dom';
 
 
-class SignIn extends Component {   
+export default class SignIn extends Component {
     state = {
         email: '',
         password: '',
-        error: false,
-        errorMessage: ''
-    }  
-    
+        error: '',
+    };    
+
     handleSubmit = event => {
 
         //Avoid page refresh
@@ -22,20 +20,10 @@ class SignIn extends Component {
            email: this.state.email,
             password: this.state.password})
         .then(res => {
-            console.log(res.data.email)
-            localStorage.setItem('currentUser', res.data.email);
-            localStorage.setItem('favorites', JSON.stringify(res.data.favorites));
-            auth.login(()=> {
-                this.props.history.push('/');
-            })
-        }).catch(res => {
-           
-            console.log(res.response)
 
-            this.setState({
-                error: true,
-                errorMessage: res.response.data.error
-            })
+            localStorage.setItem('currentUser', JSON.stringify(res.data.newUser))
+        }).catch(res => {
+            this.error = (res.response.data.error);
         })
     }
 
@@ -50,7 +38,6 @@ class SignIn extends Component {
             <h1>Sign in to Account</h1>
             <hr color="#2C698D"/>
             <h2>Hi! Log in or Sign Up Below</h2>
-            {this.state.error && <h2 style ={{color: "red"}}>{this.state.errorMessage}</h2>}
  
             <form onSubmit = {this.handleSubmit}>
                     <input type ="email" size = "40" name= "email"  placeholder="Email" required = {true} onChange = {this.handleChange}/>
@@ -60,11 +47,10 @@ class SignIn extends Component {
                 <button type="submit">Sign In</button>
             </form>
             <div>
-                <Link to="home/signup">Sign Up</Link>
+                <Link to="/signup">Sign Up</Link>
+
             </div>
             
         </StyledSignIn>
     )}
 }
-
-export default withRouter(SignIn)

@@ -22,6 +22,7 @@ router.post('/signin', signInUser)
 router.get('/signout', signOutUser)
 
 router.get('/secret', isAuth, (req,res)=>{
+     console.log(req.user)
      res.json({success: true, message: "You are inside our secret page "})
 })
 
