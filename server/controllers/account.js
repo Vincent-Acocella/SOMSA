@@ -35,7 +35,7 @@ exports.signUpUser = async (req,res) => {
         })
 
 
-        res.status(201).json({success:true, email: req.body.email, favorites: req.body.favorites});
+        res.status(201).json({success:true, email: req.body.email});
     }catch(error){
         res.status(500).json({success: false, error})
 
@@ -62,10 +62,8 @@ exports.signInUser = async (req,res) =>{
     res.cookie('auth_token', token,{
         httpOnly: true
     })
-    let email = newUser.Email;
-    let favorites = newUser.Favorites;
 
-    res.json({success:true, email, favorites});
+    res.json({success:true, newUser});
 
     }catch(error){
         res.status(500).json({success: false, error: 'An error Occured'})
