@@ -35,7 +35,7 @@ exports.signUpUser = async (req,res) => {
         })
 
 
-        res.status(201).json({success:true, email: req.body.email, favorites: req.body.favorites});
+        res.json({success:true, email: req.body.email, favorites: req.body.favorites});
     }catch(error){
         res.status(500).json({success: false, error})
 

@@ -36,11 +36,10 @@ import auth from '../../Auth';
             }).catch(res => {
                 this.setState({
                     error:true,
-                    error: (res.response.data.error)
+                    error: res.response.data.error
                 })
             })
         }else{
-
             this.setState({
                 error:true,
                 errorMessage: 'Passwords do not Match'
@@ -58,7 +57,7 @@ import auth from '../../Auth';
             
             <h1>Hello, Friend!</h1>
             <h1>Let's Set Up Your Account!</h1>
-            {this.state.error && <h2 style ={{color: "red"}}>{this.state.errorMessage}</h2>}
+            {/* {this.state.error && <h2 style ={{color: "red"}}>{this.state.errorMessage}</h2>} */}
             <hr color="#2C698D"/>
             <h2>Fill out the form below to get started</h2>
 

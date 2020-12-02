@@ -3,7 +3,7 @@ import {HomeStyled} from './Dashboard.styled';
 import Bubbles from './Bubbles'
 
 const list = [
-    "Favorites",
+    "Trending",
     "Environment",
     "General",
     "Politics",
@@ -23,13 +23,9 @@ export default function Home() {
         if(curPage !==null) setCurrentPage(curPage);
     }, [])
 
-    function handlePush(item){
-        console.log(item)
-        if(currentPage && currentPage.localeCompare(item) !== 0){
-            localStorage.getItem(PAGE_SELECTED)
-            setCurrentPage(item)
-        }
-    }
+    useEffect(()=>{
+        localStorage.setItem(PAGE_SELECTED, currentPage)
+    },[currentPage]);
 
     return (
         <HomeStyled currentPage={currentPage} >
@@ -39,7 +35,7 @@ export default function Home() {
             <ul>
                {list.map(item=> (
                     <li className={item} key={item}>
-                      <button onClick={()=> handlePush(item)}>{item}</button>
+                      <button onClick={()=> setCurrentPage(item)}>{item}</button>
                     </li>
                ))}
             </ul>
