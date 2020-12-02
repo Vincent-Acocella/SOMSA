@@ -9,7 +9,7 @@ Somsa is a social media sentiment analyzer created with the purpose of understan
 
 # Tech and Framework Used
 * Back End:
-      *[Node.js](https://github.com/nodejs)
+      /* [Node.js](https://github.com/nodejs)
       * [Express](https://github.com/expressjs/express)
       * [MySQL Database](https://github.com/mysql/mysql-server)
       * [Python](https://github.com/python)
