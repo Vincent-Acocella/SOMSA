@@ -7,24 +7,34 @@ import {StyledNav} from './Navbar.styled';
 import {Link} from 'react-router-dom';
 
 
-export default function Navbar({currentUser, setCurrentUser}) {
+export default function Navbar({currentUser, status}) {
 
   const [open_burg, setOpen_burg] = useState(false);
   const [open_ser, setOpen_ser] = useState(false);
   const burger = useRef();
   const menuId = "main-menu";
-  let disLink = "signin";
-  let userToShow = "REGISTER/SIGN IN";
+  let disLink = "";
+  let userToShow = "";
+
+  if(status){
+    disLink = "signout";
+    userToShow = "Sign Out";
+  }else{
+    disLink = "signin";
+    userToShow = "REGISTER/SIGN IN";
+  }
 
 
-  useEffect(()=>{
-    console.log(currentUser)
-    
-    // if(currentUser !== null){
-    //   disLink = "signout";
-    //   userToShow = "Sign Out";  
-    // }
-  }, [currentUser])
+  // useEffect(()=>{
+
+  //   if(status){
+  //     disLink = "signout";
+  //     userToShow = "Sign Out";
+  //   }else{
+  //     disLink = "signin";
+  //     userToShow = "REGISTER/SIGN IN";
+  //   }
+  // }, [status])
 
   useOnClickOutside(burger, () => setOpen_burg(false));
 

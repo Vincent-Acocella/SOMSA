@@ -11,25 +11,36 @@ import ErrorPage from './DashboardPages/ErrorPage'
 import auth from './Auth'
 const LOGIN_KEY = 'currentUser';
 const FAVORITES = 'favorites';
+const STATUS = 'signedin';
 
 export const UserContext = React.createContext();
 
 export default function App() {
 
-  // const [selectedPage, setSelectedPage] = useState(0)
-  const [currentUser, setCurrentUser] = useState(0);
+  const [currentUser, setCurrentUser] = useState("x");
+  const [isLoggedin, setLogIn] = useState(0);
   const [FAVORITES, setFavorites] = useState({});
-
   // const [topicList, setTopicsList] = useState(sentiments)
   useEffect(()=> {
-    //Store the username and change only when user changes
-    let curUser = localStorage.getItem(LOGIN_KEY);
-    let favorites = localStorage.getItem(FAVORITES);
-  
-    if(favorites !== {}) setFavorites(favorites)
-    if(curUser !== 0) setCurrentUser(curUser);
+    
+    let status = parseInt(localStorage.getItem(STATUS))
 
+    if(( status !==null)) setLogIn(status)
+      
+    if(isLoggedin){
+      let curUser = localStorage.getItem(LOGIN_KEY);
+      let favorites = localStorage.getItem(FAVORITES);
+      if(favorites !== {}) setFavorites(favorites)
+      if(curUser !== 0) setCurrentUser(curUser);
+    }
   },[]);
+
+
+  useEffect(()=>{
+    localStorage.setItem(STATUS, isLoggedin);
+  }, [isLoggedin])
+
+
 
   // //firsttime
   // useEffect(()=>{
@@ -40,12 +51,14 @@ export default function App() {
   return (
     <BrowserRouter>
     <ThemeProvider theme={theme}>
-    <Navbar currentUser = {currentUser} setCurrentUser = {setCurrentUser}/> 
+    <Navbar currentUser = {currentUser} setCurrentUser = {setCurrentUser} status = {isLoggedin}/> 
     </ThemeProvider>
       <Switch>
 
       <UnProtectedRoute
-        id = {currentUser}
+        status = {isLoggedin}
+        setLogIn = {setLogIn}
+        setCurrentUser = {setCurrentUser}
         path={"/home/:name"}
         component={Home}
       />
@@ -63,8 +76,6 @@ export default function App() {
       <Route path="*" component={ErrorPage}/>
       </Switch>
 
-       
-       
     {/* if link is this, render whatever */}
     {/* <Route path='/home/:id' component/> */}
       

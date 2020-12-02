@@ -58,8 +58,7 @@ exports.signInUser = async (req,res) =>{
     if(!isMatch){
         return res.status(401).json({success: false, error: 'Password does not match email'});
     }
-
-
+    
     let email = newUser.Email;
     let favorites = newUser.Favorites;
 

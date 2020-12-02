@@ -6,17 +6,19 @@ import auth from '../../Auth';
 
 
 class SignIn extends Component {   
+    constructor(props) {
+        super(props);
 
-
-    
-    state = {
-        email: '',
-        password: '',
-        error: false,
-        errorMessage: ''
-    }  
+        this.state = {
+            email: '',
+            password: '',
+            error: false,
+            errorMessage: ''
+        };  
+    }
     
     handleSubmit = event => {
+        this.props.user("potato")
 
         //Avoid page refresh
         event.preventDefault();
@@ -25,10 +27,12 @@ class SignIn extends Component {
            email: this.state.email,
             password: this.state.password})
         .then(res => {
-            console.log(res.data.email)
+            this.props.user(res.data.email);
+            
             localStorage.setItem('currentUser', res.data.email);
             localStorage.setItem('favorites', JSON.stringify(res.data.favorites));
             auth.login(()=> {
+                this.props.logIn(1);
                 this.props.history.push('/');
             })
         }).catch(res => {

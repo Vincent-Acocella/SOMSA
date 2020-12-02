@@ -26,13 +26,13 @@ export const ProtectedRoute = ({component: Component, ...rest}) => {
     )
 }
 
-export const UnProtectedRoute = ({component: Component, id, ...rest}) => {
+export const UnProtectedRoute = ({component: Component, status, setCurrentUser, setLogIn, ...rest}) => {
     return (
         <Route
          {...rest} 
          render = {(props) => {
              if('/home/signout'.localeCompare(props.location.pathname)===0){
-                 localStorage.removeItem('currentUser')
+                 setLogIn(0)
                  return <Redirect to={
                     {
                         pathname: '/',
@@ -42,8 +42,10 @@ export const UnProtectedRoute = ({component: Component, id, ...rest}) => {
                     }
                      } />
              }else{
-             if(id === 0){
-                return <Component {...props}/>;
+                 console.log(status)
+             if(!status){
+                 console.log("Hello")
+                return <Component { ...props} user ={setCurrentUser} logIn = {setLogIn}/>;
              }else{
                 return <Redirect to={
                     {
