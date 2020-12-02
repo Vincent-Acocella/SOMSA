@@ -1,7 +1,7 @@
 const fs = require('fs');
 const Sequalize = require('sequelize');
 const db = require('../conf.d/database');
-const topic = require('../models/topic');
+const topic = require('../models/topic_sentiment_association');
 const sentiment = require('../models/sentiment');
 const {exec} = require("child_process");
 const { JSDOM } = require( "jsdom" );
@@ -52,11 +52,17 @@ sendSentimentRequest = function(d) {
                 //If the data does not have a category, then that means it all ready exists in the table
                 //Attach the category we orignally found to it
                 if (data[key][1] === "NONE") {
-                    category = topic.find({
-                        where: {title: key},
-                        attributes: ['Topic_Category']
+                    category = await topic.Topic.findAll({
+                        where: {Topic_Name: key},
+                        attributes: ['Category']
                     })
-                    data[key][1] = category;
+                    console.log(category);
+                    try {
+                        data[key][1] = category[0]; 
+                    }
+                    catch {
+                        data[key][1] = "Trending";
+                    }
                 }
 
                 //If the topic is not one of our predetermined ones, then default it to Trending
@@ -68,21 +74,24 @@ sendSentimentRequest = function(d) {
                 if (data[key][2] === "Positive") {
                     s = true;
                 }
-                newSentiment = await sentiment.create({
-                    Sentiment: s,
-                    Confidence_Interval: data[key][3],
-                    Table_Data: data[key]
-                });
-
-                 //Add the topic data to the topic table
-                 console.log(newSentiment.Sentiment_ID)
-                 newTopic = await topic.create({
-                    Sentiment_ID: newSentiment.Sentiment_ID,
-                    Topic_Name: key,
-                    Topic_Category: data[key][1] 
-
-                });
-                
+                try {
+                    newSentiment = await sentiment.create({
+                        Sentiment: s,
+                        Confidence_Interval: data[key][3],
+                        Table_Data: data[key]
+                    });
+    
+                     //Add the topic data to the topic table
+                     console.log(newSentiment.Sentiment_ID)
+                     newTopic = await topic.Topic.create({
+                        Sentiment_ID: newSentiment.Sentiment_ID,
+                        Topic_Name: key,
+                        Category: data[key][1]
+                    });
+                }
+                catch {
+                    console.log("Data could not be inserted.");
+                }
             });
         }
     });
@@ -90,11 +99,21 @@ sendSentimentRequest = function(d) {
 
 
 exports.onReceiveTimeout = async function() {
-    topics = await topic.findAll({
+    fs.rm('../python-test/webscraper/trend_data_in.json', (err) => {
+        console.log(err);
+    });
+    fs.rm('../python-test/webscraper/twitter_data_in.json', (err) => {
+        console.log(err);
+    });
+    fs.rm('../python-test/webscraper/reddit_data_in.json', (err) => {
+        console.log(err);
+    });
+    
+    topics = await topic.Topic.findAll({
         attributes: ['Topic_Name', 'Category']
     });
-    //For testing purposes we will use this simple table
     
+
     //topics = ["US Election"]
     var spider_arg = "trend="
     var doTrendLookup = false; 
@@ -138,25 +157,25 @@ exports.onReceiveTimeout = async function() {
                 console.log(stderr);
             }    
     });
+    //The lookup
     try {
         processDb.on('exit', async function() {
             console.log("Lookup Scraper complete")
             readJson('../python-test/webscraper/lookup_data_in.json', (err, data) => {
                 if(err) {
                     console.log(err);
-                    return;
                 }
-                fs.rm('../python-test/webscraper/lookup_data_in.json', (err) => {
-                    if(err) {
-                        console.log(err);
-                    }
-                });
-                
-               // data = JSON.stringify(data);
-                console.log(data);
-                sendSentimentRequest(data);
-                //return 0;
-                
+                else { 
+                    fs.rm('../python-test/webscraper/lookup_data_in.json', (err) => {
+                        if(err) {
+                            console.log(err);
+                        }
+                    });
+                    
+                   // data = JSON.stringify(data);
+                    //console.log(data);
+                    sendSentimentRequest(data);    
+                }
             });
         });
     }
@@ -170,20 +189,17 @@ exports.onReceiveTimeout = async function() {
         readJson('../python-test/webscraper/reddit_data_in.json', (err, data) => {
             if(err) {
                 console.log(err);
-                return;
+
             }
-            fs.rm('../python-test/webscraper/reddit_data_in.json', (err) => {
-                if(err) {
-                    console.log(err);
-                }
-            });
-            
-            //data = JSON.stringify(data);
-            console.log(data);
-            //Object.keys(data).forEach(function(key) {
-            //   sendSentimentRequest(data[key]);
-            //});
-           sendSentimentRequest(data);
+            else {
+                fs.rm('../python-test/webscraper/reddit_data_in.json', (err) => {
+                    if(err) {
+                        console.log(err);
+                    }
+                });
+                //console.log(data);
+                sendSentimentRequest(data);
+            }
         });
     });
 
@@ -192,20 +208,17 @@ exports.onReceiveTimeout = async function() {
         readJson('../python-test/webscraper/twitter_data_in.json', (err, data) => {
             if(err) {
                 console.log(err);
-                return;
             }
-            fs.rm('../python-test/webscraper/twitter_data_in.json', (err) => {
-                if(err) {
-                    console.log(err);
-                }
-            });
-        
-           //data = JSON.stringify(data)
-           //console.log(data);
-           //Object.keys(data).forEach(function(key) {
-           //    sendSentimentRequest(data[key]);
-           //});
-           sendSentimentRequest(data);
+            else {
+                fs.rm('../python-test/webscraper/twitter_data_in.json', (err) => {
+                    if(err) {
+                        console.log(err);
+                    }
+                });
+               //data = JSON.stringify(data)
+               //console.log(data);
+               sendSentimentRequest(data);
+            }
         });
         
     });
