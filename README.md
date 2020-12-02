@@ -21,10 +21,10 @@ Somsa is a social media sentiment analyzer created with the purpose of understan
   * [Kaggle](https://www.kaggle.com/docs/datasets)
   * [Docker](https://github.com/docker/compose)
 * Front End:
-       * [React JS](https://github.com/reactjs/reactjs.org)
-       * CSS
-       * HTML
-       * [Axios](https://github.com/axios/axios)
+  * [React JS](https://github.com/reactjs/reactjs.org)
+  * CSS
+  * HTML
+  * [Axios](https://github.com/axios/axios)
       
 # Features
 * Once fully implemented our project allows a user to view a web application featuring
