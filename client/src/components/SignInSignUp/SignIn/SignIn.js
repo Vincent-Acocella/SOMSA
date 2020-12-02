@@ -3,7 +3,10 @@ import {axios} from '../../API/axios';
 import {StyledSignIn} from './SignIn.styled';
 import {Link, withRouter} from 'react-router-dom';
 import auth from '../../Auth';
+import styled from 'styled-components';
 
+const StyledLink = styled(Link)`   
+`;
 
 class SignIn extends Component {   
     constructor(props) {
@@ -18,19 +21,17 @@ class SignIn extends Component {
     }
     
     handleSubmit = event => {
-        this.props.user("potato")
-
+        
         //Avoid page refresh
         event.preventDefault();
         //First is url
        axios.post('/user/signin', {
-           email: this.state.email,
+            email: this.state.email,
             password: this.state.password})
         .then(res => {
             this.props.user(res.data.email);
-            
             localStorage.setItem('currentUser', res.data.email);
-            localStorage.setItem('favorites', JSON.stringify(res.data.favorites));
+            // localStorage.setItem('favorites', JSON.stringify(res.data.favorites));
             auth.login(()=> {
                 this.props.logIn(1);
                 this.props.history.push('/');
@@ -55,16 +56,18 @@ class SignIn extends Component {
             <hr color="#2C698D"/>
             <h2>Hi! Log in or Sign Up Below</h2>
             {this.state.error && <h2 style ={{color: "red"}}>{this.state.errorMessage}</h2>}
- 
+          
             <form onSubmit = {this.handleSubmit}>
                     <input type ="email" size = "40" name= "email"  placeholder="Email" required = {true} onChange = {this.handleChange}/>
                <br/>
                     <input type ="password" size = "40" name= "password" placeholder="Password" required = {true} onChange = {this.handleChange}/>
                 <br/>    
-                <button type="submit">Sign In</button>
+                <button style ={{ "margin-right": "189px"}} type="submit">Sign In</button>
             </form>
             <div>
-                <Link to="home/signup">Sign Up</Link>
+                <StyledLink to="signup">
+                    <button type="button">Sign Up</button>
+                </StyledLink>
             </div>
             
         </StyledSignIn>

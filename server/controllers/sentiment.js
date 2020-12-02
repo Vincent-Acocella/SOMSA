@@ -11,7 +11,4 @@ exports.getTopicList = async (req,res) =>{
 exports.getTopicByID = async (req,res) => {
 
    let newUser = await Account.findOne({where: {Accound_ID: req.body.ID}});
-
-   
-
 }

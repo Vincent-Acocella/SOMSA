@@ -1,16 +1,16 @@
-import React, {useEffect,useState} from 'react'
+import React, {useEffect,useState} from 'react';
 //This will be the entire layout 
-import {BrowserRouter, Route, Switch} from 'react-router-dom'
-import {Home} from './SignInSignUp'
-import Navbar from './Navbar/Navbar'
-import Dashboard from './DashboardPages/Dashboard'
+import {BrowserRouter, Route, Switch} from 'react-router-dom';
+import {Home} from './SignInSignUp';
+import Navbar from './navbar/Navbar';
+import Dashboard from './DashboardPages/Dashboard';
 import { ThemeProvider } from 'styled-components';
-import {theme} from './theme'
-import {ProtectedRoute, UnProtectedRoute} from './ProtectedRoute'
-import ErrorPage from './DashboardPages/ErrorPage'
-import auth from './Auth'
+import {theme} from './theme';
+import {ProtectedRoute, UnProtectedRoute} from './ProtectedRoute';
+import ErrorPage from './DashboardPages/ErrorPage';
+import Account from './Account/Account'
 const LOGIN_KEY = 'currentUser';
-const FAVORITES = 'favorites';
+// const FAVORITES = 'favorites';
 const STATUS = 'signedin';
 
 export const UserContext = React.createContext();
@@ -19,43 +19,43 @@ export default function App() {
 
   const [currentUser, setCurrentUser] = useState("x");
   const [isLoggedin, setLogIn] = useState(0);
-  const [FAVORITES, setFavorites] = useState({});
-  // const [topicList, setTopicsList] = useState(sentiments)
+  // const [FAVORITES, setFavorites] = useState({});
+ 
+  //Set what we need on refresh
   useEffect(()=> {
     
-    let status = parseInt(localStorage.getItem(STATUS))
+    let status = parseInt(localStorage.getItem(STATUS));
 
-    if(( status !==null)) setLogIn(status)
+    if(( status !==null)) setLogIn(status);
       
     if(isLoggedin){
       let curUser = localStorage.getItem(LOGIN_KEY);
-      let favorites = localStorage.getItem(FAVORITES);
-      if(favorites !== {}) setFavorites(favorites)
+      // let favorites = localStorage.getItem(FAVORITES);
+      // if(favorites !== {}) setFavorites(favorites)
       if(curUser !== 0) setCurrentUser(curUser);
     }
   },[]);
-
 
   useEffect(()=>{
     localStorage.setItem(STATUS, isLoggedin);
   }, [isLoggedin])
 
-
-
-  // //firsttime
-  // useEffect(()=>{
-  //     //Set original on page load
-  //     localStorage.setItem(LOGIN_KEY, JSON.stringify(topicList))
-  // },[])
-
   return (
     <BrowserRouter>
     <ThemeProvider theme={theme}>
-    <Navbar currentUser = {currentUser} setCurrentUser = {setCurrentUser} status = {isLoggedin}/> 
+    <Navbar status = {isLoggedin}/> 
     </ThemeProvider>
       <Switch>
 
+      <ProtectedRoute
+      exact
+      user = {currentUser}
+      status = {isLoggedin}
+      path={"/account"}
+      component={Account}/>
+
       <UnProtectedRoute
+        exact
         status = {isLoggedin}
         setLogIn = {setLogIn}
         setCurrentUser = {setCurrentUser}

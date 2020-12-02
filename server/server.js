@@ -25,7 +25,7 @@ app.use(cookieParser());
 app.use('/user', require('./routes/account_route' ));
 
 //Sentiment route
-app.use('/api', require('./routes/sentiment_route'));
+//app.use('/api', require('./routes/sentiment_route'));
 
 const PORT = process.env.PORT || 5000;
 const HOST = '0.0.0.0';

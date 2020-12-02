@@ -24,14 +24,16 @@ export default function Bubbles({currentPage}) {
 
     return (
         <BubblesStyled>
-            <ul>
+
+            
+            {/* <ul>
                 {bubblesInJson.map(bubble =>(
                     <li key={bubble}>
                         <StyledBubbleLink>{bubble}</StyledBubbleLink>
                     </li>
                 ))}
                 <li></li>
-            </ul>
+            </ul> */}
         </BubblesStyled>
        
     )

@@ -30,7 +30,7 @@ class MSTTwitterSpider(Spider):
 
     # How far down we will scroll down per trend
     AMOUNT_OF_PAGE_SCROLLS = 20
-    TRENDS_TO_SCRAPE = 10
+    TRENDS_TO_SCRAPE = 3
 
     """
     do_scroll

@@ -1,18 +1,14 @@
 import React from 'react'
 import {Route, Redirect} from 'react-router-dom'
-import auth from './Auth'
 
-export const ProtectedRoute = ({component: Component, ...rest}) => {
+export const ProtectedRoute = ({component: Component, user, status, ...rest}) => {
     return (
         <Route
          {...rest} 
          render = {(props) => {
-             if(auth.isAuthenticated()){
-
-                return <Component {...props}/>;
-
+             if(status){
+                return <Component {...props} status = {status} user = {user}/>;
              }else{
-
                  return <Redirect to={
                  {
                      pathname: '/',
@@ -42,9 +38,7 @@ export const UnProtectedRoute = ({component: Component, status, setCurrentUser, 
                     }
                      } />
              }else{
-                 console.log(status)
              if(!status){
-                 console.log("Hello")
                 return <Component { ...props} user ={setCurrentUser} logIn = {setLogIn}/>;
              }else{
                 return <Redirect to={
