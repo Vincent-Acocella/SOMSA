@@ -2,37 +2,50 @@ version: '3.5'
 
 services:
 
-  # data:
-  #   build: docker/data/.
-
-  server:
-    build: ./server
+  client:
+    build: ./client
+    stdin_open: true
+    tty: true
+    ports:
+      - "3000:3000"
     volumes:
-      - ./server:/usr/src/app
-      - /usr/src/app/node_modules
-    ports:
-       - "5000:5000"
-    depends_on: 
-      - "mysql"
-    command: ["node", "server.js"]
+      - ./client:/client/usr/src/app/
+      - /client/usr/src/app/node_modules
+    command: ["npm", "start"]
 
-  mysql:
-    image: mysql:latest
-    ports:
-      - "3306:3306"
-    cap_add:
-      - SYS_NICE
+  # server:
+  #   build: ./server
+  #   volumes:
+  #     - ./server:/server/usr/src/app
+  #     - /server/usr/src/app/node_modules
+  #   ports:
+  #      - "5000:5000"
+  #   depends_on: 
+  #     - "mysql"
+  #   command: ["node", "server.js"]
 
-    environment:
-      MYSQL_USER: SOMSA
-      MYSQL_PASSWORD: SOMSA
-      MYSQL_DATABASE: SOMSAdb
-      MYSQL_ROOT_PASSWORD: SOMSA
+  # python:
+  #   build: ./python-test
+  #   ports: 
+  #     - 8000:8000
 
-    volumes:
-      - ./mysql-dump:/docker-entrypoint-initdb.d
+  # mysql:
+  #   image: mysql:latest
+  #   ports:
+  #     - "3306:3306"
+  #   cap_add:
+  #     - SYS_NICE
 
-  adminer:
-    image: adminer
-    ports:
-      - 8080:8080
+  #   environment:
+  #     MYSQL_USER: SOMSA
+  #     MYSQL_PASSWORD: SOMSA
+  #     MYSQL_DATABASE: SOMSAdb
+  #     MYSQL_ROOT_PASSWORD: SOMSA
+
+  #   volumes:
+  #     - ./mysql-dump:/docker-entrypoint-initdb.d
+
+  # adminer:
+  #   image: adminer
+  #   ports:
+  #     - 8080:8080

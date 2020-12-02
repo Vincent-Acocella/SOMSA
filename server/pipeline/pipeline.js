@@ -22,6 +22,7 @@ readJson = function(filePath, callback) {
             return callback && callback(err);
         }
         try {
+            console.log(fileData)
             var dataObj = JSON.parse(fileData);
             return callback && callback(null, dataObj);
         }
@@ -80,9 +81,7 @@ sendSentimentRequest = function(d) {
                     Sentiment_ID: newSentiment.Sentiment_ID,
                     Topic_Name: key,
                     Topic_Category: data[key][1] 
-
                 });
-                
             });
         }
     });
@@ -124,12 +123,12 @@ exports.onReceiveTimeout = async function() {
     }
 
     //Run the Reddit scraper                                                                ../python-test/webscraper/MST_Trend_Lookup.py"
-    processReddit = exec("scrapy runspider -o ../python-test/webscraper/reddit_data_in.json ../python-test/webscraper/MST_Reddit.py",
-        {maxBuffer: 1024 * 2000}, (error, stdout, stderr) => {
-            if(error) {
-                console.log(stderr);
-            }
-    });
+    // processReddit = exec("scrapy runspider -o ../python-test/webscraper/reddit_data_in.json ../python-test/webscraper/MST_Reddit.py",
+    //     {maxBuffer: 1024 * 2000}, (error, stdout, stderr) => {
+    //         if(error) {
+    //             console.log(stderr);
+    //         }
+    // });
 
     //Run the Twitter scraper
     processTwitter = exec("scrapy runspider -o ../python-test/webscraper/twitter_data_in.json ../python-test/webscraper/MST_Twitter.py",
@@ -165,27 +164,27 @@ exports.onReceiveTimeout = async function() {
     }
     
 
-    processReddit.on('exit', async function() {
-        console.log("Reddit Scraper complete")
-        readJson('../python-test/webscraper/reddit_data_in.json', (err, data) => {
-            if(err) {
-                console.log(err);
-                return;
-            }
-            fs.rm('../python-test/webscraper/reddit_data_in.json', (err) => {
-                if(err) {
-                    console.log(err);
-                }
-            });
+    // processReddit.on('exit', async function() {
+    //     console.log("Reddit Scraper complete")
+    //     readJson('../python-test/webscraper/reddit_data_in.json', (err, data) => {
+    //         if(err) {
+    //             console.log(err);
+    //             return;
+    //         }
+    //         fs.rm('../python-test/webscraper/reddit_data_in.json', (err) => {
+    //             if(err) {
+    //                 console.log(err);
+    //             }
+    //         });
             
-            //data = JSON.stringify(data);
-            console.log(data);
-            //Object.keys(data).forEach(function(key) {
-            //   sendSentimentRequest(data[key]);
-            //});
-           sendSentimentRequest(data);
-        });
-    });
+    //         //data = JSON.stringify(data);
+    //         console.log(data);
+    //         //Object.keys(data).forEach(function(key) {
+    //         //   sendSentimentRequest(data[key]);
+    //         //});
+    //        sendSentimentRequest(data);
+    //     });
+    // });
 
     processTwitter.on('exit', async function() {
         console.log("Twitter Scraper complete")

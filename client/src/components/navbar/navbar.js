@@ -24,18 +24,6 @@ export default function Navbar({currentUser, status}) {
     userToShow = "REGISTER/SIGN IN";
   }
 
-
-  // useEffect(()=>{
-
-  //   if(status){
-  //     disLink = "signout";
-  //     userToShow = "Sign Out";
-  //   }else{
-  //     disLink = "signin";
-  //     userToShow = "REGISTER/SIGN IN";
-  //   }
-  // }, [status])
-
   useOnClickOutside(burger, () => setOpen_burg(false));
 
     return (
