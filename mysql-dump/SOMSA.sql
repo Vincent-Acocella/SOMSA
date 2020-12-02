@@ -51,8 +51,14 @@ DROP TABLE IF EXISTS `Topic`;
 CREATE TABLE `Topic` (
   `Topic_ID` int NOT NULL AUTO_INCREMENT,
   `Sentiment_ID` int NOT NULL, 
-  `Topic_Name` varchar(60) NOT NULL,
+  `Topic_Name` varchar(200) NOT NULL,
   `Category` varchar(45) NOT NULL,
   PRIMARY KEY (`Topic_ID`),
+  CONSTRAINT `Sentiment_ID`
+    FOREIGN KEY (`Sentiment_ID`)
+    REFERENCES `SOMSAdb` . `Sentiment` (`Sentiment_ID`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
   UNIQUE KEY `Topic_ID_UNIQUE` (`Topic_ID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+

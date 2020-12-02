@@ -1,7 +1,7 @@
 const fs = require('fs');
 const Sequalize = require('sequelize');
 const db = require('../conf.d/database');
-const topic = require('../models/topic');
+const topic = require('../models/topic_sentiment_association');
 const sentiment = require('../models/sentiment');
 const {exec} = require("child_process");
 const { JSDOM } = require( "jsdom" );
@@ -53,11 +53,17 @@ sendSentimentRequest = function(d) {
                 //If the data does not have a category, then that means it all ready exists in the table
                 //Attach the category we orignally found to it
                 if (data[key][1] === "NONE") {
-                    category = topic.find({
-                        where: {title: key},
-                        attributes: ['Topic_Category']
+                    category = await topic.Topic.findAll({
+                        where: {Topic_Name: key},
+                        attributes: ['Category']
                     })
-                    data[key][1] = category;
+                    console.log(category);
+                    try {
+                        data[key][1] = category[0]; 
+                    }
+                    catch {
+                        data[key][1] = "Trending";
+                    }
                 }
 
                 //If the topic is not one of our predetermined ones, then default it to Trending
@@ -69,19 +75,24 @@ sendSentimentRequest = function(d) {
                 if (data[key][2] === "Positive") {
                     s = true;
                 }
-                newSentiment = await sentiment.create({
-                    Sentiment: s,
-                    Confidence_Interval: data[key][3],
-                    Table_Data: data[key]
-                });
-
-                 //Add the topic data to the topic table
-                 console.log(newSentiment.Sentiment_ID)
-                 newTopic = await topic.create({
-                    Sentiment_ID: newSentiment.Sentiment_ID,
-                    Topic_Name: key,
-                    Topic_Category: data[key][1] 
-                });
+                try {
+                    newSentiment = await sentiment.create({
+                        Sentiment: s,
+                        Confidence_Interval: data[key][3],
+                        Table_Data: data[key]
+                    });
+    
+                     //Add the topic data to the topic table
+                     console.log(newSentiment.Sentiment_ID)
+                     newTopic = await topic.Topic.create({
+                        Sentiment_ID: newSentiment.Sentiment_ID,
+                        Topic_Name: key,
+                        Category: data[key][1]
+                    });
+                }
+                catch {
+                    console.log("Data could not be inserted.");
+                }
             });
         }
     });
@@ -89,7 +100,7 @@ sendSentimentRequest = function(d) {
 
 
 exports.onReceiveTimeout = async function() {
-    topics = await topic.findAll({
+    topics = await topic.Topic.findAll({
         attributes: ['Topic_Name', 'Category']
     });
     //For testing purposes we will use this simple table
