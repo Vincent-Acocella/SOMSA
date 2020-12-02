@@ -7,8 +7,6 @@ import styled from 'styled-components'
 
 
 const StyledBubbleLink = styled(Link)`
-
-
 `;
 
 function bubblesToShow(currentPage){

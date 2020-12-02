@@ -1,37 +1,46 @@
 import React, {useEffect,useState} from 'react'
 //This will be the entire layout 
 import {BrowserRouter, Route, Switch} from 'react-router-dom'
-import SignIn from './Pages/SignIn/SignIn'
-import SignUp from './Pages/SignUp/SignUp'
-import Home from './Pages/Home/Home'
-import Navbar from './navbar/Navbar'
-import 'bootstrap/dist/css/bootstrap.min.css'
+import {Home} from './SignInSignUp'
+import Navbar from './Navbar/Navbar'
+import Dashboard from './DashboardPages/Dashboard'
 import { ThemeProvider } from 'styled-components';
 import {theme} from './theme'
-import SpecificPage from './Pages/SpecificPage/SpecificPage'
-
-
+import {ProtectedRoute, UnProtectedRoute} from './ProtectedRoute'
+import ErrorPage from './DashboardPages/ErrorPage'
+import auth from './Auth'
 const LOGIN_KEY = 'currentUser';
+const FAVORITES = 'favorites';
+const STATUS = 'signedin';
 
 export const UserContext = React.createContext();
 
 export default function App() {
 
-  // const [selectedPage, setSelectedPage] = useState(0)
-  const [currentUser, setCurrentUser] = useState(null)
-
+  const [currentUser, setCurrentUser] = useState("x");
+  const [isLoggedin, setLogIn] = useState(0);
+  const [FAVORITES, setFavorites] = useState({});
   // const [topicList, setTopicsList] = useState(sentiments)
   useEffect(()=> {
-    //Store the username and change only when user changes
-    let curUser = localStorage.getItem(LOGIN_KEY);
-    console.log(curUser)
-    if(curUser !== null) setCurrentUser(JSON.parse(curUser));
+    
+    let status = parseInt(localStorage.getItem(STATUS))
+
+    if(( status !==null)) setLogIn(status)
+      
+    if(isLoggedin){
+      let curUser = localStorage.getItem(LOGIN_KEY);
+      let favorites = localStorage.getItem(FAVORITES);
+      if(favorites !== {}) setFavorites(favorites)
+      if(curUser !== 0) setCurrentUser(curUser);
+    }
   },[]);
-  
-  useEffect(()=> {
-    //Store the username and change only when user changes
-    localStorage.setItem(LOGIN_KEY, JSON.stringify(currentUser));
-  },[currentUser]);
+
+
+  useEffect(()=>{
+    localStorage.setItem(STATUS, isLoggedin);
+  }, [isLoggedin])
+
+
 
   // //firsttime
   // useEffect(()=>{
@@ -42,15 +51,31 @@ export default function App() {
   return (
     <BrowserRouter>
     <ThemeProvider theme={theme}>
-        <Navbar currentUser = {currentUser} setCurrentUser = {setCurrentUser}/> 
+    <Navbar currentUser = {currentUser} setCurrentUser = {setCurrentUser} status = {isLoggedin}/> 
     </ThemeProvider>
       <Switch>
-       <Route path='/signin' exact render={(props) => ( <SignIn user = {currentUser}/> )}/>  
-       <Route path='/signup' exact render={(props) => ( <SignUp setCurrentUser = {setCurrentUser}/> )}/>
+
+      <UnProtectedRoute
+        status = {isLoggedin}
+        setLogIn = {setLogIn}
+        setCurrentUser = {setCurrentUser}
+        path={"/home/:name"}
+        component={Home}
+      />
+
+      <Route
+        exact
+        path={"/"}
+        render={props => (
+          <Dashboard
+            {...props}
+          />
+        )}
+      />
+
+      <Route path="*" component={ErrorPage}/>
       </Switch>
-       <Route path='/home/'  component={Home}></Route>
-       {/* <Route path='/home/:name'  component ={SpecificPage}/> */}
-       
+
     {/* if link is this, render whatever */}
     {/* <Route path='/home/:id' component/> */}
       

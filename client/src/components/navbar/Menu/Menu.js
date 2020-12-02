@@ -1,6 +1,6 @@
 import React from 'react';
-import { bool } from 'prop-types';
 import { StyledMenu } from './Menu.styled';
+import { bool, func } from 'prop-types';
 
 const Menu = ({ open, ...props }) => {
   
@@ -28,5 +28,6 @@ const Menu = ({ open, ...props }) => {
 Menu.propTypes = {
   open: bool.isRequired,
 }
+
 
 export default Menu;
