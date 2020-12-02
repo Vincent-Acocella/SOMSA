@@ -51,7 +51,7 @@ DROP TABLE IF EXISTS `Topic`;
 CREATE TABLE `Topic` (
   `Topic_ID` int NOT NULL AUTO_INCREMENT,
   `Sentiment_ID` int NOT NULL, 
-  `Topic_Name` varchar(60) NOT NULL,
+  `Topic_Name` varchar(200) NOT NULL,
   `Category` varchar(45) NOT NULL,
   PRIMARY KEY (`Topic_ID`),
   CONSTRAINT `Sentiment_ID`
