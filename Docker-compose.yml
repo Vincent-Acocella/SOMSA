@@ -5,16 +5,16 @@ services:
   # data:
   #   build: docker/data/.
 
-  server:
-    build: ./server
-    volumes:
-      - ./server:/usr/src/app
-      - /usr/src/app/node_modules
-    ports:
-       - "5000:5000"
-    depends_on: 
-      - "mysql"
-    command: ["node", "server.js"]
+  #server:
+  #  build: ./server
+  #  volumes:
+  #    - ./server:/usr/src/app
+  #    - /usr/src/app/node_modules
+  #  ports:
+  #     - "5000:5000"
+  #  depends_on: 
+  #    - "mysql"
+  #  command: ["node", "server.js"]
 
   mysql:
     image: mysql:latest
