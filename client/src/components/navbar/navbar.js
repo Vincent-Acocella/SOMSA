@@ -1,13 +1,12 @@
-import React, {useState, useRef, useEffect} from 'react'
-import styled from 'styled-components';
-import { Burger, Menu, SearchBar, SearchIcon, Account } from '.';
+import React, {useState, useRef} from 'react'
+import { Burger, Menu, SearchBar, SearchIcon} from '.';
 import { useOnClickOutside } from '../hooks';
 import FocusLock from 'react-focus-lock';
 import {StyledNav} from './Navbar.styled';
 import {Link} from 'react-router-dom';
 
 
-export default function Navbar({currentUser, status}) {
+export default function Navbar({ status}) {
 
   const [open_burg, setOpen_burg] = useState(false);
   const [open_ser, setOpen_ser] = useState(false);

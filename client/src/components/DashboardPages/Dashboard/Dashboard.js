@@ -1,20 +1,6 @@
 import React, {useState, useEffect} from 'react';
 import {HomeStyled} from './Dashboard.styled';
-import styled from 'styled-components';
 import Bubbles from './Bubbles'
-
-const StyledButton = styled.button`
-    text-decoration: none;
-    color white;
-    background: transparent;
-    border:none;
-    
-     button:active {
-        opacity: 1;
-        border: green;
-        text-decoration: none;
-    }
-`;
 
 const list = [
     "Favorites",
@@ -24,34 +10,41 @@ const list = [
     "Sports",
     "Science",
     "Technology"
-]
+];
 
-const PAGE_SELECTED = "pageselect"
+const PAGE_SELECTED = "pageselect";
 
 export default function Home() {
 
-    const [currentPage, setCurrentPage] = useState([]);
+    const [currentPage, setCurrentPage] = useState("blue");
  
     useEffect(()=>{
-        console.log(currentPage);
-
+        const curPage = localStorage.getItem(PAGE_SELECTED);
+        if(curPage !==null) setCurrentPage(curPage);
     }, [currentPage])
 
+    function handlePush(item){
+        console.log(currentPage)
+        if(currentPage && currentPage.localeCompare(item) !==0){
+            localStorage.getItem(PAGE_SELECTED)
+            setCurrentPage(item)
+        }
+    }
+
     return (
-        <HomeStyled>
+        <HomeStyled currentPage={currentPage} >
             <>
-           <h1>Trending </h1> 
+            <h1>Trending </h1> 
             <h1>Sentiments</h1> 
             <ul>
                {list.map(item=> (
-                   <li key={item}>
-                      <StyledButton onClick={()=> setCurrentPage(item)}>{item} </StyledButton>
+                    <li className={item} key={item}>
+                      <button onClick={()=> handlePush(item)}>{item} </button>
                     </li>
                ))}
             </ul>
-            
             <div>
-
+                <Bubbles currentPage ={currentPage}></Bubbles>
             </div>
             </>
         </HomeStyled>
