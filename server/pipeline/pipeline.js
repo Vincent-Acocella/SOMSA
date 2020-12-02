@@ -100,11 +100,15 @@ sendSentimentRequest = function(d) {
 
 
 exports.onReceiveTimeout = async function() {
-    topics = await topic.Topic.findAll({
-        attributes: ['Topic_Name', 'Category']
-    });
-    //For testing purposes we will use this simple table
+    fs.rm('../python-test/webscraper/trend_data_in.json', (err) => {
     
+    });
+    fs.rm('../python-test/webscraper/twitter_data_in.json', (err) => {
+        
+    });
+    fs.rm('../python-test/webscraper/reddit_data_in.json', (err) => {
+        
+    });
     //topics = ["US Election"]
     var spider_arg = "trend="
     var doTrendLookup = false; 
@@ -148,25 +152,25 @@ exports.onReceiveTimeout = async function() {
                 console.log(stderr);
             }    
     });
+    //The lookup
     try {
         processDb.on('exit', async function() {
             console.log("Lookup Scraper complete")
             readJson('../python-test/webscraper/lookup_data_in.json', (err, data) => {
                 if(err) {
                     console.log(err);
-                    return;
                 }
-                fs.rm('../python-test/webscraper/lookup_data_in.json', (err) => {
-                    if(err) {
-                        console.log(err);
-                    }
-                });
-                
-               // data = JSON.stringify(data);
-                console.log(data);
-                sendSentimentRequest(data);
-                //return 0;
-                
+                else { 
+                    fs.rm('../python-test/webscraper/lookup_data_in.json', (err) => {
+                        if(err) {
+                            console.log(err);
+                        }
+                    });
+                    
+                   // data = JSON.stringify(data);
+                    //console.log(data);
+                    sendSentimentRequest(data);    
+                }
             });
         });
     }
@@ -174,48 +178,41 @@ exports.onReceiveTimeout = async function() {
         console.log("Database is empty. No topics to parse.")
     }
     
+    processReddit.on('exit', async function() {
+        console.log("Reddit Scraper complete")
+        readJson('../python-test/webscraper/reddit_data_in.json', (err, data) => {
+            if(err) {
+                console.log(err);
 
-    // processReddit.on('exit', async function() {
-    //     console.log("Reddit Scraper complete")
-    //     readJson('../python-test/webscraper/reddit_data_in.json', (err, data) => {
-    //         if(err) {
-    //             console.log(err);
-    //             return;
-    //         }
-    //         fs.rm('../python-test/webscraper/reddit_data_in.json', (err) => {
-    //             if(err) {
-    //                 console.log(err);
-    //             }
-    //         });
-            
-    //         //data = JSON.stringify(data);
-    //         console.log(data);
-    //         //Object.keys(data).forEach(function(key) {
-    //         //   sendSentimentRequest(data[key]);
-    //         //});
-    //        sendSentimentRequest(data);
-    //     });
-    // });
+            }
+            else {
+                fs.rm('../python-test/webscraper/reddit_data_in.json', (err) => {
+                    if(err) {
+                        console.log(err);
+                    }
+                });
+                //console.log(data);
+                sendSentimentRequest(data);
+            }
+        });
+    });
 
     processTwitter.on('exit', async function() {
         console.log("Twitter Scraper complete")
         readJson('../python-test/webscraper/twitter_data_in.json', (err, data) => {
             if(err) {
                 console.log(err);
-                return;
             }
-            fs.rm('../python-test/webscraper/twitter_data_in.json', (err) => {
-                if(err) {
-                    console.log(err);
-                }
-            });
-        
-           //data = JSON.stringify(data)
-           //console.log(data);
-           //Object.keys(data).forEach(function(key) {
-           //    sendSentimentRequest(data[key]);
-           //});
-           sendSentimentRequest(data);
+            else {
+                fs.rm('../python-test/webscraper/twitter_data_in.json', (err) => {
+                    if(err) {
+                        console.log(err);
+                    }
+                });
+               //data = JSON.stringify(data)
+               //console.log(data);
+               sendSentimentRequest(data);
+            }
         });
         
     });
