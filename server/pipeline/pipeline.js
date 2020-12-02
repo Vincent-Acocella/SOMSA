@@ -100,13 +100,13 @@ sendSentimentRequest = function(d) {
 
 exports.onReceiveTimeout = async function() {
     fs.rm('../python-test/webscraper/trend_data_in.json', (err) => {
-        console.log(err);
+    
     });
     fs.rm('../python-test/webscraper/twitter_data_in.json', (err) => {
-        console.log(err);
+        
     });
     fs.rm('../python-test/webscraper/reddit_data_in.json', (err) => {
-        console.log(err);
+        
     });
     
     topics = await topic.Topic.findAll({
