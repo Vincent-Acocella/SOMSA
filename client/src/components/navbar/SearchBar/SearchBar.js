@@ -5,8 +5,10 @@ import {StyledSearchBar} from './SearchBar.styled'
 const SearchBar = ({keyword,setKeyword}) => {
     // const BarStyling = {width:"20rem",background:"#F2F1F9", border:"none", padding:"0.5rem"};
   
-    return (
-        <StyledSearchBar  defaultValue="Search..." type= "text"/>
+    return (<div>
+
+    </div>
+        // <StyledSearchBar  defaultValue="Search..." type= "text"/>
       
     //   <input 
        

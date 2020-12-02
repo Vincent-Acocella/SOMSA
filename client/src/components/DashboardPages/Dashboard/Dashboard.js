@@ -16,16 +16,16 @@ const PAGE_SELECTED = "pageselect";
 
 export default function Home() {
 
-    const [currentPage, setCurrentPage] = useState("blue");
+    const [currentPage, setCurrentPage] = useState();
  
     useEffect(()=>{
         const curPage = localStorage.getItem(PAGE_SELECTED);
         if(curPage !==null) setCurrentPage(curPage);
-    }, [currentPage])
+    }, [])
 
     function handlePush(item){
-        console.log(currentPage)
-        if(currentPage && currentPage.localeCompare(item) !==0){
+        console.log(item)
+        if(currentPage && currentPage.localeCompare(item) !== 0){
             localStorage.getItem(PAGE_SELECTED)
             setCurrentPage(item)
         }
@@ -39,7 +39,7 @@ export default function Home() {
             <ul>
                {list.map(item=> (
                     <li className={item} key={item}>
-                      <button onClick={()=> handlePush(item)}>{item} </button>
+                      <button onClick={()=> handlePush(item)}>{item}</button>
                     </li>
                ))}
             </ul>
