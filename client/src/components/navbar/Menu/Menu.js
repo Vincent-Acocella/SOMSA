@@ -1,6 +1,6 @@
 import React from 'react';
 import { StyledMenu } from './Menu.styled';
-import { bool, func } from 'prop-types';
+import { bool } from 'prop-types';
 
 const Menu = ({ open, ...props }) => {
   
@@ -13,13 +13,9 @@ const Menu = ({ open, ...props }) => {
         <span aria-hidden="true">💁🏻‍♂️</span>
         About us
       </a>
-      <a href="/" tabIndex={tabIndex}>
-        <span aria-hidden="true">💸</span>
-        Pricing
-        </a>
-      <a href="/" tabIndex={tabIndex}>
+      <a href="/account" tabIndex={tabIndex}>
         <span aria-hidden="true">📩</span>
-        Contact
+        Account
         </a>
     </StyledMenu>
   )

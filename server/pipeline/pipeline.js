@@ -22,6 +22,7 @@ readJson = function(filePath, callback) {
             return callback && callback(err);
         }
         try {
+            console.log(fileData)
             var dataObj = JSON.parse(fileData);
             return callback && callback(null, dataObj);
         }
@@ -108,12 +109,6 @@ exports.onReceiveTimeout = async function() {
     fs.rm('../python-test/webscraper/reddit_data_in.json', (err) => {
         
     });
-    
-    topics = await topic.Topic.findAll({
-        attributes: ['Topic_Name', 'Category']
-    });
-    
-
     //topics = ["US Election"]
     var spider_arg = "trend="
     var doTrendLookup = false; 
@@ -143,12 +138,12 @@ exports.onReceiveTimeout = async function() {
     }
 
     //Run the Reddit scraper                                                                ../python-test/webscraper/MST_Trend_Lookup.py"
-    processReddit = exec("scrapy runspider -o ../python-test/webscraper/reddit_data_in.json ../python-test/webscraper/MST_Reddit.py",
-        {maxBuffer: 1024 * 2000}, (error, stdout, stderr) => {
-            if(error) {
-                console.log(stderr);
-            }
-    });
+    // processReddit = exec("scrapy runspider -o ../python-test/webscraper/reddit_data_in.json ../python-test/webscraper/MST_Reddit.py",
+    //     {maxBuffer: 1024 * 2000}, (error, stdout, stderr) => {
+    //         if(error) {
+    //             console.log(stderr);
+    //         }
+    // });
 
     //Run the Twitter scraper
     processTwitter = exec("scrapy runspider -o ../python-test/webscraper/twitter_data_in.json ../python-test/webscraper/MST_Twitter.py",
@@ -183,7 +178,6 @@ exports.onReceiveTimeout = async function() {
         console.log("Database is empty. No topics to parse.")
     }
     
-
     processReddit.on('exit', async function() {
         console.log("Reddit Scraper complete")
         readJson('../python-test/webscraper/reddit_data_in.json', (err, data) => {

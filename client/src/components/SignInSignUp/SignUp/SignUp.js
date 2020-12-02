@@ -4,30 +4,35 @@ import {StyledSignUp} from './SignUp.styled'
 import {withRouter} from 'react-router-dom'
 import auth from '../../Auth';
 
-//30px
  class Signup extends Component {
-    state = {
-        email: '',
-        password: '',
-        passwordAgain: '',
-        error: false,
-        errorMessage: ''
-    };
+     constructor(props){
+        super(props);
+        this.state = {
+            email: '',
+            password: '',
+            passwordAgain: '',
+            error: false,
+            errorMessage: ''
+        };
+}
 
     handleSubmit = event => {
         
         if(this.state.password.localeCompare(this.state.passwordAgain) === 0){
             //Avoid page refresh
             event.preventDefault();
-
             //First is url
-            axios.post('/user/signup', {email: this.state.email, password: this.state.password })
+            axios.post('/user/signup', {
+                email: this.state.email,
+                password: this.state.password })
             .then(res => {
-                localStorage.setItem('currentUser', JSON.stringify(res.data.email));
-                localStorage.setItem('favorites', JSON.stringify(res.data.favorites));
+                this.props.user(res.data.email);
+                localStorage.setItem('currentUser', res.data.email);
+                // localStorage.setItem('favorites', JSON.stringify(res.data.favorites));
                 auth.login(()=> {
-                    this.props.history.push('/');
-                })
+                this.props.logIn(1);
+                this.props.history.push('/');
+            })
             }).catch(res => {
                 this.setState({
                     error:true,
@@ -45,17 +50,17 @@ import auth from '../../Auth';
 
     handleChange = event => {
             this.setState({[event.target.name]: event.target.value});
-            console.log(this.state.passwordAgain);
     }
 
    render(){ 
        return (
         <StyledSignUp>
-            <>
+            
             <h1>Hello, Friend!</h1>
             <h1>Let's Set Up Your Account!</h1>
             {this.state.error && <h2 style ={{color: "red"}}>{this.state.errorMessage}</h2>}
-            <hr/>
+            <hr color="#2C698D"/>
+            <h2>Fill out the form below to get started</h2>
 
             <form onSubmit = {this.handleSubmit}>
                 { 
@@ -69,7 +74,7 @@ import auth from '../../Auth';
                 <br/>
                 <button type="submit">Complete</button>
             </form>
-            </>
+
         </StyledSignUp>
     )}
 }
