@@ -13,6 +13,7 @@ const list = [
 
 export default function Home() {
 
+    
     const [currentPage, setCurrentPage] = useState();
     const [isActive, setIsActive] = useState(false);
 

@@ -23,11 +23,6 @@ font-weight:bold;
     text-align:left;
 }
 
-.${({currentPage}) => currentPage}{
-    opacity: 100%;
-
-}
-
 button{
     text-decoration: none;
     color white;

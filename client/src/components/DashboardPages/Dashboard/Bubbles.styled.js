@@ -3,30 +3,52 @@ import styled from 'styled-components'
 
 export const BubblesStyled = styled.div`
 position: fixed;
-top: 60%;
-left: 407%;
+top: 40%;
+left: 302%;
 transform: translate(-50%, -50%);
 text-align:center;
 height: 500px;
-overflow:scroll;
+width: 800px;
+overflow:auto;
 -ms-overflow-style: none
-flex-flow: row nowrap;
--webkit-font-smoothing: antialiased;
 
-::-webkit-scrollbar {
-    width: 0px;
-    background: transparent; /* make scrollbar transparent */
+input {
+    background: transparent;
+    border: 1px solid grey;
+    border-radius: 4px;
+    padding: 2px;
+    margin-top: 7px;
+    margin-bottom: 7px;
+    text-align: center;
+    color: white;
+    z-index:0;
+    
 }
-
+h2 {
+    text-align: center;
+    font-size: 12px;
+    color: white;
+    font-weight: bold;
+    opacity: 0.35;
+}
+h1 {
+    text-align: center;
+    font-size: 40px;
+    color: white;
+    font-weight: bold;
+    
+}
+hr {
+    color: #b2ffff;
+    size: 10px;
+    filter: brightness(3.00);
 li{
     text-align:center;
     display: ${({length}) => length>2 ? 'inline-block' : 'block'};
     padding-bottom: 20px;
-    font-size: 30px;
-    word-wrap: break-word;
+ 
     width 100%;
 }
-
 ul {
     list-style-type: none;
     columns: 2;
@@ -37,19 +59,23 @@ ul {
 }
 
 button {
-    overflow:hidden;
     text-decoration: none;
     cursor: pointer;
     border-radius: 20px;
     border:none;
     text-align:center;
-    display:inline;
+    display:incline-block;
     font-weight: bold;
-    opacity: 65%;
+    opacity: 60%;
+    
     padding: 8px 35px;
     background-color: #3f3d56;
-    height: 200px;
-    width: 400px;
+    height: 150px;
+    width: 250px;
+}
+div {
+    margin-left: 189px;
+    margin-top: -38px;
 }
 
 button:hover {
