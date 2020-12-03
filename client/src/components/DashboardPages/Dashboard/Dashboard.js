@@ -5,7 +5,6 @@ import Bubbles from './Bubbles'
 const list = [
     "Trending",
     "Environment",
-    "General",
     "Politics",
     "Sports",
     "Science",
@@ -16,15 +15,25 @@ const PAGE_SELECTED = "pageselect";
 
 export default function Home() {
 
+    
+
     const [currentPage, setCurrentPage] = useState();
+    const [isActive, setIsActive] = useState(false);
  
     useEffect(()=>{
+        const act = localStorage.getItem('active')
+        if(act){
         const curPage = localStorage.getItem(PAGE_SELECTED);
         if(curPage !==null) setCurrentPage(curPage);
+
+        }
+        
     }, [])
 
     useEffect(()=>{
         localStorage.setItem(PAGE_SELECTED, currentPage)
+        localStorage.setItem('active', true)
+        setIsActive(true)
     },[currentPage]);
 
     return (
@@ -40,7 +49,7 @@ export default function Home() {
                ))}
             </ul>
             <div>
-                <Bubbles currentPage ={currentPage}></Bubbles>
+                <Bubbles status= {isActive} currentPage ={currentPage}></Bubbles>
             </div>
             </>
         </HomeStyled>

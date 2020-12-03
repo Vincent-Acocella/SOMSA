@@ -62,7 +62,7 @@ class SignIn extends Component {
                <br/>
                     <input type ="password" size = "40" name= "password" placeholder="Password" required = {true} onChange = {this.handleChange}/>
                 <br/>    
-                <button style ={{ "margin-right": "189px"}} type="submit">Sign In</button>
+                <button style ={{ "marginRight": "189px"}} type="submit">Sign In</button>
             </form>
             <div>
                 <StyledLink to="signup">

@@ -2,15 +2,15 @@ version: '3.5'
 
 services:
 
-  client:
-    build: ./client
-    ports:
-      - "3000:3000"
-    depends_on: 
-      - "server"
-    volumes:
-      - ./client:/client/usr/src/app/
-    command: ["npm", "start"]
+  # client:
+  #   build: ./client
+  #   ports:
+  #     - "3000:3000"
+  #   depends_on: 
+  #     - "server"
+  #   volumes:
+  #     - ./client:/client/usr/src/app/
+  #   command: ["npm", "start"]
 
   server:
     build: ./server
@@ -23,10 +23,10 @@ services:
       - "mysql"
     command: ["node", "server.js"]
 
-  # python:
-  #   build: ./python-test
-  #   ports: 
-  #     - 8000:8000
+  python:
+    build: ./python-test
+    ports: 
+      - 8000:8000
 
   mysql:
     image: mysql:latest

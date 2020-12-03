@@ -46,7 +46,7 @@ export default function Navbar({ status}) {
           </Link>
           
           <Link to= {`/home/${disLink}`}>
-            <h1>{userToShow}</h1> 
+            <h1 style = {{marginRight: "20px"}}>{userToShow}</h1> 
           </Link>  
       </>
     </StyledNav>

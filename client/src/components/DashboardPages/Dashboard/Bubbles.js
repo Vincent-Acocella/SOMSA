@@ -9,20 +9,19 @@ const StyledBubbleLink = styled(Link)`
 
     //This returns a list of the catagories 
 
-export default function Bubbles({currentPage}) {
+export default function Bubbles({status, currentPage}) {
     console.log(currentPage)
     const [error, setError] = useState(false)
-
     const [errorMessage, setErrorMessage]= useState()
     const [bubbles, setBubbles] = useState()
 
     useEffect(()=>{
-        if(currentPage){
-            axios.post('/api/getByCat', {
+        if(status){
+                axios.post('/api/getByCat', {
                 cat: currentPage
             }).then(res => setBubbles(res.data.info)).catch(res=> console.log(res))
         }
-    },[])
+    },[currentPage])
 
     console.log(bubbles)
     let bubsToRen;
@@ -38,7 +37,7 @@ export default function Bubbles({currentPage}) {
    }else{
         return (
             <BubblesStyled>
-                <h1>{currentPage}</h1>
+                {status && <h1>{currentPage}</h1>}
                 <ul>
                    {bubsToRen} 
                 </ul>

@@ -43,10 +43,10 @@ button {
     text-decoration: none;
     cursor: pointer;
     border-radius: 20px;
-    border:none;
+    border:1px;
     font-size: 15px;
     padding: 8px 35px;
-    background-color: #b2ffff;
+   
 }
 div {
     margin-left: 189px;
