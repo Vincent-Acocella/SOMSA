@@ -8,7 +8,6 @@ const signToken = (userID)=> {
 }
 //Used for signup
 exports.signUpUser = async (req,res) => {
-    console.log(req.body.email);
     try{
         let newUser = await Account.findOne({where: {Email: req.body.email}});
         
@@ -27,8 +26,10 @@ exports.signUpUser = async (req,res) => {
             Password: password,
             Favorites: {}
         }) 
+        console.log("Whats the issue")
 
-        res.status(200).json({success:true, email: req.body.email, favorites: req.body.favorites});
+        res.json({success:true, email: req.body.email});
+        console.log("Front end huh")
     }catch(error){
         res.status(500).json({success: false, error: "OOOOPS"})
     }

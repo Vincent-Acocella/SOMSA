@@ -36,9 +36,4 @@ const HOST = '0.0.0.0';
 // pipeline.onReceiveTimeout();
 // setInterval(function(){pipeline.onReceiveTimeout()},  3 * 60 * 60 * 100)
 
-// App
-app.get('/', (req, res) => {
-  res.send('Hello World');
-});
-
 app.listen(PORT, HOST);

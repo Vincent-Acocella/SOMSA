@@ -15,8 +15,6 @@ const PAGE_SELECTED = "pageselect";
 
 export default function Home() {
 
-    
-
     const [currentPage, setCurrentPage] = useState();
     const [isActive, setIsActive] = useState(false);
  
@@ -25,10 +23,9 @@ export default function Home() {
         if(act){
         const curPage = localStorage.getItem(PAGE_SELECTED);
         if(curPage !==null) setCurrentPage(curPage);
-
         }
         
-    }, [])
+    },[])
 
     useEffect(()=>{
         localStorage.setItem(PAGE_SELECTED, currentPage)

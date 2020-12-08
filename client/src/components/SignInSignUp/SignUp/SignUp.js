@@ -22,10 +22,12 @@ import auth from '../../Auth';
             //Avoid page refresh
             event.preventDefault();
             //First is url
+            console.log("HELP ME HELP you")
             axios.post('/user/signup', {
                 email: this.state.email,
-                password: this.state.password })
+                password: this.state.password})
             .then(res => {
+                console.log(res)
                 this.props.user(res.data.email);
                 localStorage.setItem('currentUser', res.data.email);
                 // localStorage.setItem('favorites', JSON.stringify(res.data.favorites));
@@ -34,7 +36,7 @@ import auth from '../../Auth';
                 this.props.history.push('/');
             })
             }).catch(res => {
-                console.log(res.response)
+              
                 this.setState({
                     error:true,
                     errorMessage: res.response.data.error

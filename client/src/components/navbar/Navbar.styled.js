@@ -40,4 +40,6 @@ export const StyledNav = styled.nav`
     font-weight:bold;
     left: 70rem;
   }
+
+  
 `;

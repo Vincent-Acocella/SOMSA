@@ -8,6 +8,6 @@ export default function Home({user, logIn, match}) {
     if(match.params.name !==null && match.params.name.localeCompare('signin') === 0){
         return (<SignIn user = {user} logIn ={logIn} />);
     }else{
-        return (<SignUp/>);
+        return (<SignUp user = {user} logIn ={logIn}/>);
     }
 }
