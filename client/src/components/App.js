@@ -9,6 +9,7 @@ import {theme} from './theme';
 import {ProtectedRoute, UnProtectedRoute} from './ProtectedRoute';
 import ErrorPage from './DashboardPages/ErrorPage';
 import Account from './Account/Account'
+import About from './About/About'
 const LOGIN_KEY = 'currentUser';
 // const FAVORITES = 'favorites';
 const STATUS = 'signedin';
@@ -68,6 +69,16 @@ export default function App() {
         path={"/"}
         render={props => (
           <Dashboard
+            {...props}
+          />
+        )}
+      />
+
+      <Route
+        exact
+        path={"/About"}
+        render={props => (
+          <About
             {...props}
           />
         )}
