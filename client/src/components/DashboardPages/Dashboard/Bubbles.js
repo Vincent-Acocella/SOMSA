@@ -4,11 +4,16 @@ import {Link} from 'react-router-dom';
 import {BubblesStyled} from './Bubbles.styled';
 import styled from 'styled-components'
 
-const StyledBubbleLink = styled(Link)`
+const StyledHeading = styled.h1`
+position: fixed;
+top: 5%;
+left: 302%;
+transform: translate(-50%, -50%);
+text-align:center;
+
 `;
 
-    //This returns a list of the catagories 
-
+//This returns a list of the catagories 
 export default function Bubbles({status, currentPage}) {
     console.log(currentPage)
     const [error, setError] = useState(false)
@@ -23,8 +28,9 @@ export default function Bubbles({status, currentPage}) {
         }
     },[currentPage])
 
-    console.log(bubbles)
     let bubsToRen;
+
+    
     if(bubbles){
        bubsToRen = bubbles.map(bubble => {
            return <li key={bubble.Sentiment_ID}><Link><button type ="button">{bubble.Topic_Name}</button></Link>
@@ -36,12 +42,16 @@ export default function Bubbles({status, currentPage}) {
        return <h1>{errorMessage}</h1>
    }else{
         return (
-            <BubblesStyled>
-                {status && <h1>{currentPage}</h1>}
+            <>
+            {status && <StyledHeading> {currentPage} </StyledHeading>}
+            <BubblesStyled length = {bubsToRen.length}>
+                
                 <ul>
                    {bubsToRen} 
                 </ul>
+                
             </BubblesStyled>
+            </>
         )
     }
 }

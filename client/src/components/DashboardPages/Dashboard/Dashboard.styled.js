@@ -24,8 +24,6 @@ li {
     text-align:left;
 }
 
-
-
 button{
     text-decoration: none;
     color white;
@@ -37,7 +35,5 @@ button{
 button:hover{
     opacity: 100%;
 }
-
-
 
 `;

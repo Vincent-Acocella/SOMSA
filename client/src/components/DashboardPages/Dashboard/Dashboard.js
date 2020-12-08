@@ -22,7 +22,7 @@ export default function Home() {
         const act = localStorage.getItem('active')
         if(act){
         const curPage = localStorage.getItem(PAGE_SELECTED);
-        if(curPage !==null) setCurrentPage(curPage);
+        if(curPage !== null) setCurrentPage(curPage);
         }
         
     },[])
@@ -46,7 +46,7 @@ export default function Home() {
                ))}
             </ul>
             <div>
-                <Bubbles status= {isActive} currentPage ={currentPage}></Bubbles>
+                <Bubbles status = {isActive} currentPage = {currentPage}></Bubbles>
             </div>
             </>
         </HomeStyled>
