@@ -9,7 +9,7 @@ class About extends Component {
    render(){ 
        return (
         <StyledAbout>
-
+            
         <div className="about-our-project-C61RwL">About Our Project!</div>
         <div className="our-team-i-on-that-wo-C61RwL">
           Our team is comprised of five senior undergraduate students at Marist College. SOMSA was developed as a part
