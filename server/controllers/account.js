@@ -84,16 +84,18 @@ exports.changePassword = async (req, res) =>{
             return;
         }
 
-        let isMatch = await newUser.validPassword(req.body.password);
+        //let isMatch = await newUser.validPassword(req.body.password);
 
 
-        if(!isMatch){
-            return res.status(401).json({success: false, error: 'Password does not match email'});
-        }
+        //if(!isMatch){
+        //    return res.status(401).json({success: false, error: 'Password does not match email'});
+        //}
 
-        Account.update({
-            password: req.body.password,
-            where: req.params.accountID
-        });
-        res.json({success: true});
+    let id = req.body.id;
+    console.log(id);
+    Account.update(
+        {Password: password},
+        {where: {Account_ID: req.body.id}}
+    );
+    res.json({success: true});
 }
