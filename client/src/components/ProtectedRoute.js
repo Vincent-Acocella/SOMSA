@@ -6,7 +6,8 @@ export const ProtectedRoute = ({component: Component, user, status, ...rest}) =>
         <Route
          {...rest} 
          render = {(props) => {
-             if(status){
+             console.log(status)
+             if(status === 1){
                 return <Component {...props} status = {status} user = {user}/>;
              }else{
                  return <Redirect to={

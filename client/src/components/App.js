@@ -49,7 +49,7 @@ export default function App() {
     </ThemeProvider>
       <Switch>
 
-      <ProtectedRoute
+      <Route
       exact
       user = {currentUser}
       status = {isLoggedin}
@@ -74,7 +74,6 @@ export default function App() {
           />
         )}
       />
-      <Route path="/sentiment/:id" component = {Sentiment}/>
 
       <Route
         exact
@@ -85,6 +84,9 @@ export default function App() {
           />
         )}
       />
+      <Route path="/sentiment/:id" component = {Sentiment}/>
+
+      
 
       <Route path="*" component={ErrorPage}/>
       </Switch>
