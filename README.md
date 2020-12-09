@@ -36,8 +36,10 @@ Somsa is a social media sentiment analyzer created with the purpose of understan
 # Getting Started
 ## Prerequisites
 * [npm](https://github.com/npm/cli)
+
   `npm install npm@latest -g`
-* Docker
+* [Docker](https://github.com/docker/compose)
+
  Instructions to install Docker Desktop for Windows can be found [here](https://hub.docker.com/editions/community/docker-ce-desktop-windows)
  Once insalled, open powershell as administrator
  `#Display version of Docker installed:
@@ -48,6 +50,7 @@ Somsa is a social media sentiment analyzer created with the purpose of understan
  ### Demo Video
  [![Demo Video](https://j.gifs.com/81Rgwg.gif)](https://www.youtube.com/watch?v=JzmBxDfEr7E&feature=youtu.be)
  1. Clone the Repository
+ 
  `git clone https://github.com/Vincent-Acocella/SOMSA`
  2. Change directory to SOMSA
  `cd Somsa`
