@@ -44,13 +44,13 @@ Somsa is a social media sentiment analyzer created with the purpose of understan
  
  Once insalled, open powershell as administrator
  
- `#Display version of Docker installed:
+ `#Display version of Docker installed:`
  
- docker version
+ `docker version`
  
- #Pull, create, and run "Hello World" in one command:
+ `#Pull, create, and run "Hello World" in one command:`
  
- docker run hello-world`
+ `docker run hello-world`
  ## Installation
  ### Demo Video
  [![Demo Video](https://j.gifs.com/81Rgwg.gif)](https://www.youtube.com/watch?v=JzmBxDfEr7E&feature=youtu.be)
