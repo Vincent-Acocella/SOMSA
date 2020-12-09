@@ -17,21 +17,12 @@ export default function Home() {
 
     const [currentPage, setCurrentPage] = useState();
     const [isActive, setIsActive] = useState(false);
- 
-    useEffect(()=>{
-        const act = localStorage.getItem('active')
-        if(act){
-        const curPage = localStorage.getItem(PAGE_SELECTED);
-        if(curPage !== null) setCurrentPage(curPage);
-        }
-        
-    },[])
 
-    useEffect(()=>{
-        localStorage.setItem(PAGE_SELECTED, currentPage)
-        localStorage.setItem('active', true)
-        setIsActive(true)
-    },[currentPage]);
+    function buttonClick(item){
+        setCurrentPage(item);
+        setIsActive(true);
+    }
+ 
 
     return (
         <HomeStyled currentPage={currentPage} >
@@ -41,12 +32,12 @@ export default function Home() {
             <ul>
                {list.map(item=> (
                     <li className={item} key={item}>
-                      <button onClick={()=> setCurrentPage(item)}>{item}</button>
+                      <button onClick={()=>buttonClick(item)}>{item}</button>
                     </li>
                ))}
             </ul>
             <div>
-                <Bubbles status = {isActive} currentPage = {currentPage}></Bubbles>
+               {isActive &&<Bubbles status = {isActive} currentPage = {currentPage}></Bubbles>}
             </div>
             </>
         </HomeStyled>

@@ -7,8 +7,8 @@ top: 60%;
 left: 302%;
 transform: translate(-50%, -50%);
 text-align:center;
-height: 400px;
-width: 700px;
+height: 500px;
+width: 800px;
 overflow:auto;
 -ms-overflow-style: none
 
@@ -26,12 +26,12 @@ h1 {
     font-weight: bold;
     
 }
-${({ open }) => open ? 'rotate(45deg)' : 'rotate(0)'};
 li{
     text-align:center;
     display: ${({length}) => length>2 ? 'inline-block' : 'block'};
     padding-bottom: 20px;
-    width 100%
+ 
+    width 100%;
 }
 ul {
     list-style-type: none;
@@ -41,23 +41,28 @@ ul {
     column-rule: dotted 1px #333;
     list-style-position: inside;
 }
+
 button {
     text-decoration: none;
     cursor: pointer;
     border-radius: 20px;
-    border:1px;
-    font-size: 15px;
+    border:none;
+    text-align:center;
+    display:incline-block;
+    font-weight: bold;
+    opacity: 60%;
+    
     padding: 8px 35px;
-   
+    background-color: #3f3d56;
+    height: 150px;
+    width: 250px;
 }
 div {
     margin-left: 189px;
     margin-top: -38px;
 }
+
 button:hover {
     border: #b2ffff;
-}
-input:hover {
-    border: 3px solid #b2ffff;
 }
 `;

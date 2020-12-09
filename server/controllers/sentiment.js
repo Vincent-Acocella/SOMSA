@@ -11,8 +11,7 @@ exports.getTrendsByTopic = async (req,res) =>{
       attributes: ['Sentiment_ID', 'Topic_Name'],
       where: {Category: req.body.cat}
    });
-
-   if(allInfo === null){
+   if(allInfo.length < 1){
       return res.status(401).json({success: false, error: 'Sorry we have no data in the catagory'});
    }
 
