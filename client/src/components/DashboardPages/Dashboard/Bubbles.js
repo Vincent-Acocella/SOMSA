@@ -1,40 +1,62 @@
-import React, {useEffect} from 'react';
+import React, {useEffect, useState} from 'react';
 import {axios} from '../../API/axios';
 import {Link} from 'react-router-dom';
 import {BubblesStyled} from './Bubbles.styled';
-
 import styled from 'styled-components'
 
-
-const StyledBubbleLink = styled(Link)`
+const StyledHeading = styled.h1`
+position: fixed;
+top: ${({error}) => error ? '20%' : '3%'};
+left: 416%;
+transform: translate(-50%, -50%);
+text-align:center;
+color: ${({error}) => error ? 'red' : ''};
+width: ${({error}) => error ? '400px;' : ''};
 `;
 
-function bubblesToShow(currentPage){
-    //This returns a list of the catagories 
-    axios.get(`/sentiment/${currentPage}`)
-    .then(res=>{
-        return res.data;
-    })
-}
+//This returns a list of the catagories 
+export default function Bubbles({status, currentPage}) {
+    const [error, setError] = useState(false)
+    const [errorMessage, setErrorMessage]= useState()
+    const [bubbles, setBubbles] = useState(null)
 
-export default function Bubbles({currentPage}) {
+    useEffect(()=>{
+        if(status){
+                axios.post('/api/getByCat', {
+                cat: currentPage
+            }).then(res => {
+                setBubbles(res.data.info);
+                setError(false);
+            }       
+            ).catch(res=> {
+                setError(true);
+                setErrorMessage(res.response.data.error);
 
-   let bubblesInJson = bubblesToShow(currentPage);
+            } )
+        }
+    },[currentPage])
 
+    let bubsToRen;
+    
+    if(bubbles !== null){
+       bubsToRen = bubbles.map(bubble => {
+           return <li key={bubble.Sentiment_ID}><Link><button type ="button">{bubble.Topic_Name}</button></Link>
+       </li>
+       })
+   }
 
-    return (
-        <BubblesStyled>
-
-            
-            {/* <ul>
-                {bubblesInJson.map(bubble =>(
-                    <li key={bubble}>
-                        <StyledBubbleLink>{bubble}</StyledBubbleLink>
-                    </li>
-                ))}
-                <li></li>
-            </ul> */}
-        </BubblesStyled>
-       
-    )
+   if(error){
+       return <StyledHeading error ={error}>{errorMessage}</StyledHeading>
+   }else{
+        return (
+            <>
+            {status && <StyledHeading error = {error}> {currentPage} </StyledHeading>}
+            {bubsToRen !==null && bubbles && <BubblesStyled length = {bubsToRen.length}>
+                <ul>
+                   {bubsToRen} 
+                </ul>
+            </BubblesStyled>}
+            </>
+        )
+    }
 }

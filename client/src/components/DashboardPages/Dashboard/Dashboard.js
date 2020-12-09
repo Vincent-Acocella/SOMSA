@@ -3,48 +3,40 @@ import {HomeStyled} from './Dashboard.styled';
 import Bubbles from './Bubbles'
 
 const list = [
-    "Favorites",
+    "Trending",
     "Environment",
-    "General",
     "Politics",
     "Sports",
     "Science",
     "Technology"
 ];
 
-const PAGE_SELECTED = "pageselect";
-
 export default function Home() {
 
     const [currentPage, setCurrentPage] = useState();
- 
-    useEffect(()=>{
-        const curPage = localStorage.getItem(PAGE_SELECTED);
-        if(curPage !==null) setCurrentPage(curPage);
-    }, [])
+    const [isActive, setIsActive] = useState(false);
 
-    function handlePush(item){
-        console.log(item)
-        if(currentPage && currentPage.localeCompare(item) !== 0){
-            localStorage.getItem(PAGE_SELECTED)
-            setCurrentPage(item)
-        }
+    function buttonClick(item){
+        setCurrentPage(item);
+        setIsActive(true);
     }
 
+    let addActive = "sidebar " + currentPage;
+ 
     return (
-        <HomeStyled currentPage={currentPage} >
+        <HomeStyled currentPage={currentPage}>
             <>
             <h1>Trending </h1> 
             <h1>Sentiments</h1> 
-            <ul>
-               {list.map(item=> (
-                    <li className={item} key={item}>
-                      <button onClick={()=> handlePush(item)}>{item}</button>
+            <ul className = "list">
+               {list.map(item => (
+                    <li className = {addActive} key = {item}>
+                        <button onClick={()=>buttonClick(item)}>{item}</button>
                     </li>
                ))}
             </ul>
             <div>
-                <Bubbles currentPage ={currentPage}></Bubbles>
+               {isActive && <Bubbles status = {isActive} currentPage = {currentPage}></Bubbles>}
             </div>
             </>
         </HomeStyled>

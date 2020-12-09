@@ -2,5 +2,3 @@ flask==1.0.2
 keras==2.4.3
 numpy==1.18.5
 flask_cors
-selenium
-scrappy

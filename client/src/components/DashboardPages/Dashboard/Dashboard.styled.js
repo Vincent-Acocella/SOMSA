@@ -3,29 +3,27 @@ import styled from 'styled-components'
 export const HomeStyled = styled.div`
 position: absolute;
 top: 50%;
-left: 14%;
+left: 12%;
 transform: translate(-50%, -50%);
 text-align:left;
 z-index: -1;
 color: white;
-font-size: 50px;
+font-size:  70px;
 font-weight:bold;
-
-ul {
+.list {
    padding: 0px;
     text-align: left;
 }
-li {
-    
+.sidebar {
     margin-top: 20px;
     list-style-type: none;
     font-size: 40%;
     font-weight: normal;
     text-align:left;
 }
-
-
-
+.${({currentPage}) => currentPage}{
+    opacity: 100%;
+}
 button{
     text-decoration: none;
     color white;
@@ -33,11 +31,7 @@ button{
     background: transparent;
     border:none;
 }
-
 button:hover{
     opacity: 100%;
 }
-
-
-
 `;

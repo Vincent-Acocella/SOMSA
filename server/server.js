@@ -25,20 +25,15 @@ app.use(cookieParser());
 app.use('/user', require('./routes/account_route' ));
 
 //Sentiment route
-//app.use('/api', require('./routes/sentiment_route'));
+app.use('/api', require('./routes/sentiment_route'));
 
 const PORT = process.env.PORT || 5000;
 const HOST = '0.0.0.0';
 
-var pipeline = require('./pipeline/pipeline');
-//Run the pipeline once every day
-//Will also be executed on every startup of the backends
-pipeline.onReceiveTimeout();
-setInterval(function(){pipeline.onReceiveTimeout()},  3 * 60 * 60 * 100)
-
-// App
-app.get('/', (req, res) => {
-  res.send('Hello World');
-});
+// var pipeline = require('./pipeline/pipeline');
+// //Run the pipeline once every day
+// //Will also be executed on every startup of the backends
+// pipeline.onReceiveTimeout();
+// setInterval(function(){pipeline.onReceiveTimeout()},  3 * 60 * 60 * 100)
 
 app.listen(PORT, HOST);

@@ -4,7 +4,7 @@ import {StyledSignUp} from './SignUp.styled'
 import {withRouter} from 'react-router-dom'
 import auth from '../../Auth';
 
- class Signup extends Component {
+ class SignUp extends Component {
      constructor(props){
         super(props);
         this.state = {
@@ -22,10 +22,12 @@ import auth from '../../Auth';
             //Avoid page refresh
             event.preventDefault();
             //First is url
+            console.log("HELP ME HELP you")
             axios.post('/user/signup', {
                 email: this.state.email,
-                password: this.state.password })
+                password: this.state.password})
             .then(res => {
+                console.log(res)
                 this.props.user(res.data.email);
                 localStorage.setItem('currentUser', res.data.email);
                 // localStorage.setItem('favorites', JSON.stringify(res.data.favorites));
@@ -34,13 +36,13 @@ import auth from '../../Auth';
                 this.props.history.push('/');
             })
             }).catch(res => {
+              
                 this.setState({
                     error:true,
-                    error: (res.response.data.error)
+                    errorMessage: res.response.data.error
                 })
             })
         }else{
-
             this.setState({
                 error:true,
                 errorMessage: 'Passwords do not Match'
@@ -63,9 +65,6 @@ import auth from '../../Auth';
             <h2>Fill out the form below to get started</h2>
 
             <form onSubmit = {this.handleSubmit}>
-                { 
-                this.state.error && <h1 style = {{color: "red"}}> {this.state.errorMessage} </h1> 
-                }
                 <input type ="email" size = "40" name= "email" placeholder="Email" required ={true} onChange = {this.handleChange}/>
                 <br/>
                 <input type ="password" size = "40" name= "password" placeholder="Password" required = {true} onChange = {this.handleChange}/>
@@ -79,4 +78,4 @@ import auth from '../../Auth';
     )}
 }
 
-export default withRouter(Signup);
+export default withRouter(SignUp);
