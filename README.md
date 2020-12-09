@@ -52,7 +52,7 @@ Somsa is a social media sentiment analyzer created with the purpose of understan
  
  `docker run hello-world`
  
- ## Demo Video
+ ## Demo Installation Video
  [![Demo Video](https://j.gifs.com/81Rgwg.gif)](https://www.youtube.com/watch?v=JzmBxDfEr7E&feature=youtu.be)
  
  ## Installation
