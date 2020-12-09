@@ -9,6 +9,7 @@ import {theme} from './theme';
 import {ProtectedRoute, UnProtectedRoute} from './ProtectedRoute';
 import ErrorPage from './DashboardPages/ErrorPage';
 import Account from './Account/Account'
+import Sentiment from './DashboardPages/Dashboard/Sentiment/Sentiment';
 import About from './About/About'
 const LOGIN_KEY = 'currentUser';
 // const FAVORITES = 'favorites';
@@ -73,6 +74,7 @@ export default function App() {
           />
         )}
       />
+      <Route path="/sentiment/:id" component = {Sentiment}/>
 
       <Route
         exact

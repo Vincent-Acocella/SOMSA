@@ -18,6 +18,20 @@ exports.getTrendsByTopic = async (req,res) =>{
    res.json({success:true, info: allInfo});
 }
 
+exports.getSentimentByID = async (req,res) =>{
+   let id = req.params.id;
+
+   let sentimentToGet = await Sentiment.findOne({
+      where:{Sentiment_ID:id}
+   });
+
+   if(sentimentToGet ==null){
+      return res.status(401).json({success: false, error: 'We could not find the sentiment'});
+   }
+
+   res.json({success:true, CI: sentimentToGet.Confidence_Interval, sentiment: sentimentToGet.Sentiment});
+}
+
 exports.getSentimentFromSearch = async (req,res) => {
 
    let id = await Topic.findOne({

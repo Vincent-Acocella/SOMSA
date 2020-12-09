@@ -7,7 +7,6 @@ const Sentiment = db.define('Sentiment', {
         type: Sequalize.INTEGER,
         autoIncrement: true,
         primaryKey: true
-
     },
     
     Sentiment: {
