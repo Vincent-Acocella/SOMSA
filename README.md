@@ -41,10 +41,15 @@ Somsa is a social media sentiment analyzer created with the purpose of understan
 * [Docker](https://github.com/docker/compose)
 
  Instructions to install Docker Desktop for Windows can be found [here](https://hub.docker.com/editions/community/docker-ce-desktop-windows)
+ 
  Once insalled, open powershell as administrator
+ 
  `#Display version of Docker installed:
+ 
  docker version
+ 
  #Pull, create, and run "Hello World" in one command:
+ 
  docker run hello-world`
  ## Installation
  ### Demo Video
@@ -52,8 +57,12 @@ Somsa is a social media sentiment analyzer created with the purpose of understan
  1. Clone the Repository
  
  `git clone https://github.com/Vincent-Acocella/SOMSA`
+ 
  2. Change directory to SOMSA
+ 
  `cd Somsa`
+ 
  3. Run Docker
+ 
  `docker-compose up --build -d`
   
