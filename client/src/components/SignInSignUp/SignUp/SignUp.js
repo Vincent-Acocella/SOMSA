@@ -3,6 +3,7 @@ import {axios} from '../../API/axios'
 import {StyledSignUp} from './SignUp.styled'
 import {withRouter} from 'react-router-dom'
 import auth from '../../Auth';
+import social_interaction from '../../../img/undraw-social-interaction-cy9i@1x.png'
 
  class SignUp extends Component {
      constructor(props){
@@ -63,6 +64,8 @@ import auth from '../../Auth';
             {this.state.error && <h2 style ={{color: "red"}}>{this.state.errorMessage}</h2>}
             <hr color="#2C698D"/>
             <h2>Fill out the form below to get started</h2>
+
+            <img className="undraw-social-interaction-cy9i@1x" src={social_interaction} />
 
             <form onSubmit = {this.handleSubmit}>
                 <input type ="email" size = "40" name= "email" placeholder="Email" required ={true} onChange = {this.handleChange}/>
