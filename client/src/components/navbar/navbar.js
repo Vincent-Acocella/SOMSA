@@ -50,6 +50,5 @@ export default function Navbar({ status}) {
           </Link>  
       </>
     </StyledNav>
-
     )
 }

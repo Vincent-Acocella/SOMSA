@@ -4,35 +4,29 @@ import styled from 'styled-components'
 export const BubblesStyled = styled.div`
 position: fixed;
 top: 60%;
-left: 302%;
+left: 407%;
 transform: translate(-50%, -50%);
 text-align:center;
 height: 500px;
-width: 800px;
-overflow:auto;
+overflow:scroll;
 -ms-overflow-style: none
+flex-flow: row nowrap;
+-webkit-font-smoothing: antialiased;
 
-h2 {
-    text-align: center;
-    font-size: 12px;
-    color: white;
-    font-weight: bold;
-    opacity: 0.35;
+::-webkit-scrollbar {
+    width: 0px;
+    background: transparent; /* make scrollbar transparent */
 }
-h1 {
-    text-align: center;
-    font-size: 40px;
-    color: white;
-    font-weight: bold;
-    
-}
+
 li{
     text-align:center;
     display: ${({length}) => length>2 ? 'inline-block' : 'block'};
     padding-bottom: 20px;
- 
+    font-size: 30px;
+    word-wrap: break-word;
     width 100%;
 }
+
 ul {
     list-style-type: none;
     columns: 2;
@@ -43,23 +37,19 @@ ul {
 }
 
 button {
+    overflow:hidden;
     text-decoration: none;
     cursor: pointer;
     border-radius: 20px;
     border:none;
     text-align:center;
-    display:incline-block;
+    display:inline;
     font-weight: bold;
-    opacity: 60%;
-    
+    opacity: 65%;
     padding: 8px 35px;
     background-color: #3f3d56;
-    height: 150px;
-    width: 250px;
-}
-div {
-    margin-left: 189px;
-    margin-top: -38px;
+    height: 200px;
+    width: 400px;
 }
 
 button:hover {
