@@ -73,3 +73,27 @@ exports.signOutUser = (req,res) =>{
     res.clearCookie('auth_token');
     res.json({success:true})
 }
+
+exports.changePassword = async (req, res) =>{
+    console.log(req.body);
+    let password = req.body.password;
+        try{
+            password = await bcrypt.hash(password, bcrypt.genSaltSync(8));
+        }catch(e){
+            console.log({e});
+            return;
+        }
+
+        let isMatch = await newUser.validPassword(req.body.password);
+
+
+        if(!isMatch){
+            return res.status(401).json({success: false, error: 'Password does not match email'});
+        }
+
+        Account.update({
+            password: req.body.password,
+            where: req.params.accountID
+        });
+        res.json({success: true});
+}
