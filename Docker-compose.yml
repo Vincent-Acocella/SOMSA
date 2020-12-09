@@ -12,21 +12,21 @@ services:
   #     - ./client:/client/usr/src/app/
   #   command: ["npm", "start"]
 
-  server:
-    build: ./server
-    volumes:
-      - ./server:/server/usr/src/app
-      - /server/usr/src/app/node_modules
-    ports:
-       - "5000:5000"
-    depends_on: 
-      - "mysql"
-    command: ["node", "server.js"]
+  # server:
+  #   build: ./server
+  #   volumes:
+  #     - ./server:/server/usr/src/app
+  #     - /server/usr/src/app/node_modules
+  #   ports:
+  #      - "5000:5000"
+  #   depends_on: 
+  #     - "mysql"
+  #   command: ["node", "server.js"]
 
-  python:
-    build: ./python-test
-    ports: 
-      - 8000:8000
+  # python:
+  #   build: ./python-test
+  #   ports: 
+  #     - 8000:8000
 
   mysql:
     image: mysql:latest
