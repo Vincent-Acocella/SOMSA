@@ -10,7 +10,6 @@ z-index: -1;
 color: white;
 font-size:  70px;
 font-weight:bold;
-
 .list {
    padding: 0px;
     text-align: left;
@@ -22,7 +21,9 @@ font-weight:bold;
     font-weight: normal;
     text-align:left;
 }
-
+.${({currentPage}) => currentPage}{
+    opacity: 100%;
+}
 button{
     text-decoration: none;
     color white;
@@ -30,9 +31,7 @@ button{
     background: transparent;
     border:none;
 }
-
 button:hover{
     opacity: 100%;
 }
-
 `;

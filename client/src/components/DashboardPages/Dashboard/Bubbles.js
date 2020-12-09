@@ -6,19 +6,16 @@ import styled from 'styled-components'
 
 const StyledHeading = styled.h1`
 position: fixed;
-top: ${({error}) => error ? '20%' : '5%'};
-left: 302%;
+top: ${({error}) => error ? '20%' : '3%'};
+left: 416%;
 transform: translate(-50%, -50%);
 text-align:center;
 color: ${({error}) => error ? 'red' : ''};
 width: ${({error}) => error ? '400px;' : ''};
-
 `;
 
-    //This returns a list of the catagories 
-
+//This returns a list of the catagories 
 export default function Bubbles({status, currentPage}) {
-    console.log(currentPage)
     const [error, setError] = useState(false)
     const [errorMessage, setErrorMessage]= useState()
     const [bubbles, setBubbles] = useState(null)
@@ -39,7 +36,6 @@ export default function Bubbles({status, currentPage}) {
         }
     },[currentPage])
 
-    console.log(bubbles)
     let bubsToRen;
     
     if(bubbles !== null){
@@ -56,11 +52,9 @@ export default function Bubbles({status, currentPage}) {
             <>
             {status && <StyledHeading error = {error}> {currentPage} </StyledHeading>}
             {bubsToRen !==null && bubbles && <BubblesStyled length = {bubsToRen.length}>
-                
                 <ul>
                    {bubsToRen} 
                 </ul>
-
             </BubblesStyled>}
             </>
         )

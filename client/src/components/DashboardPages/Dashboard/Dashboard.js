@@ -13,7 +13,6 @@ const list = [
 
 export default function Home() {
 
-    
     const [currentPage, setCurrentPage] = useState();
     const [isActive, setIsActive] = useState(false);
 
@@ -21,7 +20,6 @@ export default function Home() {
         setCurrentPage(item);
         setIsActive(true);
     }
- 
 
     let addActive = "sidebar " + currentPage;
  
@@ -30,15 +28,15 @@ export default function Home() {
             <>
             <h1>Trending </h1> 
             <h1>Sentiments</h1> 
-            <ul>
-               {list.map(item=> (
-                    <li className={item} key={item}>
-                      <button onClick={()=>buttonClick(item)}>{item}</button>
+            <ul className = "list">
+               {list.map(item => (
+                    <li className = {addActive} key = {item}>
+                        <button onClick={()=>buttonClick(item)}>{item}</button>
                     </li>
                ))}
             </ul>
             <div>
-               {isActive &&<Bubbles status = {isActive} currentPage = {currentPage}></Bubbles>}
+               {isActive && <Bubbles status = {isActive} currentPage = {currentPage}></Bubbles>}
             </div>
             </>
         </HomeStyled>
