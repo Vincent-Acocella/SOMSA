@@ -2,7 +2,7 @@ import React, {useEffect,useState} from 'react';
 //This will be the entire layout 
 import {BrowserRouter, Route, Switch} from 'react-router-dom';
 import {Home} from './SignInSignUp';
-import Navbar from './Navbar/Navbar';
+import Navbar from './Navbar/navbar';
 import Dashboard from './DashboardPages/Dashboard';
 import { ThemeProvider } from 'styled-components';
 import {theme} from './theme';
@@ -10,6 +10,7 @@ import {ProtectedRoute, UnProtectedRoute} from './ProtectedRoute';
 import ErrorPage from './DashboardPages/ErrorPage';
 import Account from './Account/Account'
 import About from './About/About'
+//import Navbar from './navbar/navbar'
 const LOGIN_KEY = 'currentUser';
 // const FAVORITES = 'favorites';
 const STATUS = 'signedin';
@@ -48,7 +49,7 @@ export default function App() {
     </ThemeProvider>
       <Switch>
 
-      <ProtectedRoute
+      <Route
       exact
       user = {currentUser}
       status = {isLoggedin}
