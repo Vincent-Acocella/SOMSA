@@ -1,6 +1,7 @@
 const Account = require('../models/account');
 const bcrypt = require('bcrypt');
 const JWT = require('jsonwebtoken');
+//const { json } = require('sequelize/types');
 
 //Creates token
 const signToken = (userID)=> {
@@ -83,19 +84,35 @@ exports.changePassword = async (req, res) =>{
             console.log({e});
             return;
         }
-
-        //let isMatch = await newUser.validPassword(req.body.password);
-
-
-        //if(!isMatch){
-        //    return res.status(401).json({success: false, error: 'Password does not match email'});
-        //}
-
-    let id = req.body.id;
-    console.log(id);
     Account.update(
         {Password: password},
         {where: {Account_ID: req.body.id}}
+    );
+    res.json({success: true});
+}
+
+exports.addFavorite = async (req, res) => {
+    let favorites = {}
+    try{
+        currentFavorites = await Account.findOne(
+            {where: {Account_ID: req.body.accountId},
+            attributes: ['Favorites']
+        })
+        favorites = currentFavorites.Favorites || {};
+        //JSON.parse(favorites);
+    }
+
+    catch(e) {
+        console.log(e);
+    }
+    console.log(favorites);
+    let topicId = req.body.topicId;
+    favorites[topicId] = req.body.topicId
+    console.log(favorites);
+
+    Account.update(
+        {Favorites: favorites},
+        {where: {Account_ID: req.body.accountId}}
     );
     res.json({success: true});
 }
