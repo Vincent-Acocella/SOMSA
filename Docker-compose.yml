@@ -23,17 +23,10 @@ services:
       - "mysql"
     command: ["node", "server.js"]
 
-<<<<<<< HEAD
-  # python:
-  #   build: ./python-test
-  #   ports: 
-  #     - "8000:8000"
-=======
   python:
     build: ./python-test
     ports: 
       - 8000:8000
->>>>>>> 7b54bf9... DONE BUT NOT
 
   mysql:
     image: mysql:latest
