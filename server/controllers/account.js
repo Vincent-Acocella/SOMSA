@@ -125,9 +125,10 @@ exports.removeFavorite = async (req, res) => {
             {where: {Account_ID: req.body.accountId},
             attributes: ['Favorites']
         })
-        currentFavorites[req.body.topicId] = null;
+        currentFavorites = currentFavorites.Favorites;
+        delete currentFavorites[req.body.topicId];
         Account.update(
-            {Favorites: crrentFavorites},
+            {Favorites: currentFavorites},
             {where: {Account_ID: req.body.accountId}}
         );
     }
