@@ -1,7 +1,9 @@
 const express = require('express');
 const router = express.Router();
 const Account = require('../models/account');
-const {signUpUser, signInUser, signOutUser, changePassword, addFavorite} = require('../controllers/account')
+const {signUpUser, signInUser, signOutUser, 
+    changePassword, addFavorite, removeFavorite,
+    search} = require('../controllers/account')
 const {userValidatorResult, userValidator} = require('../validators/userValidator')
 
 const {isAuth} = require('../middlewares/auth')
@@ -29,5 +31,9 @@ router.get('/secret', isAuth, (req,res)=>{
 router.post('/updatePassword', changePassword);
 
 router.post('/addFavorite', addFavorite);
+
+router.post('/removeFavorite', removeFavorite);
+
+router.post('/search', search);
 
 module.exports = router;

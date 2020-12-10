@@ -1,6 +1,7 @@
 const Account = require('../models/account');
 const bcrypt = require('bcrypt');
 const JWT = require('jsonwebtoken');
+const Topic = require('../models/topic');
 //const { json } = require('sequelize/types');
 
 //Creates token
@@ -115,4 +116,50 @@ exports.addFavorite = async (req, res) => {
         {where: {Account_ID: req.body.accountId}}
     );
     res.json({success: true});
+}
+
+exports.removeFavorite = async (req, res) => {
+    let favorites = {}
+    try{
+        currentFavorites = await Account.findOne(
+            {where: {Account_ID: req.body.accountId},
+            attributes: ['Favorites']
+        })
+        currentFavorites[req.body.topicId] = null;
+        Account.update(
+            {Favorites: crrentFavorites},
+            {where: {Account_ID: req.body.accountId}}
+        );
+    }
+
+    catch(e) {
+        console.log(e);
+        return;
+    }
+    res.json({success: true});
+}
+
+//Search function is only for users
+exports.search = async (req, res) => {
+    let results = null;
+    try{
+        let query = await Topic.findAll(
+            {where: {
+                Topic_Name:{ 
+                    $like: '%' + req.body.search + '%'
+                }
+            }}
+        );
+        console.log(query);
+        results = query;
+    }
+    catch(e) {
+        console.log(e);
+    }
+    if (results) {
+        results.success = true
+        res.status(201).json(results);
+        return;
+    }
+    res.status(401).json({success: false, error: "No results for " + req.body.search + " found."});
 }
