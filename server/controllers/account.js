@@ -2,7 +2,8 @@ const Account = require('../models/account');
 const bcrypt = require('bcrypt');
 const JWT = require('jsonwebtoken');
 const Topic = require('../models/topic');
-//const { json } = require('sequelize/types');
+const sequelize  = require('sequelize');
+const op = sequelize.Op;
 
 //Creates token
 const signToken = (userID)=> {
@@ -147,18 +148,21 @@ exports.search = async (req, res) => {
         let query = await Topic.findAll(
             {where: {
                 Topic_Name:{ 
-                    $like: '%' + req.body.search + '%'
+                    [op.like]: '%' + req.body.search + '%'
                 }
             }}
         );
         console.log(query);
+        if (query.length == 0) {
+            query = null;
+        }
         results = query;
     }
     catch(e) {
         console.log(e);
     }
     if (results) {
-        results.success = true
+        results["success"] = true
         res.status(201).json(results);
         return;
     }
