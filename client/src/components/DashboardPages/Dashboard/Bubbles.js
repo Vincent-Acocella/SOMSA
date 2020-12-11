@@ -40,7 +40,7 @@ export default function Bubbles({status, currentPage}) {
     
     if(bubbles !== null){
        bubsToRen = bubbles.map(bubble => {
-           return <li key={bubble.Sentiment_ID}><Link><button type ="button">{bubble.Topic_Name}</button></Link>
+           return <li key={bubble.Sentiment_ID}><Link style={{"textDecoration": "none"}} to= {`/sentiment/${bubble.Sentiment_ID}`}>><button type ="button">{bubble.Topic_Name}</button></Link>
        </li>
        })
    }

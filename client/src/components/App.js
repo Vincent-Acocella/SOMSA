@@ -9,6 +9,7 @@ import {theme} from './theme';
 import {ProtectedRoute, UnProtectedRoute} from './ProtectedRoute';
 import ErrorPage from './DashboardPages/ErrorPage';
 import Account from './Account/Account'
+import Sentiment from './DashboardPages/Dashboard/Sentiment/Sentiment';
 import About from './About/About'
 //import Navbar from './navbar/navbar'
 const LOGIN_KEY = 'currentUser';
@@ -84,6 +85,9 @@ export default function App() {
           />
         )}
       />
+      <Route path="/sentiment/:id" component = {Sentiment}/>
+
+      
 
       <Route path="*" component={ErrorPage}/>
       </Switch>

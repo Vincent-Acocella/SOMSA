@@ -17,6 +17,7 @@ export const StyledAbout = styled.div`
     letter-spacing: 0.00px;
     line-height: 65px;
     position: absolute;
+    z-index: 0;
     text-align: left;
     top: 230px;
     width: 609px;

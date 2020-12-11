@@ -6,7 +6,8 @@ export const ProtectedRoute = ({component: Component, user, status, ...rest}) =>
         <Route
          {...rest} 
          render = {(props) => {
-             if(status){
+             console.log(status)
+             if(status === 1){
                 return <Component {...props} status = {status} user = {user}/>;
              }else{
                  return <Redirect to={
@@ -27,7 +28,7 @@ export const UnProtectedRoute = ({component: Component, status, setCurrentUser, 
         <Route
          {...rest} 
          render = {(props) => {
-             if('/home/signout'.localeCompare(props.location.pathname)===0){
+             if('/home/signout'.localeCompare(props.location.pathname) === 0){
                  setLogIn(0)
                  return <Redirect to={
                     {
@@ -38,7 +39,7 @@ export const UnProtectedRoute = ({component: Component, status, setCurrentUser, 
                     }
                      } />
              }else{
-             if(!status){
+                if(!status){
                 return <Component { ...props} user ={setCurrentUser} logIn = {setLogIn}/>;
              }else{
                 return <Redirect to={
