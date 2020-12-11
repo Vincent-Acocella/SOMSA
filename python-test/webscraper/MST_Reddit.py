@@ -30,7 +30,7 @@ class MSTRedditSpider(Spider):
     current_home_url = 'http://example.com/'
 
     AMOUNT_OF_PAGE_SCROLLS = 50
-    THREADS_TO_SCRAPE = 6
+    THREADS_TO_SCRAPE = 8
 
     def scrape_subreddit(self):
         self.driver.get(self.current_home_url)
