@@ -34,7 +34,7 @@ var pipeline = require('./pipeline/pipeline');
 //Run the pipeline once every day
 //Will also be executed on every startup of the backends
 pipeline.onReceiveTimeout();
-//setInterval(pipeline.onReceiveTimeout(),  8 * 60 * 60 * 100)
+setInterval(function() {pipeline.onReceiveTimeout()},  12 * 60 * 60 * 100)
 
 // App
 app.get('/', (req, res) => {
