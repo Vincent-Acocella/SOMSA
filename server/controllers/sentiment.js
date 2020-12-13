@@ -4,9 +4,6 @@ const Sentiment = require('../models/sentiment');
 exports.getTrendsByTopic = async (req,res) =>{
    console.log(req.body.cat)
 
-   //catagory is selected
-   //get all topics and ids that go with 
-   //sends
    let allInfo = await Topic.findAll({
       attributes: ['Sentiment_ID', 'Topic_Name'],
       where: {Category: req.body.cat}
@@ -25,11 +22,15 @@ exports.getSentimentByID = async (req,res) =>{
       where:{Sentiment_ID:id}
    });
 
+   let trend = await Topic.findOne({
+      where:{Sentiment_ID:id}
+   })
+
    if(sentimentToGet ==null){
       return res.status(401).json({success: false, error: 'We could not find the sentiment'});
    }
 
-   res.json({success:true, CI: sentimentToGet.Confidence_Interval, sentiment: sentimentToGet.Sentiment});
+   res.json({success:true, CI: sentimentToGet.Confidence_Interval, trend:trend, sentiment: sentimentToGet.Sentiment});
 }
 
 exports.getSentimentFromSearch = async (req,res) => {

@@ -11,9 +11,11 @@ import ErrorPage from './DashboardPages/ErrorPage';
 import Account from './Account/Account'
 import Sentiment from './DashboardPages/Dashboard/Sentiment/Sentiment';
 import About from './About/About'
+import Search from './DashboardPages/Search/Search'
+
 //import Navbar from './navbar/navbar'
 const LOGIN_KEY = 'currentUser';
-// const FAVORITES = 'favorites';
+const FAVORITES = 'favorites';
 const STATUS = 'signedin';
 
 export const UserContext = React.createContext();
@@ -22,7 +24,7 @@ export default function App() {
 
   const [currentUser, setCurrentUser] = useState("x");
   const [isLoggedin, setLogIn] = useState(0);
-  // const [FAVORITES, setFavorites] = useState({});
+  const [favorites, setFavorites] = useState({});
  
   //Set what we need on refresh
   useEffect(()=> {
@@ -33,8 +35,8 @@ export default function App() {
       
     if(isLoggedin){
       let curUser = localStorage.getItem(LOGIN_KEY);
-      // let favorites = localStorage.getItem(FAVORITES);
-      // if(favorites !== {}) setFavorites(favorites)
+      let favorites = localStorage.getItem(FAVORITES);
+      if(favorites !== {}) setFavorites(favorites)
       if(curUser !== 0) setCurrentUser(curUser);
     }
   },[]);
@@ -62,6 +64,7 @@ export default function App() {
         status = {isLoggedin}
         setLogIn = {setLogIn}
         setCurrentUser = {setCurrentUser}
+        favorites = {setFavorites}
         path={"/home/:name"}
         component={Home}
       />
@@ -78,6 +81,16 @@ export default function App() {
 
       <Route
         exact
+        path={"/search"}
+        render={props => (
+          <Search
+            {...props}
+          />
+        )}
+      />
+
+      <Route
+        exact
         path={"/About"}
         render={props => (
           <About
@@ -86,8 +99,6 @@ export default function App() {
         )}
       />
       <Route path="/sentiment/:id" component = {Sentiment}/>
-
-      
 
       <Route path="*" component={ErrorPage}/>
       </Switch>

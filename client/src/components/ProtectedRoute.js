@@ -23,7 +23,7 @@ export const ProtectedRoute = ({component: Component, user, status, ...rest}) =>
     )
 }
 
-export const UnProtectedRoute = ({component: Component, status, setCurrentUser, setLogIn, ...rest}) => {
+export const UnProtectedRoute = ({component: Component, status, setCurrentUser, favorites, setLogIn, ...rest}) => {
     return (
         <Route
          {...rest} 
@@ -40,7 +40,7 @@ export const UnProtectedRoute = ({component: Component, status, setCurrentUser, 
                      } />
              }else{
                 if(!status){
-                return <Component { ...props} user ={setCurrentUser} logIn = {setLogIn}/>;
+                return <Component { ...props} user ={setCurrentUser} favorites = {favorites} logIn = {setLogIn}/>;
              }else{
                 return <Redirect to={
                     {

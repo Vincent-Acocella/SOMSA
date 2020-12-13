@@ -3,12 +3,11 @@ import {axios} from '../../../API/axios'
 import {Pie} from 'react-chartjs-2'
 import { MDBContainer } from "mdbreact";
 import {SentimentStyled} from './Sentiment.styled'
+import HandleStar from './HandleStar';
 
 
 export default function Sentiment({match}) {
-    useEffect(()=>{
-        fetchSentiment();
-    },[])
+    
 
     const [data, setData] = useState({});
 
@@ -16,12 +15,33 @@ export default function Sentiment({match}) {
 
     const [feeling, setFeeling] = useState();
 
+    const [topicId, setTopicId] = useState();
+    const [favorites, setFavorites] = useState({});
+
+    const [isFavorite, setIsFavorite ] = useState(0);
+
+    const [currentuser, setCurrentUser] = useState(-1);
+
+    const [topicName, setTopicName] = useState();
+
+    const [ci, setCi] = useState()
+
+    useEffect(()=>{
+
+        fetchSentiment();
+        let curUser = localStorage.getItem('currentUser');
+        let favorites = localStorage.getItem('favorites');
+        if(curUser !== 0) setCurrentUser(curUser);
+        if(favorites !== 0) setFavorites(favorites);
+        
+    },[])
+
     const fetchSentiment = async () => {
         const getSentiment = await axios.get(`/api/sentiment/${match.params.id}`);
-        console.log(getSentiment);
         setSentiment(getSentiment);
-
+        
         let confInterval = getSentiment.data.CI;
+        setCi(confInterval)
 
         setFeeling(getSentiment.data.sentiment);
 
@@ -31,6 +51,15 @@ export default function Sentiment({match}) {
             setFeeling("Negative");
         }
 
+        setTopicId(getSentiment.data.trend.Topic_ID);
+        let topicname = getSentiment.data.trend.Topic_Name;
+
+        if(topicname.length > 30){
+            topicname = topicname.substring(0,28);
+            topicname = topicname.concat("....")
+        }
+
+        setTopicName(topicname)
         let remainder = 100 - confInterval
      
         let newData = {
@@ -51,13 +80,30 @@ export default function Sentiment({match}) {
         }
         setData(newData)
     }
-    return (
-        <SentimentStyled>
-            <MDBContainer>
 
-            <h3 className="mt-5">{feeling}</h3>
-            <Pie data={data} width = {500} height = {250} options={{ responsive: true, maintainAspectRatio: false}}/>
+
+    return (
+
+        <SentimentStyled>
+            
+                <h2 className="name">{topicName}</h2>
+         
+                
+    
+            <h3 className="feel">People are feeling <u>{feeling}</u> about this</h3>
+        
+            <HandleStar accountId = {currentuser} topicId ={topicId} status = {isFavorite}></HandleStar>
+
+            <div className="pie-chart">
+            <MDBContainer>
+                <Pie data={data} width = {1000} height = {250} options={{ responsive: true, maintainAspectRatio: false}}/>
             </MDBContainer>
+            </div>
+            <h3 className="tootin"> We are {ci}% confident</h3>
+
+           
+
         </SentimentStyled>
+
     )
 }
