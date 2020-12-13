@@ -29,9 +29,10 @@ class SignIn extends Component {
             email: this.state.email,
             password: this.state.password})
         .then(res => {
-            this.props.user(res.data.email);
-            localStorage.setItem('currentUser', res.data.email);
-            // localStorage.setItem('favorites', JSON.stringify(res.data.favorites));
+            this.props.user(res.data.id);
+            this.props.favorites(res.data.favorites)
+            localStorage.setItem('favorites', JSON.stringify(res.data.favorites));
+            localStorage.setItem('currentUser', res.data.id);
             auth.login(()=> {
                 this.props.logIn(1);
                 this.props.history.push('/');

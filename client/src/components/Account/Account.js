@@ -36,10 +36,69 @@ import path_115 from '../../img/account_img/path-115@1x.png'
 import ellipse_13 from '../../img/account_img/ellipse-13@1x.png'
 
 class Account extends Component {   
-   
+  constructor(props){
+    super(props);
+    this.state = {
+        email: '',
+        password: '',
+        passwordAgain: '',
+        error: false,
+        errorMessage: ''
+    };
+}
+
+handleSubmit = event => {
+    
+    if(this.state.password.localeCompare(this.state.passwordAgain) === 0){
+        //Avoid page refresh
+        event.preventDefault();
+        //First is url
+        axios.post('/user/changepassword', {
+            email: this.state.email,
+            password: this.state.password})
+        .then(res => {
+            console.log(res)
+            this.props.user(res.data.email);
+            localStorage.setItem('currentUser', res.data.email);
+            // localStorage.setItem('favorites', JSON.stringify(res.data.favorites));
+            this.props.logIn(1);
+            this.props.history.push('/');
+        }).catch(res => {
+          
+            this.setState({
+                error:true,
+                errorMessage: res.response.data.error
+            })
+        })
+    }else{
+        this.setState({
+            error:true,
+            errorMessage: 'Passwords do not Match'
+        })
+    }
+}
+
+handleChange = event => {
+        this.setState({[event.target.name]: event.target.value});
+}
    render(){ 
        return (
         <StyledAccount>
+
+
+            <form onSubmit = {this.handleSubmit}>
+                <input type ="email" size = "40" name= "email" placeholder="Email" required ={true} onChange = {this.handleChange}/>
+                <br/>
+                <input type ="password" size = "40" name= "password" placeholder="Password" required = {true} onChange = {this.handleChange}/>
+                <br/>
+                <input type ="password" size = "40" name= "passwordAgain" placeholder="Confirm Password" required = {true} onChange = {this.handleChange}/>
+                <br/>
+                <button type="submit">Complete</button>
+            </form>
+
+
+
+
           
         {/* <div className="account-C61RwL">Account</div>
         <div className="rectangle-8-C61RwL"></div>

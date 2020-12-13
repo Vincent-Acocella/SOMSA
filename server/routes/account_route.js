@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const Account = require('../models/account');
-const {signUpUser, signInUser, signOutUser} = require('../controllers/account')
+const {signUpUser, signInUser, signOutUser,addFavorite,removeFavorite,search,changePassword} = require('../controllers/account')
 const {userValidatorResult, userValidator} = require('../validators/userValidator')
 
 const {isAuth} = require('../middlewares/auth')
@@ -26,4 +26,11 @@ router.get('/secret', isAuth, (req,res)=>{
      res.json({success: true, message: "You are inside our secret page "})
 })
 
+router.post('/updatePassword', changePassword);
+
+router.post('/addFavorite', addFavorite);
+
+router.post('/removeFavorite', removeFavorite);
+
+router.post('/search', search);
 module.exports = router;

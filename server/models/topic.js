@@ -7,7 +7,6 @@ const Topic = db.define('Topic', {
         type: Sequalize.INTEGER,
         autoIncrement: true,
         primaryKey: true
-
     },
     
     Topic_Name: {

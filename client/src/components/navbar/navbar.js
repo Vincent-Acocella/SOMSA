@@ -37,8 +37,8 @@ export default function Navbar({ status}) {
           <h3>MENU</h3>
 
           <FocusLock disabled={!open_ser}>
-            <SearchIcon open={open_ser} setOpen={setOpen_ser} aria-controls={menuId}/>
-            <SearchBar open={open_ser} setOpen={setOpen_ser} />
+            <SearchIcon/>
+            
           </FocusLock>
           
           <Link to= "/">

@@ -57,7 +57,7 @@ button:hover {
 .undraw-social-interaction-cy9i@1x {
     background-color: transparent;
     height: 444px;
-    left: 50%;
+    left: 20%;
     position: absolute;
     top: 50%;
     width: 887px;

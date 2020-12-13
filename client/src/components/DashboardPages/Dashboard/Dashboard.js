@@ -11,7 +11,7 @@ const list = [
     "Technology"
 ];
 
-export default function Home() {
+export default function Dashboard() {
 
     const [currentPage, setCurrentPage] = useState();
     const [isActive, setIsActive] = useState(false);

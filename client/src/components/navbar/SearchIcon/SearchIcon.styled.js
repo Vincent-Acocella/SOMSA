@@ -8,7 +8,6 @@ left: 15rem;
 display: flex;
 flex-direction: column;
 justify-content: space-around;
-transform: ${({ open }) => open ? 'display: none' : 'opacity 1'};
 
 width: 2rem;
 height: 2rem;
