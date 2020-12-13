@@ -67,4 +67,11 @@ Somsa is a social media sentiment analyzer created with the purpose of understan
  3. Run Docker
  
  `docker-compose up --build -d`
+ 
+ 4. Switch to client
+ `cd client`
+ 
+ 5. Start the frontend
+ `npm install`
+ `npm start`
   
